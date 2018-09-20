@@ -6,24 +6,31 @@ class m130524_201442_init extends Migration
 {
     public function up()
     {
-        $tableOptions = null;
-        if ($this->db->driverName === 'mysql') {
-            // http://stackoverflow.com/questions/766809/whats-the-difference-between-utf8-general-ci-and-utf8-unicode-ci
-            $tableOptions = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
-        }
-
         $this->createTable('{{%user}}', [
             'id' => $this->primaryKey(),
-            'username' => $this->string()->notNull()->unique(),
             'auth_key' => $this->string(32)->notNull(),
             'password_hash' => $this->string()->notNull(),
             'password_reset_token' => $this->string()->unique(),
-            'email' => $this->string()->notNull()->unique(),
 
+            'username' => $this->string()->notNull()->unique(),
+            'email' => $this->string()->notNull()->unique(),
+            'name' => $this->string(),
+            'avatar' => $this->string(64)->null(),
+
+            'phone' => $this->string(16)->null(),
+            'position' => $this->string(64)->null(),
+            'country' => $this->string(64)->null(),
+            'state' => $this->string(64)->null(),
+            'city' => $this->string(64)->null(),
+            'zip' => $this->string(5)->null(),
+            'address' => $this->string(128)->null(),
+
+            'role_id' => $this->smallInteger()->notNull(),
             'status' => $this->smallInteger()->notNull()->defaultValue(10),
-            'created_at' => $this->integer()->notNull(),
-            'updated_at' => $this->integer()->notNull(),
-        ], $tableOptions);
+
+            'created_at' => $this->timestamp()->defaultExpression('CURRENT_TIMESTAMP'),
+            'updated_at' => $this->timestamp(),
+        ]);
     }
 
     public function down()
