@@ -16,6 +16,7 @@ class m180917_153849_create_region_table extends Migration
             'id' => $this->primaryKey(),
             'name' => $this->string()->notNull(),
         ]);
+        $this->addForeignKey('fk_location_region', 'location', 'region_id', 'region', 'id');
     }
 
     /**

@@ -17,7 +17,7 @@ return [
         ],
         'cache' => [
             'class' => \yii\caching\FileCache::class,
-            'keyPrefix' => 'pos.artpix'
+            'keyPrefix' => 'pos.frontend.artpix'
         ],
         'user' => [
             'identityClass' => 'common\models\User',
@@ -26,7 +26,7 @@ return [
         ],
         'session' => [
             // this is the name of the session cookie used for login on the frontend
-            'name' => 'advanced-frontend',
+            'name' => 'pos-frontend',
         ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
@@ -45,6 +45,7 @@ return [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
+                '<controller>/<action>/<id:\d+>' => '<controller>/<action>',
             ],
         ],
 

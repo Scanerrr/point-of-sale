@@ -1,14 +1,28 @@
 <?php
-
-return [
-    [
-        'username' => 'bayer.hudson',
-        'auth_key' => 'HP187Mvq7Mmm3CTU80dLkGmni_FUH_lR',
-        //password_0
-        'password_hash' => '$2y$13$EjaPFBnZOQsHdGuHI.xvhuDp1fHpo8hKRSk6yshqa9c5EG8s3C3lO',
-        'password_reset_token' => 'ExzkCOaYc1L8IOBs4wdTGGbgNiG3Wz1I_1402312317',
-        'created_at' => '1402312317',
-        'updated_at' => '1402312317',
-        'email' => 'nicole.paucek@schultz.info',
-    ],
-];
+$users = [];
+$roles = [10, 20, 30];
+$statuses = [10, 20];
+for ($i = 1; $i <= 10; $i++) {
+    $users[] = [
+        'id' => $i,
+        'auth_key' => Yii::$app->security->generateRandomString(),
+        'password_hash' => Yii::$app->security->generatePasswordHash('123456'),
+        'password_reset_token' => null,
+        'username' => 'somename' . $i,
+        'email' => 'someemail' . $i . '@ex.org',
+        'name' => 'fullname-' . $i,
+        'avatar' => null,
+        'phone' => $i . $i . $i . $i . $i . $i . $i . $i,
+        'position' => null,
+        'country' => 'USA',
+        'state' => 'rand',
+        'city' => 'rand',
+        'zip' => '12345',
+        'address' => 'rand',
+        'role' => $roles[rand(0, 2)],
+        'status' => $statuses[rand(0, 1)],
+        'created_at' => date('Y-m-d H:i:s', strtotime('-' . $i * 2 . ' day')),
+        'updated_at' => null,
+    ];
+}
+return $users;

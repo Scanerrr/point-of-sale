@@ -40,6 +40,7 @@ class SignupForm extends Model
      * Signs user up.
      *
      * @return User|null the saved model or null if saving fails
+     * @throws \yii\base\Exception
      */
     public function signup()
     {
@@ -50,6 +51,7 @@ class SignupForm extends Model
         $user = new User();
         $user->username = $this->username;
         $user->email = $this->email;
+        $user->role_id = 0;
         $user->setPassword($this->password);
         $user->generateAuthKey();
         

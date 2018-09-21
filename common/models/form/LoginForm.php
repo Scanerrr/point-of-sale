@@ -1,6 +1,7 @@
 <?php
-namespace common\models;
+namespace common\models\form;
 
+use common\models\User;
 use Yii;
 use yii\base\Model;
 
@@ -56,6 +57,11 @@ class LoginForm extends Model
     public function login()
     {
         if ($this->validate()) {
+            $user = $this->getUser();
+            if ($user->role !== User::ROLE_ADMIN) {
+                Yii::$app->session->setFlash('error', 'You don\'t have permissions.');
+                return false;
+            }
             return Yii::$app->user->login($this->getUser(), $this->rememberMe ? 3600 * 24 * 30 : 0);
         }
         

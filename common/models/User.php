@@ -1,6 +1,7 @@
 <?php
 namespace common\models;
 
+use common\models\query\UserQuery;
 use Yii;
 use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
@@ -10,21 +11,36 @@ use yii\web\IdentityInterface;
 /**
  * User model
  *
- * @property integer $id
- * @property string $username
+ * @property int $id
+ * @property string $auth_key
  * @property string $password_hash
  * @property string $password_reset_token
+ * @property string $username
  * @property string $email
- * @property string $auth_key
- * @property integer $status
- * @property integer $created_at
- * @property integer $updated_at
- * @property string $password write-only password
+ * @property string $name
+ * @property string $avatar
+ * @property string $phone
+ * @property string $position
+ * @property string $country
+ * @property string $state
+ * @property string $city
+ * @property string $zip
+ * @property string $address
+ * @property int $role
+ * @property int $status
+ * @property string $created_at
+ * @property string $updated_at
+ *
+ * @property LocationUser[] $locationUsers
  */
 class User extends ActiveRecord implements IdentityInterface
 {
     const STATUS_DELETED = 0;
     const STATUS_ACTIVE = 10;
+
+    const ROLE_USER = 10;
+    const ROLE_MANAGER = 20;
+    const ROLE_ADMIN = 30;
 
 
     /**
@@ -38,21 +54,49 @@ class User extends ActiveRecord implements IdentityInterface
     /**
      * {@inheritdoc}
      */
-    public function behaviors()
+    public function rules()
     {
         return [
-            TimestampBehavior::className(),
+            ['status', 'default', 'value' => self::STATUS_ACTIVE],
+            ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED]],
+            ['role', 'default', 'value' => self::ROLE_USER],
+            ['role', 'in', 'range' => [
+                self::ROLE_USER,
+                self::ROLE_MANAGER,
+                self::ROLE_ADMIN
+            ]],
+            [['username', 'email'], 'required'],
+            [['role', 'status'], 'integer'],
+            [['created_at', 'updated_at'], 'safe'],
+            [['username', 'email', 'name', 'avatar', 'phone', 'position', 'country', 'state', 'city', 'address'], 'string', 'max' => 255],
+            [['zip'], 'string', 'max' => 5],
+            [['username'], 'unique'],
+            [['email'], 'unique'],
         ];
     }
 
     /**
      * {@inheritdoc}
      */
-    public function rules()
+    public function attributeLabels()
     {
         return [
-            ['status', 'default', 'value' => self::STATUS_ACTIVE],
-            ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED]],
+            'id' => 'ID',
+            'username' => 'Username',
+            'email' => 'Email',
+            'name' => 'Name',
+            'avatar' => 'Avatar',
+            'phone' => 'Phone',
+            'position' => 'Position',
+            'country' => 'Country',
+            'state' => 'State',
+            'city' => 'City',
+            'zip' => 'Zip',
+            'address' => 'Address',
+            'role' => 'Role',
+            'status' => 'Status',
+            'created_at' => 'Created At',
+            'updated_at' => 'Updated At',
         ];
     }
 
@@ -66,6 +110,7 @@ class User extends ActiveRecord implements IdentityInterface
 
     /**
      * {@inheritdoc}
+     * @throws NotSupportedException
      */
     public static function findIdentityByAccessToken($token, $type = null)
     {
@@ -157,6 +202,7 @@ class User extends ActiveRecord implements IdentityInterface
      * Generates password hash from password and sets it to the model
      *
      * @param string $password
+     * @throws \yii\base\Exception
      */
     public function setPassword($password)
     {
@@ -165,6 +211,7 @@ class User extends ActiveRecord implements IdentityInterface
 
     /**
      * Generates "remember me" authentication key
+     * @throws \yii\base\Exception
      */
     public function generateAuthKey()
     {
@@ -173,6 +220,7 @@ class User extends ActiveRecord implements IdentityInterface
 
     /**
      * Generates new password reset token
+     * @throws \yii\base\Exception
      */
     public function generatePasswordResetToken()
     {
@@ -185,5 +233,22 @@ class User extends ActiveRecord implements IdentityInterface
     public function removePasswordResetToken()
     {
         $this->password_reset_token = null;
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getLocationUsers()
+    {
+        return $this->hasMany(LocationUser::className(), ['user_id' => 'id']);
+    }
+
+    /**
+     * {@inheritdoc}
+     * @return UserQuery the active query used by this AR class.
+     */
+    public static function find()
+    {
+        return new UserQuery(get_called_class());
     }
 }
