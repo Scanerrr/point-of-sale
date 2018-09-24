@@ -93,9 +93,7 @@ class EmployeeForm extends Model
         $user->status = $this->status;
         $user->setPassword($this->password);
         $user->generateAuthKey();
-        $user->save();
-        Yii::debug(VarDumper::dumpAsString($user->getErrors()));
-        
+
         return $user->save() ? $user : null;
     }
 

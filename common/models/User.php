@@ -45,7 +45,6 @@ class User extends ActiveRecord implements IdentityInterface
 
     const UPLOAD_PATH = 'upload/user/';
 
-
     /**
      * {@inheritdoc}
      */
@@ -75,7 +74,6 @@ class User extends ActiveRecord implements IdentityInterface
             [['zip'], 'string', 'max' => 5],
             [['username'], 'unique'],
             [['email'], 'unique'],
-            [['imageFile'], 'file', 'extensions' => 'png, jpg, jpeg'],
         ];
     }
 
