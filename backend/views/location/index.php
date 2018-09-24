@@ -1,8 +1,12 @@
 <?php
 
 use yii\helpers\Html;
-use yii\grid\GridView;
+use yiister\gentelella\widgets\grid\GridView;
 use yii\widgets\Pjax;
+use common\models\Region;
+use kartik\select2\Select2;
+use common\models\Location;
+
 /* @var $this yii\web\View */
 /* @var $searchModel common\models\search\LocationSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -26,10 +30,27 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
-            'id',
-            'prefix',
+//            'id',
+//            'prefix',
             'name',
-            'region_id',
+            [
+                'label' => 'Region',
+                'filter' => Select2::widget([
+                    'model' => $searchModel,
+                    'attribute' => 'region_id',
+                    'data' => Region::find()->select('name')->indexBy('id')->column(),
+                    'value' => $searchModel->region_id,
+                    'theme' => Select2::THEME_DEFAULT,
+                    'options' => [
+                        'class' => 'form-control',
+                        'placeholder' => 'Select Region'
+                    ],
+                    'pluginOptions' => [
+                        'allowClear' => true
+                    ],
+                ]),
+                'attribute' => 'region.name',
+            ],
             'email:email',
             //'phone',
             //'country',
@@ -38,7 +59,13 @@ $this->params['breadcrumbs'][] = $this->title;
             //'address',
             //'zip',
             //'tax_rate',
-            //'status',
+            [
+                'filter' => Html::dropDownList('LocationSearch[status]', $searchModel->status, ['' => 'All', Location::STATUS_ACTIVE => 'Active', Location::STATUS_DELETED => 'Disabled'], ['class' => 'form-control']),
+                'attribute' => 'status',
+                'value' => function($model) {
+                    return $model->status === Location::STATUS_ACTIVE ? 'Active' : 'Disabled';
+                }
+            ],
             //'created_at',
             //'updated_at',
 

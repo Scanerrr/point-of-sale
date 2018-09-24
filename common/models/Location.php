@@ -59,7 +59,7 @@ class Location extends \yii\db\ActiveRecord
             [['zip'], 'string', 'max' => 5],
             [['prefix'], 'unique'],
             [['email'], 'unique'],
-            [['region_id'], 'exist', 'skipOnError' => true, 'targetClass' => Region::className(), 'targetAttribute' => ['region_id' => 'id']],
+            [['region_id'], 'exist', 'skipOnError' => true, 'targetClass' => Region::class, 'targetAttribute' => ['region_id' => 'id']],
         ];
     }
 
@@ -72,7 +72,7 @@ class Location extends \yii\db\ActiveRecord
             'id' => 'ID',
             'prefix' => 'Prefix',
             'name' => 'Name',
-            'region_id' => 'Region ID',
+            'region_id' => 'Region',
             'email' => 'Email',
             'phone' => 'Phone',
             'country' => 'Country',
@@ -92,7 +92,7 @@ class Location extends \yii\db\ActiveRecord
      */
     public function getRegion()
     {
-        return $this->hasOne(Region::className(), ['id' => 'region_id']);
+        return $this->hasOne(Region::class, ['id' => 'region_id']);
     }
 
     /**
@@ -100,7 +100,7 @@ class Location extends \yii\db\ActiveRecord
      */
     public function getLocationUsers()
     {
-        return $this->hasMany(LocationUser::className(), ['location_id' => 'id']);
+        return $this->hasMany(LocationUser::class, ['location_id' => 'id']);
     }
 
     /**

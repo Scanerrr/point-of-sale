@@ -1,7 +1,7 @@
 <?php
 $users = [];
 $roles = [10, 20, 30];
-$statuses = [10, 20];
+$statuses = [0, 10];
 for ($i = 1; $i <= 10; $i++) {
     $users[] = [
         'id' => $i,

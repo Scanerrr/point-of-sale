@@ -32,8 +32,8 @@ class LocationUser extends \yii\db\ActiveRecord
         return [
             [['location_id', 'user_id'], 'required'],
             [['location_id', 'user_id'], 'integer'],
-            [['location_id'], 'exist', 'skipOnError' => true, 'targetClass' => Location::className(), 'targetAttribute' => ['location_id' => 'id']],
-            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_id' => 'id']],
+            [['location_id'], 'exist', 'skipOnError' => true, 'targetClass' => Location::class, 'targetAttribute' => ['location_id' => 'id']],
+            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
         ];
     }
 
@@ -54,7 +54,7 @@ class LocationUser extends \yii\db\ActiveRecord
      */
     public function getLocation()
     {
-        return $this->hasOne(Location::className(), ['id' => 'location_id']);
+        return $this->hasOne(Location::class, ['id' => 'location_id']);
     }
 
     /**
@@ -62,6 +62,25 @@ class LocationUser extends \yii\db\ActiveRecord
      */
     public function getUser()
     {
-        return $this->hasOne(User::className(), ['id' => 'user_id']);
+        return $this->hasOne(User::class, ['id' => 'user_id']);
+    }
+
+    /**
+     * save relations between location and user
+     *
+     * @param int $locationID
+     * @param array $employees
+     * @return bool
+     */
+    public static function makeRelation(int $locationID, array $employees)
+    {
+        if (!$employees || !$locationID) return false;
+        foreach ($employees as $employee) {
+            $locationUser = new self();
+            $locationUser->location_id = $locationID;
+            $locationUser->user_id = $employee;
+            $locationUser->save();
+        }
+        return true;
     }
 }

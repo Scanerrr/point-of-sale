@@ -1,12 +1,15 @@
-<?php
+<?php /** @noinspection PhpUnhandledExceptionInspection */
 
 /* @var $this \yii\web\View */
 
 /* @var $content string */
 
 use yii\helpers\Html;
+use yiister\gentelella\assets\Asset;
+use yiister\gentelella\widgets\Menu;
+use yiister\gentelella\widgets\FlashAlert;
 
-\yiister\gentelella\assets\Asset::register($this);
+Asset::register($this);
 $user = Yii::$app->user->identity;
 ?>
 <?php $this->beginPage() ?>
@@ -43,11 +46,12 @@ $user = Yii::$app->user->identity;
                 <!-- menu prile quick info -->
                 <div class="profile">
                     <div class="profile_pic">
-                        <img src="http://placehold.it/128x128" alt="user avatar in left menu" class="img-circle profile_img">
+                        <img src="http://placehold.it/128x128" alt="user avatar in left menu"
+                             class="img-circle profile_img">
                     </div>
                     <div class="profile_info">
                         <span>Welcome,</span>
-                        <h2><?= $user->name  ?></h2>
+                        <h2><?= $user->name ?></h2>
                     </div>
                 </div>
                 <!-- /menu prile quick info -->
@@ -60,11 +64,12 @@ $user = Yii::$app->user->identity;
                     <div class="menu_section">
                         <h3>General</h3>
                         <?=
-                        \yiister\gentelella\widgets\Menu::widget(
+                        Menu::widget(
                             [
                                 'items' => [
                                     ['label' => 'Home', 'url' => '/', 'icon' => 'home'],
                                     ['label' => 'Locations', 'url' => ['location/index'], 'icon' => 'archive'],
+                                    ['label' => 'Employees', 'url' => ['employee/index'], 'icon' => 'users'],
                                     ['label' => 'Layout', 'url' => ['site/layout'], 'icon' => 'files-o'],
                                     ['label' => 'Error page', 'url' => ['site/error-page'], 'icon' => 'close'],
                                     [
@@ -167,7 +172,7 @@ $user = Yii::$app->user->identity;
                         <li class="">
                             <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown"
                                aria-expanded="false">
-                                <img src="http://placehold.it/128x128" alt="">John Doe
+                                <img src="http://placehold.it/128x128" alt=""><?= $user->name ?>
                                 <span class=" fa fa-angle-down"></span>
                             </a>
                             <ul class="dropdown-menu dropdown-usermenu pull-right">
@@ -182,7 +187,10 @@ $user = Yii::$app->user->identity;
                                 <li>
                                     <a href="javascript:;">Help</a>
                                 </li>
-                                <li><a href="login.html"><i class="fa fa-sign-out pull-right"></i> Log Out</a>
+                                <li>
+                                    <?= Html::a('<i class="fa fa-sign-out pull-right"></i> Log Out', ['site/logout'], [
+                                        'data-method' => 'POST'
+                                    ]) ?>
                                 </li>
                             </ul>
                         </li>
@@ -288,6 +296,8 @@ $user = Yii::$app->user->identity;
                 </div>
             <?php endif; ?>
             <div class="clearfix"></div>
+
+            <?= FlashAlert::widget(['showHeader' => true]) ?>
 
             <?= $content ?>
         </div>

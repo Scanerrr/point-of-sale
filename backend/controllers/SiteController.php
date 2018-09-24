@@ -12,39 +12,8 @@ use yii\filters\AccessControl;
 /**
  * Site controller
  */
-class SiteController extends Controller
+class SiteController extends AccessController
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function behaviors()
-    {
-        return [
-            'access' => [
-                'class' => AccessControl::class,
-                'ruleConfig' => [
-                    'class' => AccessRule::class,
-                ],
-                'rules' => [
-                    [
-                        'actions' => ['login', 'error'],
-                        'allow' => true,
-                    ],
-                    [
-                        'actions' => ['logout', 'index'],
-                        'allow' => true,
-                        'roles' => [User::ROLE_ADMIN],
-                    ],
-                ],
-            ],
-            'verbs' => [
-                'class' => VerbFilter::class,
-                'actions' => [
-                    'logout' => ['post'],
-                ],
-            ],
-        ];
-    }
 
     /**
      * {@inheritdoc}

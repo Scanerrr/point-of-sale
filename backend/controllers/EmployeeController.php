@@ -2,27 +2,26 @@
 
 namespace backend\controllers;
 
-use common\models\LocationUser;
+use backend\models\EmployeeForm;
 use Yii;
-use common\models\Location;
-use common\models\search\LocationSearch;
-use yii\helpers\ArrayHelper;
-use yii\helpers\VarDumper;
+use common\models\User;
+use common\models\search\UserSearch;
 use yii\web\NotFoundHttpException;
+use yii\web\UploadedFile;
 
 /**
- * LocationController implements the CRUD actions for Location model.
+ * EmployeeController implements the CRUD actions for User model.
  */
-class LocationController extends AccessController
+class EmployeeController extends AccessController
 {
 
     /**
-     * Lists all Location models.
+     * Lists all User models.
      * @return mixed
      */
     public function actionIndex()
     {
-        $searchModel = new LocationSearch();
+        $searchModel = new UserSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -32,7 +31,7 @@ class LocationController extends AccessController
     }
 
     /**
-     * Displays a single Location model.
+     * Displays a single User model.
      * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
@@ -45,27 +44,38 @@ class LocationController extends AccessController
     }
 
     /**
-     * Creates a new Location model.
+     * Creates a new User model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
+     * @throws \yii\base\Exception
      */
     public function actionCreate()
     {
-        $model = new Location();
+        $model = new EmployeeForm();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            $employees = Yii::$app->request->post('employees');
-            LocationUser::makeRelation($model->id, $employees);
-            return $this->redirect(['view', 'id' => $model->id]);
+        if ($model->load(Yii::$app->request->post())) {
+            if ($user = $model->create()) {
+
+                $model->imageFile = UploadedFile::getInstance($model, 'imageFile');
+
+                if ($model->imageFile) {
+
+                    if ($model->upload($user->id)) {
+                        Yii::$app->session->setFlash('error', 'An error occurred while uploading file');
+                    }
+
+                }
+                return $this->redirect(['view', 'id' => $user->id]);
+            }
         }
 
         return $this->render('create', [
-            'model' => $model
+            'model' => $model,
         ]);
     }
 
     /**
-     * Updates an existing Location model.
+     * Updates an existing User model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
@@ -76,9 +86,6 @@ class LocationController extends AccessController
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            $employees = Yii::$app->request->post('employees');
-            LocationUser::deleteAll(['location_id' => $model->id]);
-            LocationUser::makeRelation($model->id, $employees);
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
@@ -88,13 +95,11 @@ class LocationController extends AccessController
     }
 
     /**
-     * Deletes an existing Location model.
+     * Deletes an existing User model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
-     * @throws \Throwable
-     * @throws \yii\db\StaleObjectException
      */
     public function actionDelete($id)
     {
@@ -104,15 +109,15 @@ class LocationController extends AccessController
     }
 
     /**
-     * Finds the Location model based on its primary key value.
+     * Finds the User model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return Location the loaded model
+     * @return User the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = Location::findOne($id)) !== null) {
+        if (($model = User::findOne($id)) !== null) {
             return $model;
         }
 

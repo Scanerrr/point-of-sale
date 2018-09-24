@@ -5,23 +5,21 @@ namespace common\models\search;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use common\models\Location;
+use common\models\User;
 
 /**
- * LocationSearch represents the model behind the search form of `common\models\Location`.
+ * UserSearch represents the model behind the search form of `common\models\User`.
  */
-class LocationSearch extends Location
+class UserSearch extends User
 {
-    public $region;
     /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
-            [['id', 'region_id', 'status'], 'integer'],
-            [['prefix', 'name', 'region', 'email', 'phone', 'country', 'state', 'city', 'address', 'zip', 'created_at', 'updated_at'], 'safe'],
-            [['tax_rate'], 'number'],
+            [['id', 'role', 'status'], 'integer'],
+            [['auth_key', 'password_hash', 'password_reset_token', 'username', 'email', 'name', 'avatar', 'phone', 'position', 'country', 'state', 'city', 'zip', 'address', 'created_at', 'updated_at'], 'safe'],
         ];
     }
 
@@ -43,7 +41,7 @@ class LocationSearch extends Location
      */
     public function search($params)
     {
-        $query = Location::find()->joinWith('region');
+        $query = User::find();
 
         // add conditions that should always apply here
 
@@ -59,31 +57,29 @@ class LocationSearch extends Location
             return $dataProvider;
         }
 
-        // добавляем сортировку по колонке из зависимости
-        $dataProvider->sort->attributes['region.name'] = [
-            'asc' => ['region.name' => SORT_ASC],
-            'desc' => ['region.name' => SORT_DESC],
-        ];
-
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'region_id' => $this->region_id,
-            'tax_rate' => $this->tax_rate,
+            'role' => $this->role,
             'status' => $this->status,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ]);
 
-        $query->andFilterWhere(['like', 'prefix', $this->prefix])
-            ->andFilterWhere(['like', 'name', $this->name])
+        $query->andFilterWhere(['like', 'auth_key', $this->auth_key])
+            ->andFilterWhere(['like', 'password_hash', $this->password_hash])
+            ->andFilterWhere(['like', 'password_reset_token', $this->password_reset_token])
+            ->andFilterWhere(['like', 'username', $this->username])
             ->andFilterWhere(['like', 'email', $this->email])
+            ->andFilterWhere(['like', 'name', $this->name])
+            ->andFilterWhere(['like', 'avatar', $this->avatar])
             ->andFilterWhere(['like', 'phone', $this->phone])
+            ->andFilterWhere(['like', 'position', $this->position])
             ->andFilterWhere(['like', 'country', $this->country])
             ->andFilterWhere(['like', 'state', $this->state])
             ->andFilterWhere(['like', 'city', $this->city])
-            ->andFilterWhere(['like', 'address', $this->address])
-            ->andFilterWhere(['like', 'zip', $this->zip]);
+            ->andFilterWhere(['like', 'zip', $this->zip])
+            ->andFilterWhere(['like', 'address', $this->address]);
 
         return $dataProvider;
     }

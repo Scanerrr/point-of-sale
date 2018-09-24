@@ -6,6 +6,7 @@ use Yii;
 use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
+use yii\helpers\FileHelper;
 use yii\web\IdentityInterface;
 
 /**
@@ -42,6 +43,8 @@ class User extends ActiveRecord implements IdentityInterface
     const ROLE_MANAGER = 20;
     const ROLE_ADMIN = 30;
 
+    const UPLOAD_PATH = 'upload/user/';
+
 
     /**
      * {@inheritdoc}
@@ -72,6 +75,7 @@ class User extends ActiveRecord implements IdentityInterface
             [['zip'], 'string', 'max' => 5],
             [['username'], 'unique'],
             [['email'], 'unique'],
+            [['imageFile'], 'file', 'extensions' => 'png, jpg, jpeg'],
         ];
     }
 
@@ -86,6 +90,7 @@ class User extends ActiveRecord implements IdentityInterface
             'email' => 'Email',
             'name' => 'Name',
             'avatar' => 'Avatar',
+            'imageFile' => 'Avatar',
             'phone' => 'Phone',
             'position' => 'Position',
             'country' => 'Country',
@@ -240,7 +245,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function getLocationUsers()
     {
-        return $this->hasMany(LocationUser::className(), ['user_id' => 'id']);
+        return $this->hasMany(LocationUser::class, ['user_id' => 'id']);
     }
 
     /**
@@ -251,4 +256,5 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return new UserQuery(get_called_class());
     }
+
 }
