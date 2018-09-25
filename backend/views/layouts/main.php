@@ -11,6 +11,7 @@ use yiister\gentelella\widgets\FlashAlert;
 
 Asset::register($this);
 $user = Yii::$app->user->identity;
+$avatar = Yii::getAlias('@web/') . \common\models\User::UPLOAD_PATH . $user->id . '/' . $user->avatar;
 ?>
 <?php $this->beginPage() ?>
 <!DOCTYPE html>
@@ -46,7 +47,7 @@ $user = Yii::$app->user->identity;
                 <!-- menu prile quick info -->
                 <div class="profile">
                     <div class="profile_pic">
-                        <img src="http://placehold.it/128x128" alt="user avatar in left menu"
+                        <img src="<?= $avatar ?>" alt="user avatar in left menu"
                              class="img-circle profile_img">
                     </div>
                     <div class="profile_info">
@@ -145,7 +146,7 @@ $user = Yii::$app->user->identity;
                         <li class="">
                             <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown"
                                aria-expanded="false">
-                                <img src="http://placehold.it/128x128" alt=""><?= $user->name ?>
+                                <img src="<?= $avatar ?>" alt=""><?= $user->name ?>
                                 <span class=" fa fa-angle-down"></span>
                             </a>
                             <ul class="dropdown-menu dropdown-usermenu pull-right">
