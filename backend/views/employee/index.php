@@ -28,18 +28,10 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
-//            'id',
             'username',
             'email:email',
             'name',
-            //'avatar',
-            //'phone',
-            //'position',
-            //'country',
-            //'state',
-            //'city',
-            //'zip',
-            //'address',
+
             [
                 'filter' => Html::dropDownList('UserSearch[role]', $searchModel->role, [
                     '' => 'All',
@@ -67,10 +59,19 @@ $this->params['breadcrumbs'][] = $this->title;
                     return $model->status === User::STATUS_ACTIVE ? 'Active' : 'Disabled';
                 }
             ],
-            //'created_at',
-            //'updated_at',
 
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+                'class' => 'yii\grid\ActionColumn',
+                'buttons' => [
+                    'details' => function ($url) {
+                        return Html::a('<span class="glyphicon glyphicon-user"></span>', $url, [
+                            'title' => 'Details',
+                            'aria-label' => 'Details',
+                        ]);
+                    }
+                ],
+                'template' => '{details} {update} {delete}'
+            ],
         ],
     ]); ?>
     <?php Pjax::end(); ?>

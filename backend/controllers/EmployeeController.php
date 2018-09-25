@@ -6,6 +6,7 @@ use backend\models\EmployeeForm;
 use Yii;
 use common\models\User;
 use common\models\search\UserSearch;
+use yii\helpers\FileHelper;
 use yii\web\NotFoundHttpException;
 use yii\web\UploadedFile;
 
@@ -36,10 +37,12 @@ class EmployeeController extends AccessController
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionView($id)
+    public function actionDetails(int $id)
     {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
+//        TODO: implement
+        $user = $this->findModel($id);
+        return $this->render('details', [
+            'user' => $user,
         ]);
     }
 
@@ -51,7 +54,7 @@ class EmployeeController extends AccessController
      */
     public function actionCreate()
     {
-        $model = new EmployeeForm();
+        $model = new EmployeeForm(['scenario' => 'create']);
 
         if ($model->load(Yii::$app->request->post())) {
             if ($user = $model->create()) {
@@ -60,12 +63,12 @@ class EmployeeController extends AccessController
 
                 if ($model->imageFile) {
 
-                    if ($model->upload($user->id)) {
+                    if (!$model->upload($user)) {
                         Yii::$app->session->setFlash('error', 'An error occurred while uploading file');
                     }
 
                 }
-                return $this->redirect(['view', 'id' => $user->id]);
+                return $this->redirect(['details', 'id' => $user->id]);
             }
         }
 
@@ -79,18 +82,37 @@ class EmployeeController extends AccessController
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
+     * @throws \yii\base\Exception
      */
-    public function actionUpdate($id)
+    public function actionUpdate(int $id)
     {
-        $model = $this->findModel($id);
+        $user = $this->findModel($id);
+        if (!$user) throw new NotFoundHttpException();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        $model = new EmployeeForm([], $user);
+
+        if ($model->load(Yii::$app->request->post()) && $model->update($user)) {
+
+            $model->imageFile = UploadedFile::getInstance($model, 'imageFile');
+
+            if ($model->imageFile) {
+
+                if ($oldImg = $user->avatar) {
+                    FileHelper::unlink(User::UPLOAD_PATH . $user->id . '/' . $oldImg);
+                }
+
+                if (!$model->upload($user)) {
+                    Yii::$app->session->setFlash('error', 'An error occurred while uploading file');
+                }
+
+            }
+
+            return $this->redirect(['details', 'id' => $user->id]);
         }
 
         return $this->render('update', [
             'model' => $model,
+            'user' => $user,
         ]);
     }
 
@@ -100,8 +122,10 @@ class EmployeeController extends AccessController
      * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
+     * @throws \Throwable
+     * @throws \yii\db\StaleObjectException
      */
-    public function actionDelete($id)
+    public function actionDelete(int $id)
     {
         $this->findModel($id)->delete();
 
@@ -115,7 +139,7 @@ class EmployeeController extends AccessController
      * @return User the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($id)
+    protected function findModel(int $id)
     {
         if (($model = User::findOne($id)) !== null) {
             return $model;
