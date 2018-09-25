@@ -44,7 +44,10 @@ class ProductController extends AccessController
 
             if ($model->imageFile = UploadedFile::getInstance($model, 'imageFile')) {
 
-                if (!$model->upload()) {
+                if ($model->upload()) {
+                    $model->image = $model->imageFile->name;
+                    $model->save(false);
+                } else {
                     Yii::$app->session->setFlash('error', 'An error occurred while uploading file');
                 }
 
@@ -74,7 +77,10 @@ class ProductController extends AccessController
 
             if ($model->imageFile = UploadedFile::getInstance($model, 'imageFile')) {
 
-                if (!$model->upload()) {
+                if ($model->upload()) {
+                    $model->image = $model->imageFile->name;
+                    $model->save(false);
+                } else {
                     Yii::$app->session->setFlash('error', 'An error occurred while uploading file');
                 }
 

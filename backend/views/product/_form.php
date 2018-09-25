@@ -44,13 +44,29 @@ $options = [
 
     <?= $form->field($model, 'description', $options)->textarea(['rows' => 6]) ?>
 
-    <?= $form->field($model, 'cost_price', $options)->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'cost_price', $options)->textInput([
+        'type' => 'number',
+        'min' => 0,
+        'step' => 'any',
+        'maxlength' => true])->label($model->getAttributeLabel('cost_price') . ', $') ?>
 
-    <?= $form->field($model, 'markup_price', $options)->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'markup_price', $options)->textInput([
+        'type' => 'number',
+        'min' => 0,
+        'step' => 'any',
+        'maxlength' => true])->label($model->getAttributeLabel('markup_price') . ', $') ?>
 
-    <?= $form->field($model, 'max_price', $options)->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'max_price', $options)->textInput([
+        'type' => 'number',
+        'min' => 0,
+        'step' => 'any',
+        'maxlength' => true])->label($model->getAttributeLabel('max_price') . ', $') ?>
 
-    <?= $form->field($model, 'tax', $options)->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'tax', $options)->textInput([
+        'type' => 'number',
+        'min' => 0,
+        'step' => 'any',
+        'maxlength' => true])->label($model->getAttributeLabel('tax') . ', %') ?>
 
     <?= $form->field($model, 'commission_policy_id', $options)->dropDownList([
         Product::COMMISSION_REGULAR => 'Commission Regular',
