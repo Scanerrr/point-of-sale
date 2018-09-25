@@ -70,16 +70,14 @@ $user = Yii::$app->user->identity;
                                     ['label' => 'Home', 'url' => '/', 'icon' => 'home'],
                                     ['label' => 'Locations', 'url' => ['location/index'], 'icon' => 'archive'],
                                     ['label' => 'Employees', 'url' => ['employee/index'], 'icon' => 'users'],
-                                    ['label' => 'Layout', 'url' => ['site/layout'], 'icon' => 'files-o'],
-                                    ['label' => 'Error page', 'url' => ['site/error-page'], 'icon' => 'close'],
                                     [
-                                        'label' => 'Widgets',
-                                        'icon' => 'th',
-                                        'url' => '#',
+                                        'label' => 'Catalog',
+                                        'icon' => 'tags fw',
                                         'url' => '#',
                                         'items' => [
-                                            ['label' => 'Menu', 'url' => ['site/menu']],
-                                            ['label' => 'Panel', 'url' => ['site/panel']],
+                                            ['label' => 'Categories', 'url' => ['category/index']],
+                                            ['label' => 'Products', 'url' => ['product/index']],
+                                            ['label' => 'Supplier', 'url' => ['supplier/index']],
                                         ],
                                     ],
                                     [
@@ -103,31 +101,6 @@ $user = Yii::$app->user->identity;
                                                 'url' => '#',
                                                 'badge' => '!',
                                                 'badgeOptions' => ['class' => 'label-danger'],
-                                            ],
-                                        ],
-                                    ],
-                                    [
-                                        'label' => 'Multilevel',
-                                        'url' => '#',
-                                        'icon' => 'table',
-                                        'items' => [
-                                            [
-                                                'label' => 'Second level 1',
-                                                'url' => '#',
-                                            ],
-                                            [
-                                                'label' => 'Second level 2',
-                                                'url' => '#',
-                                                'items' => [
-                                                    [
-                                                        'label' => 'Third level 1',
-                                                        'url' => '#',
-                                                    ],
-                                                    [
-                                                        'label' => 'Third level 2',
-                                                        'url' => '#',
-                                                    ],
-                                                ],
                                             ],
                                         ],
                                     ],

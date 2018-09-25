@@ -37,11 +37,11 @@ use yii\web\IdentityInterface;
 class User extends ActiveRecord implements IdentityInterface
 {
     const STATUS_DELETED = 0;
-    const STATUS_ACTIVE = 10;
+    const STATUS_ACTIVE = 1;
 
-    const ROLE_USER = 10;
-    const ROLE_MANAGER = 20;
-    const ROLE_ADMIN = 30;
+    const ROLE_USER = 1;
+    const ROLE_MANAGER = 2;
+    const ROLE_ADMIN = 3;
 
     const UPLOAD_PATH = 'upload/user/';
 

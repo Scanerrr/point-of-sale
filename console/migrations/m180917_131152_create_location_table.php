@@ -20,17 +20,17 @@ class m180917_131152_create_location_table extends Migration
             'region_id' => $this->integer()->notNull(),
 
             'email' => $this->string(64)->notNull()->unique(),
-            'phone' => $this->string()->null(),
+            'phone' => $this->string(),
 
             'country' => $this->string()->notNull(),
             'state' => $this->string()->notNull(),
-            'city' => $this->string()->null(),
-            'address' => $this->string()->null(),
-            'zip' => $this->string(5)->null(),
+            'city' => $this->string(),
+            'address' => $this->string(),
+            'zip' => $this->string(5),
 
-            'tax_rate' => $this->decimal(5, 2)->null(),
+            'tax_rate' => $this->decimal(5, 2)->defaultValue(0),
 
-            'status' => $this->smallInteger()->notNull()->defaultValue(10),
+            'status' => $this->smallInteger(1)->notNull()->defaultValue(1),
 
             'created_at' => $this->timestamp()->defaultExpression('CURRENT_TIMESTAMP'),
             'updated_at' => $this->timestamp() . ' on update CURRENT_TIMESTAMP',
