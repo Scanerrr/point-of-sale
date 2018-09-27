@@ -1,58 +1,23 @@
 <?php
 namespace frontend\controllers;
 
-use common\models\Location;
+use common\models\Category;
 use Yii;
 use yii\base\InvalidParamException;
 use yii\web\BadRequestHttpException;
-use yii\web\Controller;
-use yii\filters\VerbFilter;
-use yii\filters\AccessControl;
 use common\models\form\LoginForm;
 use frontend\models\PasswordResetRequestForm;
 use frontend\models\ResetPasswordForm;
-use frontend\models\SignupForm;
 
 /**
  * Site controller
  */
-class SiteController extends Controller
+class SiteController extends AccessController
 {
     /**
      * {@inheritdoc}
      */
-    public function behaviors()
-    {
-        return [
-            'access' => [
-                'class' => AccessControl::class,
-                'only' => ['logout', 'signup'],
-                'rules' => [
-                    [
-                        'actions' => ['signup'],
-                        'allow' => true,
-                        'roles' => ['?'],
-                    ],
-                    [
-                        'actions' => ['logout'],
-                        'allow' => true,
-                        'roles' => ['@'],
-                    ],
-                ],
-            ],
-            'verbs' => [
-                'class' => VerbFilter::class,
-                'actions' => [
-                    'logout' => ['post'],
-                ],
-            ],
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function actions()
+    public function actions(): array
     {
         return [
             'error' => [
@@ -72,10 +37,10 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        $locations = Location::find()->all();
+        $categories = Category::find()->forParent()->all();
 
         return $this->render('index', [
-            'locations' => $locations
+            'categories' => $categories
         ]);
     }
 
@@ -112,28 +77,6 @@ class SiteController extends Controller
         Yii::$app->user->logout();
 
         return $this->goHome();
-    }
-
-    /**
-     * Signs user up.
-     *
-     * @return mixed
-     * @throws \yii\base\Exception
-     */
-    public function actionSignup()
-    {
-        $model = new SignupForm();
-        if ($model->load(Yii::$app->request->post())) {
-            if ($user = $model->signup()) {
-                if (Yii::$app->getUser()->login($user)) {
-                    return $this->goHome();
-                }
-            }
-        }
-
-        return $this->render('signup', [
-            'model' => $model,
-        ]);
     }
 
     /**

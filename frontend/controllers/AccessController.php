@@ -6,7 +6,7 @@
  * Time: 1:56 PM
  */
 
-namespace backend\controllers;
+namespace frontend\controllers;
 
 
 use common\components\AccessRule;
@@ -36,7 +36,7 @@ class AccessController extends Controller
                     [
 //                        'actions' => ['logout', 'index'],
                         'allow' => true,
-                        'roles' => [User::ROLE_ADMIN],
+                        'roles' => ['@'],
                     ],
                 ],
             ],

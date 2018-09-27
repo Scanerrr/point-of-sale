@@ -12,7 +12,8 @@
         "irc": "irc://irc.freenode.net/yii",
         "source": "https://github.com/yiisoft/yii2"
     },
-    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "minimum-stability": "dev",
     "require": {
         "php": ">=7.2.0",
         "yiisoft/yii2": "~2.0.6",
@@ -20,7 +21,9 @@
         "yiisoft/yii2-swiftmailer": "~2.0.0 || ~2.1.0",
         "yiister/yii2-gentelella": "~1.0",
         "kartik-v/yii2-widget-select2": "@dev",
-        "kartik-v/yii2-grid": "@dev"
+        "kartik-v/yii2-grid": "@dev",
+        "scanerrr/yii2-local-image": "dev-master",
+      "ext-json": "*"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.0.0",

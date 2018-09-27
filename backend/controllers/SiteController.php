@@ -18,7 +18,7 @@ class SiteController extends AccessController
     /**
      * {@inheritdoc}
      */
-    public function actions()
+    public function actions(): array
     {
         return [
             'error' => [

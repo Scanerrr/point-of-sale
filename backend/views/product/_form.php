@@ -6,6 +6,7 @@ use common\models\Product;
 use kartik\select2\Select2;
 use common\models\Category;
 use common\models\Supplier;
+use Scanerrr\Image;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\Product */
@@ -73,11 +74,17 @@ $options = [
         Product::COMMISSION_NO => 'No Commission'
     ]) ?>
 
+    <?= $form->field($model, 'commission', $options)->textInput([
+        'type' => 'number',
+        'min' => 0,
+        'step' => 'any',
+        'maxlength' => true])->label($model->getAttributeLabel('commission') . ', $') ?>
+
     <?= $form->field($model, 'imageFile', $options)->fileInput([
         'class' => 'form-control avatar-input',
     ]) ?>
     <div class="image-preview col-md-7 col-xs-12 col-sm-offset-3">
-        <?= Html::img($model->image ? '/' . Product::UPLOAD_PATH . $model->id . '/' . $model->image : null, ['width' => 150]) ?>
+        <?= Html::img(Image::resize($model->imageUrl), ['width' => 150]) ?>
     </div>
 
     <?= $form->field($model, 'barcode', $options)->textInput(['maxlength' => true]) ?>

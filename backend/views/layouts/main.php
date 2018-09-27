@@ -11,7 +11,7 @@ use yiister\gentelella\widgets\FlashAlert;
 
 Asset::register($this);
 $user = Yii::$app->user->identity;
-$avatar = Yii::getAlias('@web/') . \common\models\User::UPLOAD_PATH . $user->id . '/' . $user->avatar;
+$avatar = \Scanerrr\Image::resize($user->avatarUrl, 57);
 ?>
 <?php $this->beginPage() ?>
 <!DOCTYPE html>

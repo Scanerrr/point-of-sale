@@ -1,6 +1,6 @@
 <?php
 
-use yii\web\View;
+use Scanerrr\Image;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use common\models\User;
@@ -44,7 +44,7 @@ $options = [
         'value' => $user->avatar ?? ''
     ]) ?>
     <div class="image-preview col-md-7 col-xs-12 col-sm-offset-3">
-        <?= Html::img($user->avatar ? '/' . User::UPLOAD_PATH . $user->id . '/' . $user->avatar : null, ['width' => 150]) ?>
+        <?= Html::img(Image::resize($model->imageUrl), ['width' => 150]) ?>
     </div>
 
     <?= $form->field($model, 'phone', $options)->textInput([

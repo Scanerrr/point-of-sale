@@ -32,6 +32,8 @@ use yii\web\IdentityInterface;
  * @property string $created_at
  * @property string $updated_at
  *
+ * @property string|null $avatarUrl
+ *
  * @property LocationUser[] $locationUsers
  */
 class User extends ActiveRecord implements IdentityInterface
@@ -255,4 +257,13 @@ class User extends ActiveRecord implements IdentityInterface
         return new UserQuery(get_called_class());
     }
 
+    /**
+     * get valid image url link
+     *
+     * @return null|string
+     */
+    public function getAvatarUrl(): ?string
+    {
+        return $this->avatar ? self::UPLOAD_PATH . $this->id . '/' . $this->avatar : null;
+    }
 }

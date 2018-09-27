@@ -19,12 +19,14 @@ class m180925_135443_create_product_table extends Migration
 
             'name' => $this->string()->notNull(),
             'description' => $this->text(),
-            'cost_price' => $this->decimal(15, 4)->defaultValue(0),
-            'markup_price' => $this->decimal(15, 4)->defaultValue(0),
-            'max_price' => $this->decimal(15, 4)->defaultValue(0),
+            'cost_price' => $this->decimal(15, 2)->defaultValue(0),
+            'markup_price' => $this->decimal(15, 2)->defaultValue(0),
+            'max_price' => $this->decimal(15, 2)->defaultValue(0),
 
             'tax' => $this->decimal(5, 2)->defaultValue(0),
+
             'commission_policy_id' => $this->smallInteger()->notNull()->defaultValue(1),
+            'commission' => $this->decimal(15, 2)->defaultValue(0),
 
             'image' => $this->string()->null(),
             'barcode' => $this->string(64),

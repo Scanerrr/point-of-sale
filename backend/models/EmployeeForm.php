@@ -2,11 +2,9 @@
 
 namespace backend\models;
 
-use Yii;
 use yii\base\Model;
 use common\models\User;
 use yii\helpers\FileHelper;
-use yii\helpers\VarDumper;
 
 /**
  * create/update user form
@@ -74,7 +72,7 @@ class EmployeeForm extends Model
      * @return User|null
      * @throws \yii\base\Exception
      */
-    public function create()
+    public function create() : ? User
     {
         if (!$this->validate()) return null;
 
@@ -105,7 +103,7 @@ class EmployeeForm extends Model
      * @return bool
      * @throws \yii\base\Exception
      */
-    public function update(User $user)
+    public function update(User $user) : bool
     {
         if (!$user || !$this->validate()) return false;
 
@@ -135,7 +133,7 @@ class EmployeeForm extends Model
      * @return bool
      * @throws \yii\base\Exception
      */
-    public function upload(User $user)
+    public function upload(User $user) : bool
     {
         if (!$this->validate('imageFile'))  return false;
 
@@ -146,7 +144,11 @@ class EmployeeForm extends Model
         $this->imageFile->saveAs($directory . '/' . $fileName);
 
         $user->avatar = $fileName;
-        $user->save(false);
-        return true;
+        return $user->save(false);
+    }
+
+    public function getImageUrl(): ?string
+    {
+        return $this->_user->avatarUrl;
     }
 }

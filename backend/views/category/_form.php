@@ -4,6 +4,7 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use common\models\Category;
 use kartik\select2\Select2;
+use Scanerrr\Image;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\Category */
@@ -35,7 +36,7 @@ $options = [
         'class' => 'form-control avatar-input',
     ]) ?>
     <div class="image-preview col-md-7 col-xs-12 col-sm-offset-3">
-        <?= Html::img($model->image ? '/' . Category::UPLOAD_PATH . $model->id . '/' . $model->image : null, ['width' => 150]) ?>
+        <?= Html::img(Image::resize($model->imageUrl), ['width' => 150]) ?>
     </div>
 
     <?= $form->field($model, 'status', $options)->dropDownList([

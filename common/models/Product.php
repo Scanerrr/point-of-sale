@@ -18,6 +18,7 @@ use yii\helpers\FileHelper;
  * @property string $markup_price
  * @property string $max_price
  * @property string $tax
+ * @property string $commission
  * @property int $commission_policy_id
  * @property string $image
  * @property string $barcode
@@ -26,6 +27,8 @@ use yii\helpers\FileHelper;
  * @property int $status
  * @property string $created_at
  * @property string $updated_at
+ *
+ * @property string|null $imageUrl
  *
  * @property Inventory[] $inventories
  * @property Category $category
@@ -64,7 +67,7 @@ class Product extends \yii\db\ActiveRecord
             [['category_id', 'supplier_id', 'commission_policy_id', 'status'], 'integer'],
             [['name'], 'required'],
             [['description'], 'string'],
-            [['cost_price', 'markup_price', 'max_price', 'tax'], 'number'],
+            [['cost_price', 'markup_price', 'max_price', 'tax', 'commission'], 'number'],
             [['created_at', 'updated_at'], 'safe'],
             [['name', 'image'], 'string', 'max' => 255],
             [['barcode', 'size', 'sku'], 'string', 'max' => 64],
@@ -97,6 +100,7 @@ class Product extends \yii\db\ActiveRecord
             'max_price' => 'Max Price',
             'tax' => 'Tax',
             'commission_policy_id' => 'Commission Policy',
+            'commission' => 'Commission',
             'image' => 'Image',
             'barcode' => 'Barcode',
             'size' => 'Size',
@@ -157,5 +161,15 @@ class Product extends \yii\db\ActiveRecord
         $this->imageFile->saveAs($directory . '/' . $fileName);
 
         return true;
+    }
+
+    /**
+     * get valid image url link
+     *
+     * @return null|string
+     */
+    public function getImageUrl(): ?string
+    {
+        return $this->image ? self::UPLOAD_PATH . $this->id . '/' . $this->image : null;
     }
 }

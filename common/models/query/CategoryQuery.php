@@ -17,6 +17,16 @@ class CategoryQuery extends \yii\db\ActiveQuery
     }
 
     /**
+     * if $id === null then getting all root categories
+     * @param int|null $id
+     * @return CategoryQuery
+     */
+    public function forParent(?int $id = null)
+    {
+        return $this->active()->andWhere(['parent_id' => $id]);
+    }
+
+    /**
      * {@inheritdoc}
      * @return \common\models\Category[]|array
      */

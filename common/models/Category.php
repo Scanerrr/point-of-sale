@@ -20,13 +20,14 @@ use yii\helpers\FileHelper;
  * @property Category $parent
  * @property Category[] $categories
  * @property Product[] $products
+ * @property string|null $imageUrl
  */
 class Category extends \yii\db\ActiveRecord
 {
     const STATUS_DELETED = 0;
     const STATUS_ACTIVE = 1;
 
-    const UPLOAD_PATH = 'upload/category/';
+    const UPLOAD_PATH = '/upload/category/';
 
     /**
      * \yii\web\UploadedFile
@@ -113,16 +114,26 @@ class Category extends \yii\db\ActiveRecord
      * @return bool
      * @throws \yii\base\Exception
      */
-    public function upload()
+    public function upload(): bool
     {
         if (!$this->validate('imageFile'))  return false;
 
-        $directory = Category::UPLOAD_PATH . $this->id;
+        $directory = Yii::getAlias('@web/') . self::UPLOAD_PATH . $this->id;
         FileHelper::createDirectory($directory);
 
         $fileName = $this->imageFile->baseName . '.' . $this->imageFile->extension;
         $this->imageFile->saveAs($directory . '/' . $fileName);
 
         return true;
+    }
+
+    /**
+     * get valid image url link
+     *
+     * @return null|string
+     */
+    public function getImageUrl(): ?string
+    {
+        return $this->image ? self::UPLOAD_PATH . $this->id . '/' . $this->image : null;
     }
 }

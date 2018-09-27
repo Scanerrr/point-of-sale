@@ -28,6 +28,8 @@ class m130524_201442_init extends Migration
             'role' => $this->smallInteger(1)->notNull()->defaultValue(1),
             'status' => $this->smallInteger(1)->notNull()->defaultValue(1),
 
+            'salary_settings' => $this->text(),
+
             'created_at' => $this->timestamp()->defaultExpression('CURRENT_TIMESTAMP'),
             'updated_at' => $this->timestamp() . ' on update CURRENT_TIMESTAMP',
         ]);
