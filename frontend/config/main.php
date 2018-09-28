@@ -20,7 +20,7 @@ return [
             'keyPrefix' => 'pos.frontend.artpix'
         ],
         'user' => [
-            'identityClass' => 'common\models\User',
+            'identityClass' => \common\models\User::class,
             'enableAutoLogin' => true,
             'identityCookie' => ['name' => '_identity-frontend', 'httpOnly' => true],
         ],
@@ -32,7 +32,7 @@ return [
             'traceLevel' => YII_DEBUG ? 3 : 0,
             'targets' => [
                 [
-                    'class' => 'yii\log\FileTarget',
+                    'class' => \yii\log\FileTarget::class,
                     'levels' => ['error', 'warning'],
                 ],
             ],
@@ -45,9 +45,12 @@ return [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
-                '<controller>/<action>/<id:\d+>' => '<controller>/<action>',
+                'catalog' => 'catalog/index',
+                'catalog/<id:\d+>' => 'catalog/view',
+                'catalog/<id:\d+>/<_a:\[\w-]+>' => 'catalog/<_a>',
             ],
         ],
+
 
     ],
     'params' => $params,

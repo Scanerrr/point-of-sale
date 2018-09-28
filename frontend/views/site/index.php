@@ -14,7 +14,7 @@ $this->title = 'Home';
     <div class="body-content">
         <div class="cards">
             <?php foreach ($categories as $category): ?>
-                <a href="<?= \yii\helpers\Url::to(['category/index', 'id' => $category->id]) ?>">
+                <a href="<?= \yii\helpers\Url::to(['catalog/category', 'id' => $category->id]) ?>">
                     <div class="card" data-toggle="">
                         <div class="card-header"><?= $category->name ?></div>
                         <div class="card-main">

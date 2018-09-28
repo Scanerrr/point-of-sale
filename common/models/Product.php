@@ -3,7 +3,7 @@
 namespace common\models;
 
 use common\models\query\ProductQuery;
-use Yii;
+use yii\db\ActiveRecord;
 use yii\helpers\FileHelper;
 
 /**
@@ -34,7 +34,7 @@ use yii\helpers\FileHelper;
  * @property Category $category
  * @property Supplier $supplier
  */
-class Product extends \yii\db\ActiveRecord
+class Product extends ActiveRecord
 {
 
     const STATUS_DELETED = 0;

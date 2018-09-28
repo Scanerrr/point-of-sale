@@ -26,7 +26,10 @@ $this->title = 'Categories';
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
-            'parent.name',
+            [
+                'attribute' => 'parent_id',
+                'value' => 'parent.name',
+            ],
             'name',
             [
                 'filter' => Html::dropDownList('CategorySearch[status]', $searchModel->status, [

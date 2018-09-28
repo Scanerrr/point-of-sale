@@ -9,7 +9,7 @@ use common\models\Category;
  *
  * @see \common\models\Category
  */
-class CategoryQuery extends \yii\db\ActiveQuery
+class   CategoryQuery extends \yii\db\ActiveQuery
 {
     public function active()
     {
@@ -18,10 +18,10 @@ class CategoryQuery extends \yii\db\ActiveQuery
 
     /**
      * if $id === null then getting all root categories
-     * @param int|null $id
+     * @param mixed $id
      * @return CategoryQuery
      */
-    public function forParent(?int $id = null)
+    public function forParent($id = null)
     {
         return $this->active()->andWhere(['parent_id' => $id]);
     }

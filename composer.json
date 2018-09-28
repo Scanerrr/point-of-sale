@@ -23,7 +23,8 @@
         "kartik-v/yii2-widget-select2": "@dev",
         "kartik-v/yii2-grid": "@dev",
         "scanerrr/yii2-local-image": "dev-master",
-      "ext-json": "*"
+      "ext-json": "*",
+        "kartik-v/yii2-popover-x": "dev-master"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.0.0",
