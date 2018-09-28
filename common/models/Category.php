@@ -27,7 +27,7 @@ class Category extends \yii\db\ActiveRecord
     const STATUS_DELETED = 0;
     const STATUS_ACTIVE = 1;
 
-    const UPLOAD_PATH = '/upload/category/';
+    const UPLOAD_PATH = 'upload/category/';
 
     /**
      * \yii\web\UploadedFile
@@ -118,7 +118,7 @@ class Category extends \yii\db\ActiveRecord
     {
         if (!$this->validate('imageFile'))  return false;
 
-        $directory = Yii::getAlias('@web/') . self::UPLOAD_PATH . $this->id;
+        $directory = self::UPLOAD_PATH . $this->id;
         FileHelper::createDirectory($directory);
 
         $fileName = $this->imageFile->baseName . '.' . $this->imageFile->extension;
