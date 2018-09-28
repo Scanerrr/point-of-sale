@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "08441cd87e74c274ebc3039d92956be8",
+    "content-hash": "9f8daa6f15932bc23c8dbeb979902768",
     "packages": [
         {
             "name": "bower-asset/bootstrap",
@@ -658,12 +658,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Scanerrr/yii2-local-image.git",
-                "reference": "5e69735146074b877cf54f3d9a37d782cdd3ffd6"
+                "reference": "6388e0fece53f12ecaf1d00407620c7a6a182312"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Scanerrr/yii2-local-image/zipball/5e69735146074b877cf54f3d9a37d782cdd3ffd6",
-                "reference": "5e69735146074b877cf54f3d9a37d782cdd3ffd6",
+                "url": "https://api.github.com/repos/Scanerrr/yii2-local-image/zipball/6388e0fece53f12ecaf1d00407620c7a6a182312",
+                "reference": "6388e0fece53f12ecaf1d00407620c7a6a182312",
                 "shasum": ""
             },
             "require": {
@@ -698,7 +698,7 @@
                 "yii2",
                 "yii2-images"
             ],
-            "time": "2018-09-27T15:17:45+00:00"
+            "time": "2018-09-27T15:32:03+00:00"
         },
         {
             "name": "swiftmailer/swiftmailer",
@@ -3705,7 +3705,8 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=7.2.0"
+        "php": ">=7.2.0",
+        "ext-json": "*"
     },
     "platform-dev": []
 }

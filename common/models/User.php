@@ -29,6 +29,7 @@ use yii\web\IdentityInterface;
  * @property string $address
  * @property int $role
  * @property int $status
+ * @property array $salary_settings
  * @property string $created_at
  * @property string $updated_at
  *
@@ -71,7 +72,7 @@ class User extends ActiveRecord implements IdentityInterface
             ]],
             [['username', 'email'], 'required'],
             [['role', 'status'], 'integer'],
-            [['created_at', 'updated_at'], 'safe'],
+            [['salary_settings', 'created_at', 'updated_at'], 'safe'],
             [['username', 'email', 'name', 'avatar', 'phone', 'position', 'country', 'state', 'city', 'address'], 'string', 'max' => 255],
             [['zip'], 'string', 'max' => 5],
             [['username'], 'unique'],
@@ -100,6 +101,7 @@ class User extends ActiveRecord implements IdentityInterface
             'address' => 'Address',
             'role' => 'Role',
             'status' => 'Status',
+            'salary_settings' => 'Salary Settings',
             'created_at' => 'Created At',
             'updated_at' => 'Updated At',
         ];

@@ -3,9 +3,8 @@ $locations = [];
 for ($i = 1; $i <= 5; $i++) {
     $faker = Faker\Factory::create();
     $locations[] = [
-
         'id' => $i,
-        'prefix' => $faker->word,
+        'prefix' => $faker->word . $i,
         'name' => $faker->word,
         'region_id' => rand(1, 10),
         'email' => $faker->email,
@@ -19,8 +18,6 @@ for ($i = 1; $i <= 5; $i++) {
         'status' => rand(0, 1),
         'created_at' => date('Y-m-d H:i:s', strtotime('-' . $i * 2 . ' day')),
         'updated_at' => null,
-
-
     ];
 }
 return $locations;
