@@ -51,6 +51,9 @@ return [
             ],
         ],
 
+        'cart' => [
+            'class' => \frontend\components\cart\Cart::class,
+        ],
 
     ],
     'params' => $params,
