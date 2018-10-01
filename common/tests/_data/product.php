@@ -1,14 +1,21 @@
 <?php
+$names = [];
+
+for($i = 1; $i <= 50; $i++) {
+    $faker = Faker\Factory::create();
+    $names[] = $faker->word;
+}
+
+$names = array_unique($names);
 
 $products = [];
 for ($i = 1; $i <= 20; $i++) {
     $faker = Faker\Factory::create();
     $products[] = [
-
         'id' => $i,
         'category_id' => rand(1, 10),
         'supplier_id' => rand(1, 2),
-        'name' => $faker->word,
+        'name' => $names[$i],
         'description' => $faker->text,
         'cost_price' => $faker->randomNumber(4),
         'markup_price' => $faker->randomNumber(4),

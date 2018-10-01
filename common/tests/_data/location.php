@@ -1,11 +1,21 @@
 <?php
+
+$names = [];
+
+for($i = 1; $i <= 20; $i++) {
+    $faker = Faker\Factory::create();
+    $names[] = $faker->word;
+}
+
+$names = array_unique($names);
+
 $locations = [];
 for ($i = 1; $i <= 5; $i++) {
     $faker = Faker\Factory::create();
     $locations[] = [
         'id' => $i,
         'prefix' => $faker->word . $i,
-        'name' => $faker->word,
+        'name' => $names[$i],
         'region_id' => rand(1, 10),
         'email' => $faker->email,
         'phone' => $faker->phoneNumber,
