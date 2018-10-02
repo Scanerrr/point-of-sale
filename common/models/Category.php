@@ -3,7 +3,7 @@
 namespace common\models;
 
 use common\models\query\CategoryQuery;
-use Yii;
+use yii\db\ActiveRecord;
 use yii\helpers\FileHelper;
 
 /**
@@ -22,7 +22,7 @@ use yii\helpers\FileHelper;
  * @property Product[] $products
  * @property string|null $imageUrl
  */
-class Category extends \yii\db\ActiveRecord
+class Category extends ActiveRecord
 {
     const STATUS_DELETED = 0;
     const STATUS_ACTIVE = 1;

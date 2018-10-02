@@ -67,7 +67,7 @@ $regions = Region::find()->select('name')->indexBy('id')->column();
                 'theme' => Select2::THEME_DEFAULT,
                 'options' => [
                     'class' => 'form-control col-md-7 col-xs-12',
-                    'placeholder' => 'Select a color ...',
+                    'placeholder' => 'Select an employee ...',
                     'multiple' => true
                 ],
             ]) ?>

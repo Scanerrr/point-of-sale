@@ -9,44 +9,13 @@
 namespace frontend\controllers;
 
 
-use common\models\Location;
-use yii\filters\AccessControl;
-use yii\filters\VerbFilter;
-use yii\web\Controller;
-use yii\web\NotFoundHttpException;
+use Yii;
+use common\models\{Category, Location};
+use frontend\controllers\access\MainController;
+use yii\web\{Cookie, NotFoundHttpException, ErrorAction};
 
-class LocationController extends Controller
+class LocationController extends MainController
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function behaviors()
-    {
-        return [
-            'access' => [
-                'class' => AccessControl::class,
-                'rules' => [
-                    [
-//                        'actions' => ['login', 'error'],
-                        'allow' => true,
-                        'roles' => ['@'],
-                    ],
-//                    [
-//                        'actions' => ['logout', 'index'],
-//                        'allow' => true,
-//                        'roles' => ['@'],
-//                    ],
-                ],
-            ],
-            'verbs' => [
-                'class' => VerbFilter::class,
-                'actions' => [
-//                    'logout' => ['post'],
-                ],
-            ],
-        ];
-    }
-
     /**
      * {@inheritdoc}
      */
@@ -54,7 +23,7 @@ class LocationController extends Controller
     {
         return [
             'error' => [
-                'class' => 'yii\web\ErrorAction',
+                'class' => ErrorAction::class,
             ],
         ];
     }
@@ -68,12 +37,39 @@ class LocationController extends Controller
      */
     public function actionIndex(int $id)
     {
-        $location = Location::findOne($id);
+        $location = $this->findLocationModelForUser($id, Yii::$app->user->id);
 
-        if (!$location) throw new NotFoundHttpException('Location not found!');
+        $cookies = Yii::$app->response->cookies;
+        $cookies->add(new Cookie([
+            'name' => 'location',
+            'value' => $location->id
+        ]));
+
+        $categories = Category::find()->forParent()->all();
 
         return $this->render('index', [
-            'location' => $location
+            'location' => $location,
+            'categories' => $categories
         ]);
+    }
+
+    /**
+     * Finds the Location model based on its primary key value.
+     * If the model is not found, a 404 HTTP exception will be thrown.
+     * @param int $id
+     * @param int $userId
+     * @return Location the loaded model
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    protected function findLocationModelForUser(int $id, int $userId): Location
+    {
+        if (($model = Location::find()->where(['id' => $id])->active()->one()) !== null) {
+            if ($model->getLocationUsers()->forUser($userId)->one() === null) {
+                throw new NotFoundHttpException('User doesn\'t have permissions!');
+            }
+            return $model;
+        }
+
+        throw new NotFoundHttpException('The requested page does not exist.');
     }
 }

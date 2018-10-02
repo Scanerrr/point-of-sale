@@ -1,6 +1,6 @@
 <?php
 use yii\helpers\Html;
-use Scanerrr\Image;
+use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $categories \common\models\Category */
@@ -9,22 +9,16 @@ $this->title = 'Home';
 ?>
 <div class="site-index">
 
-    <h1>Choose category!</h1>
+    <h1>Choose Location!</h1>
 
     <div class="body-content">
         <div class="cards">
-            <?php foreach ($categories as $category): ?>
-                <a href="<?= \yii\helpers\Url::to(['catalog/category', 'id' => $category->id]) ?>">
-                    <div class="card" data-toggle="">
-                        <div class="card-header"><?= $category->name ?></div>
+            <?php foreach ($locations as $location): ?>
+                <a href="<?= Url::to(['location/index', 'id' => $location->id]) ?>">
+                    <div class="card">
+                        <div class="card-header"><?= Html::encode($location->name) ?></div>
                         <div class="card-main">
-<!--                            --><?php //if ($category->image): ?>
-                                <?= Html::img(Image::resize($category->imageUrl, 120), [
-                                    'width' => 120,
-                                    'class' => 'card-main-thumb'
-                                ]) ?>
-<!--                            --><?php //endif; ?>
-                            <div class="card-main-description"><?= $category->name ?></div>
+                            <div class="card-main-description"><?= Html::encode($location->name) ?></div>
                         </div>
                     </div>
                 </a>

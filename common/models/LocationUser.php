@@ -3,6 +3,8 @@
 namespace common\models;
 
 use Yii;
+use common\models\query\LocationUserQuery;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "location_user".
@@ -14,7 +16,7 @@ use Yii;
  * @property Location $location
  * @property User $user
  */
-class LocationUser extends \yii\db\ActiveRecord
+class LocationUser extends ActiveRecord
 {
     /**
      * {@inheritdoc}
@@ -44,8 +46,8 @@ class LocationUser extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'location_id' => 'Location ID',
-            'user_id' => 'User ID',
+            'location_id' => 'Location',
+            'user_id' => 'User',
         ];
     }
 
@@ -63,6 +65,15 @@ class LocationUser extends \yii\db\ActiveRecord
     public function getUser()
     {
         return $this->hasOne(User::class, ['id' => 'user_id']);
+    }
+
+    /**
+     * {@inheritdoc}
+     * @return LocationUserQuery the active query used by this AR class.
+     */
+    public static function find()
+    {
+        return new LocationUserQuery(get_called_class());
     }
 
     /**

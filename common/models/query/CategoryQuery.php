@@ -23,7 +23,7 @@ class   CategoryQuery extends \yii\db\ActiveQuery
      */
     public function forParent($id = null)
     {
-        return $this->active()->andWhere(['parent_id' => $id]);
+        return $this->andWhere(['parent_id' => $id]);
     }
 
     /**

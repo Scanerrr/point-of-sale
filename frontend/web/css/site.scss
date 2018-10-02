@@ -181,7 +181,7 @@ a {
     height: 100%;
 
     &-thumb {
-      padding-bottom: 10px;
+      margin-bottom: 10px;
     }
 
     &-description {
@@ -213,12 +213,6 @@ a {
     border-bottom: 1px solid $color_vanilla_ice;
     padding-bottom: 15px;
 
-    .cart-icon {
-      color: $color_sea_pink;
-      font-size: 24px;
-      margin-right: 7px;
-      float: left;
-    }
   }
 
   &-items {
@@ -226,6 +220,7 @@ a {
 
     li {
       margin-bottom: 18px;
+      position: relative;
     }
 
     img {
@@ -234,6 +229,17 @@ a {
     }
 
     .item {
+      &-mid-content {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-evenly;
+      }
+      &-delete a {
+        position: absolute;
+        right: 0;
+        top: 0;
+        float: none;
+      }
       &-name {
         display: block;
         font-size: 16px;

@@ -4,6 +4,7 @@ namespace common\models;
 
 use common\models\query\LocationQuery;
 use Yii;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "location".
@@ -27,7 +28,7 @@ use Yii;
  * @property Region $region
  * @property LocationUser[] $locationUsers
  */
-class Location extends \yii\db\ActiveRecord
+class Location extends ActiveRecord
 {
 
     const STATUS_DELETED = 0;

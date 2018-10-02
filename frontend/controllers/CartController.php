@@ -11,9 +11,10 @@ namespace frontend\controllers;
 
 use Yii;
 use common\models\Product;
-use yii\base\InvalidArgumentException;
+use yii\web\NotFoundHttpException;
+use frontend\controllers\access\CookieController;
 
-class CartController extends AccessController
+class CartController extends CookieController
 {
 
     public function actionIndex()
@@ -27,11 +28,41 @@ class CartController extends AccessController
                 && ($price = Yii::$app->request->post('price'))
                 && ($quantity = Yii::$app->request->post('quantity'))) {
 
-            $product = Product::findOne($productId);
-            if (!$product) throw new InvalidArgumentException('Product does\'n exists');
+            $product = $this->findModel($productId);
+
             Yii::$app->cart->add($product, $price, $quantity);
             Yii::$app->session->setFlash('success', 'Item added to cart');
         }
         return $this->redirect(Yii::$app->request->referrer ?? ['/site/index']);
+    }
+    
+    public function actionCheckout()
+    {
+        $cart = Yii::$app->cart;
+        $location = Yii::$app->params['location'];
+
+    }
+
+    public function actionDelete(int $id)
+    {
+        Yii::$app->cart->remove($id);
+
+        return $this->redirect(Yii::$app->request->referrer ?? ['/site/index']);
+    }
+
+    /**
+     * Finds the Product model based on its primary key value.
+     * If the model is not found, a 404 HTTP exception will be thrown.
+     * @param integer $id
+     * @return Product the loaded model
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    protected function findModel(int $id)
+    {
+        if (($model = Product::find()->where(['id' => $id])->active()->one()) !== null) {
+            return $model;
+        }
+
+        throw new NotFoundHttpException('The requested page does not exist.');
     }
 }

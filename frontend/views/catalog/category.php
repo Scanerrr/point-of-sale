@@ -57,12 +57,6 @@ use yii\bootstrap\ActiveForm;
                         <div class="card-main-description">
 
                             <div class="product">
-                                <div class="product-img">
-                                    <?= Html::img($product->image ? Image::resize($product->imageUrl, 120) : null, [
-                                        'width' => 120,
-                                        'class' => 'card-main-thumb'
-                                    ]) ?>
-                                </div>
                                 <div class="product-info">
                                     <div class="info-barcode">
                                         <?= $product->barcode ?>

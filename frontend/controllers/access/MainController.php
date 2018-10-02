@@ -6,16 +6,14 @@
  * Time: 1:56 PM
  */
 
-namespace frontend\controllers;
+namespace frontend\controllers\access;
 
 
 use common\components\AccessRule;
-use common\models\User;
-use yii\filters\AccessControl;
-use yii\filters\VerbFilter;
+use yii\filters\{AccessControl, VerbFilter};
 use yii\web\Controller;
 
-class AccessController extends Controller
+class MainController extends Controller
 {
     /**
      * {@inheritdoc}
@@ -34,7 +32,6 @@ class AccessController extends Controller
                         'allow' => true,
                     ],
                     [
-//                        'actions' => ['logout', 'index'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],

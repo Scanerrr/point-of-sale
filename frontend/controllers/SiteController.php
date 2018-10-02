@@ -1,18 +1,19 @@
 <?php
 namespace frontend\controllers;
 
-use common\models\Category;
+use common\models\LocationUser;
+use frontend\controllers\access\MainController;
 use Yii;
-use yii\base\InvalidParamException;
-use yii\web\BadRequestHttpException;
+use yii\base\InvalidArgumentException;
+use yii\captcha\CaptchaAction;
+use yii\web\{BadRequestHttpException, ErrorAction};
 use common\models\form\LoginForm;
-use frontend\models\PasswordResetRequestForm;
-use frontend\models\ResetPasswordForm;
+use frontend\models\{PasswordResetRequestForm, ResetPasswordForm};
 
 /**
  * Site controller
  */
-class SiteController extends AccessController
+class SiteController extends MainController
 {
     /**
      * {@inheritdoc}
@@ -21,10 +22,10 @@ class SiteController extends AccessController
     {
         return [
             'error' => [
-                'class' => 'yii\web\ErrorAction',
+                'class' => ErrorAction::class,
             ],
             'captcha' => [
-                'class' => 'yii\captcha\CaptchaAction',
+                'class' => CaptchaAction::class,
                 'fixedVerifyCode' => YII_ENV_TEST ? 'testme' : null,
             ],
         ];
@@ -37,10 +38,13 @@ class SiteController extends AccessController
      */
     public function actionIndex()
     {
-        $categories = Category::find()->forParent()->all();
+        $locationIds = LocationUser::findAll(['user_id' => Yii::$app->user->id]);
+        $locations = array_map(function ($locationId) {
+            return $locationId->getLocation()->active()->one();
+        }, $locationIds);
 
         return $this->render('index', [
-            'categories' => $categories
+            'locations' => $locations
         ]);
     }
 
@@ -58,13 +62,13 @@ class SiteController extends AccessController
         $model = new LoginForm();
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
             return $this->goBack();
-        } else {
-            $model->password = '';
-
-            return $this->render('login', [
-                'model' => $model,
-            ]);
         }
+
+        $model->password = '';
+
+        return $this->render('login', [
+            'model' => $model,
+        ]);
     }
 
     /**
@@ -83,6 +87,7 @@ class SiteController extends AccessController
      * Requests password reset.
      *
      * @return mixed
+     * @throws \yii\base\Exception
      */
     public function actionRequestPasswordReset()
     {
@@ -92,9 +97,8 @@ class SiteController extends AccessController
                 Yii::$app->session->setFlash('success', 'Check your email for further instructions.');
 
                 return $this->goHome();
-            } else {
-                Yii::$app->session->setFlash('error', 'Sorry, we are unable to reset password for the provided email address.');
             }
+            Yii::$app->session->setFlash('error', 'Sorry, we are unable to reset password for the provided email address.');
         }
 
         return $this->render('requestPasswordResetToken', [
@@ -108,12 +112,13 @@ class SiteController extends AccessController
      * @param string $token
      * @return mixed
      * @throws BadRequestHttpException
+     * @throws \yii\base\Exception
      */
     public function actionResetPassword($token)
     {
         try {
             $model = new ResetPasswordForm($token);
-        } catch (InvalidParamException $e) {
+        } catch (InvalidArgumentException $e) {
             throw new BadRequestHttpException($e->getMessage());
         }
 

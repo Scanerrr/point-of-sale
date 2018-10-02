@@ -4,8 +4,7 @@ namespace frontend\components\cart;
 
 use common\models\Product;
 use Yii;
-use yii\base\Component;
-use yii\base\InvalidArgumentException;
+use yii\base\{Component, InvalidArgumentException};
 
 
 /**
@@ -23,6 +22,8 @@ class Cart extends Component
     private $_storage;
 
     protected $items;
+
+    public $tax;
 
     /**
      * @return mixed
@@ -85,6 +86,15 @@ class Cart extends Component
         return array_sum(array_map(function ($item) {
             return $item['price'] * $item['quantity'];
         }, $this->items));
+    }
+
+    /**
+     * @return float
+     */
+    public function getTax($rate): float
+    {
+        $this->tax = ($this->total * $rate) / 100;
+        return $this->tax;
     }
 
     /**
