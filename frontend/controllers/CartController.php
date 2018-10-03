@@ -10,8 +10,9 @@ namespace frontend\controllers;
 
 
 use Yii;
-use common\models\Product;
 use yii\web\NotFoundHttpException;
+use frontend\components\cart\Cart;
+use common\models\{Order, Product, Location};
 use frontend\controllers\access\CookieController;
 
 class CartController extends CookieController
@@ -38,9 +39,19 @@ class CartController extends CookieController
     
     public function actionCheckout()
     {
+        /* @var Cart $cart */
         $cart = Yii::$app->cart;
+
+        /* @var Location $location */
         $location = Yii::$app->params['location'];
 
+        $items = $cart->getItems();
+        if (!$items) return $this->redirect(Yii::$app->request->referrer ?? ['/site/index']);
+
+        $order = new Order();
+        foreach ($items as $item) {
+
+        }
     }
 
     public function actionDelete(int $id)

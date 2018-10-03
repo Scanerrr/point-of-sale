@@ -7,7 +7,7 @@
 use yii\helpers\Html;
 use yii\bootstrap\{Nav, NavBar};
 use frontend\assets\AppAsset;
-use common\widgets\{Categories, Alert};
+use common\widgets\{Categories, Alert, ShoppingCart};
 
 AppAsset::register($this);
 ?>
@@ -64,7 +64,6 @@ AppAsset::register($this);
         ?>
     </header>
 
-    <?= $this->render('shopping_cart') ?>
 
     <main class="container">
         <?= Alert::widget() ?>
@@ -88,6 +87,8 @@ AppAsset::register($this);
         <p class="text-center">&copy; <?= Html::encode(Yii::$app->name) ?> <?= date('Y') ?></p>
     </div>
 </footer>
+
+<?= ShoppingCart::widget() ?>
 
 <?php $this->endBody() ?>
 </body>
