@@ -178,4 +178,9 @@ a.desc:after {
   .shopping-cart .btn {
     background: #6394F8; }
 
+#checkout-modal .modal-first {
+  display: flex;
+  justify-content: space-between;
+  align-items: center; }
+
 /*# sourceMappingURL=site.css.map */

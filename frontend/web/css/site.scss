@@ -274,3 +274,11 @@ a {
     background: $main-color;
   }
 }
+
+#checkout-modal {
+  .modal-first {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
