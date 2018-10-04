@@ -12,6 +12,7 @@ namespace frontend\controllers;
 use Yii;
 use common\models\{Category, Location};
 use frontend\controllers\access\MainController;
+use yii\helpers\VarDumper;
 use yii\web\{Cookie, NotFoundHttpException, ErrorAction};
 
 class LocationController extends MainController
@@ -39,11 +40,7 @@ class LocationController extends MainController
     {
         $location = $this->findLocationModelForUser($id, Yii::$app->user->id);
 
-        $cookies = Yii::$app->response->cookies;
-        $cookies->add(new Cookie([
-            'name' => 'location',
-            'value' => $location->id
-        ]));
+        Yii::$app->session->set('user.location', $location->id);
 
         $categories = Category::find()->forParent()->all();
 

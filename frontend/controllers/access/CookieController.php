@@ -37,9 +37,7 @@ class CookieController extends Controller
                         'roles' => ['@'],
                         'matchCallback' => function ($rule, $action) {
                             // allow only if user is assigned to location
-                            $cookies = Yii::$app->request->cookies;
-                            if (($location = $cookies->get('location')) !== null) {
-                                $locationId = $location->value;
+                            if (($locationId = Yii::$app->session->get('user.location')) !== null) {
                                 if (($model = Location::find()->where(['id' => $locationId])->active()->one()) !== null) {
                                     if ($model->getLocationUsers()->forUser(Yii::$app->user->id)->one() !== null) {
                                         Yii::$app->params['location'] = $model;
