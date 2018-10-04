@@ -14,10 +14,11 @@ class m181002_160429_create_order_table extends Migration
     {
         $this->createTable('order', [
             'id' => $this->primaryKey(),
-            'invoice_id' => $this->smallInteger(1)->defaultValue(0),
-            'status_id' => $this->integer()->notNull(),
+            'invoice' => $this->smallInteger(1)->defaultValue(0),
+            'status' => $this->integer()->notNull(),
+            'location_id' => $this->integer()->notNull(),
             'employee_id' => $this->integer()->notNull(),
-            'customer_id' => $this->integer()->notNull(),
+            'customer_id' => $this->integer()->null(),
             'total_tax' => $this->decimal(15, 2)->defaultValue(0),
             'total' => $this->decimal(15, 2)->defaultValue(0),
 
@@ -25,6 +26,7 @@ class m181002_160429_create_order_table extends Migration
             'updated_at' => $this->timestamp() . ' on update CURRENT_TIMESTAMP',
         ]);
 
+        $this->addForeignKey('fk-order-location', 'order', 'location_id', 'location', 'id');
         $this->addForeignKey('fk-order-employee', 'order', 'employee_id', 'user', 'id');
         $this->addForeignKey('fk-order-customer', 'order', 'customer_id', 'customer', 'id');
     }

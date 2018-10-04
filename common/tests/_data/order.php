@@ -4,8 +4,9 @@ for ($i = 1; $i <= 15; $i++) {
     $faker = Faker\Factory::create();
     $orders[] = [
         'id' => $i,
-        'invoice_id' => rand(0, 50),
-        'status_id' => rand(1, 6),
+        'invoice' => rand(0, 50),
+        'status' => rand(1, 6),
+        'location_id' => rand(1, 10),
         'employee_id' => rand(1, 10),
         'customer_id' => rand(1, 15),
         'total_tax' => $faker->randomFloat(5, 0, 500),

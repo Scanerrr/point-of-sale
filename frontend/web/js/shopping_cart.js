@@ -1,4 +1,35 @@
 $(document).ready(() => {
+    // Remove Items From Cart
+    $('a.remove').click(e => {
+        e.preventDefault()
+        const $this = $(e.target)
+        $this.parent().parent().parent().hide(400);
+        $.ajax({
+            type: $this.data('type'),
+            url: $this.data('href'),
+            dataType: 'json',
+        })
+            .done(({total}) => {
+                $('#checkout-modal .total').html(total)
+            })
+            .fail(err => console.error(err.message))
+    })
+
+    $('.update-quantity').on('change', e => {
+        e.preventDefault()
+        const $this = $(e.target)
+        $.ajax({
+            type: 'post',
+            url: '/cart/update/?id=' + $this.data('id'),
+            data: {quantity: $this.val()},
+            dataType: 'json',
+        })
+            .done(({success, total}) => {
+                $this.closest('.items').find('.prodTotal p').text(total)
+            })
+            .fail(err => console.error(err.message))
+    })
+
     $('.search_customer-form').on('submit', e => {
         e.preventDefault()
         const $this = $(e.target)
@@ -29,7 +60,7 @@ $(document).ready(() => {
                     addCustomerModal.modal()
                 }
             })
-            .fail(err => console.error(err))
+            .fail(err => console.error(err.message))
     })
 
     $('.create_customer-form').on('beforeSubmit', e => {
@@ -57,10 +88,10 @@ $(document).ready(() => {
                         '<span class="lighter-text"><strong>Email receipt to:</strong></span>' +
                         `<span class="main-color-text">${customer.email}</span>` +
                         '</div>')
-                    // TODO: finish order create
+
                 }
             })
-            .fail(err => console.error(err))
+            .fail(err => console.error(err.message))
 
         return false
     })

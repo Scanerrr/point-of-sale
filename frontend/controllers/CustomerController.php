@@ -2,10 +2,10 @@
 
 namespace frontend\controllers;
 
-use common\models\Customer;
-use frontend\models\CreateCustomerForm;
 use Yii;
 use yii\web\Response;
+use common\models\Customer;
+use frontend\models\CreateCustomerForm;
 use frontend\controllers\access\CookieController;
 
 class CustomerController extends CookieController
@@ -39,9 +39,10 @@ class CustomerController extends CookieController
         $response = ['success' => false, 'customer' => null];
 
         if ($model->load(Yii::$app->request->post())) {
-            if ($response['customer'] = $model->create()) {
-                Yii::$app->session->set('customer', $response['customer']->id);
-                $response['success'] = true;
+            if ($customer = $model->create()) {
+                $response = ['success' => true, 'customer' => $customer];
+
+                Yii::$app->session->set('customer', $customer->id);
             }
         }
         return $response;

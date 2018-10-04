@@ -11,11 +11,10 @@ namespace frontend\controllers;
 
 use Yii;
 use common\models\{Category, Location};
-use frontend\controllers\access\MainController;
-use yii\helpers\VarDumper;
-use yii\web\{Cookie, NotFoundHttpException, ErrorAction};
+use yii\web\{NotFoundHttpException, ErrorAction};
+use frontend\controllers\access\CookieController;
 
-class LocationController extends MainController
+class LocationController extends CookieController
 {
     /**
      * {@inheritdoc}

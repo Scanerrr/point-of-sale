@@ -41,6 +41,7 @@ class CookieController extends Controller
                                 if (($model = Location::find()->where(['id' => $locationId])->active()->one()) !== null) {
                                     if ($model->getLocationUsers()->forUser(Yii::$app->user->id)->one() !== null) {
                                         Yii::$app->params['location'] = $model;
+                                        Yii::$app->params['location_tax'] = $model->tax_rate;
                                         return true;
                                     }
                                 }

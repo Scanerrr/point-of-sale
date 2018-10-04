@@ -10,20 +10,23 @@
 
 /* @var $cart \frontend\components\cart\Cart */
 
+use Scanerrr\Image;
+use yii\helpers\Url;
 use yii\helpers\Html;
 use yii\bootstrap\Modal;
 use yii\widgets\ActiveForm;
 
 $cart = Yii::$app->cart;
 $location = Yii::$app->params['location'];
-$tax = $cart->getTax($location->tax_rate);
+$items = $cart->getItems();
+$cart->setTax(Yii::$app->params['location_tax']);
 ?>
 
     <div class="shopping-cart" style="display: none">
         <div class="shopping-cart-header text-right">
             <div>
                 <span class="lighter-text"><strong>Tax:</strong></span>
-                <span class="main-color-text"><?= Yii::$app->formatter->asCurrency($tax) ?></span>
+                <span class="main-color-text"><?= Yii::$app->formatter->asCurrency($cart->tax) ?></span>
             </div>
             <div>
                 <span class="lighter-text"><strong>Subtotal:</strong></span>
@@ -34,7 +37,7 @@ $tax = $cart->getTax($location->tax_rate);
                 <span class="main-color-text"><?= Yii::$app->formatter->asCurrency($cart->total + $cart->tax) ?></span>
             </div>
         </div>
-        <?php if ($items = $cart->getItems()): ?>
+        <?php if ($items): ?>
             <ul class="shopping-cart-items list-unstyled">
                 <?php foreach ($items as $item): ?>
                     <?php $product = $item['product'] ?>
@@ -78,12 +81,54 @@ $tax = $cart->getTax($location->tax_rate);
     <div class="modal-first">
         <div>
             <span class="lighter-text"><strong>Total:</strong></span>
-            <span class="main-color-text"><?= Yii::$app->formatter->asCurrency($cart->total + $cart->tax) ?></span>
+            <span class="main-color-text total"><?= Yii::$app->formatter->asCurrency($cart->total + $cart->tax) ?></span>
         </div>
         <div>
             <button class="btn btn-sm btn-success add-customer" data-toggle="modal" data-target="#customer-modal"><i
                         class="fa fa-plus"></i> Add Customer
             </button>
+        </div>
+    </div>
+    <div class="cart">
+        <ul class="cartWrap">
+            <?php $idx = 0; foreach ($items as $item): ?>
+                <?php $product = $item['product'] ?>
+                <li class="items <?= $idx++ % 2 === 0 ? 'odd' : 'even' ?>">
+
+                    <div class="infoWrap">
+                        <div class="cartSection">
+                            <?= Html::img(Image::resize($product->imageUrl, 300), ['class' => 'itemImg']) ?>
+                            <p class="itemNumber"># <?= $product->barcode ?></p>
+                            <h3><?= Html::encode($product->name) ?></h3>
+
+                            <p><?= Html::input('number', null, $item['quantity'], [
+                                    'min' => 1,
+                                    'class' => 'qty update-quantity',
+                                    'data-id' => $product->id
+                                ]) ?> x <?= Yii::$app->formatter->asCurrency($item['price']) ?></p>
+
+                            <p class="stockStatus">In Stock</p>
+                        </div>
+
+                        <div class="prodTotal cartSection">
+                            <p><?= Yii::$app->formatter->asCurrency($item['price'] * $item['quantity']) ?></p>
+                        </div>
+                        <div class="cartSection removeWrap">
+                            <?= Html::a('x', '#', [
+                                'class' => 'remove',
+                                'data-href' => Url::to(['/cart/delete', 'id' => $product->id]),
+                                'data-type' => 'post'
+                            ]) ?>
+                        </div>
+                    </div>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+        <div class="text-right">
+            <?= Html::a('Create Order', ['/cart/checkout'], [
+                'class' => 'btn btn-lg btn-primary create-order',
+                'data-href' => Url::to(['/cart/checkout']),
+            ]) ?>
         </div>
     </div>
     <div class="customer-info"></div>
@@ -129,11 +174,11 @@ $tax = $cart->getTax($location->tax_rate);
     'id' => 'add-customer-modal',
     'size' => 'modal-md',
 ]) ?>
-    <?php $customerModel = new \frontend\models\CreateCustomerForm();
-    $form = ActiveForm::begin([
-        'action' => ['/customer/create'],
-        'options' => ['class' => 'create_customer-form']
-    ]) ?>
+<?php $customerModel = new \frontend\models\CreateCustomerForm();
+$form = ActiveForm::begin([
+    'action' => ['/customer/create'],
+    'options' => ['class' => 'create_customer-form']
+]) ?>
     <div class="col-sm-6">
         <?= $form->field($customerModel, 'firstname')->textInput(['class' => 'form-control customer-firstname']) ?>
     </div>
@@ -168,7 +213,7 @@ $tax = $cart->getTax($location->tax_rate);
     <div class="form-group">
         <?= Html::submitButton('Create', ['class' => 'btn btn-primary', 'name' => 'create-button']) ?>
     </div>
-    <?php ActiveForm::end() ?>
+<?php ActiveForm::end() ?>
 <?php Modal::end() ?>
 
 <?php $this->registerJsFile('@web/js/shopping_cart.js', [

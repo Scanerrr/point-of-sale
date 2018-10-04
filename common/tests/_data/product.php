@@ -15,7 +15,7 @@ for ($i = 1; $i <= 20; $i++) {
         'id' => $i,
         'category_id' => rand(1, 10),
         'supplier_id' => rand(1, 2),
-        'name' => $names[$i],
+        'name' => $names[$i] ?? $faker->word,
         'description' => $faker->text,
         'cost_price' => $faker->randomNumber(4),
         'markup_price' => $faker->randomNumber(4),

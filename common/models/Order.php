@@ -9,8 +9,9 @@ use Yii;
  * This is the model class for table "order".
  *
  * @property int $id
- * @property int $invoice_id
- * @property int $status_id
+ * @property int $invoice
+ * @property int $status
+ * @property int $location_id
  * @property int $employee_id
  * @property int $customer_id
  * @property string $total_tax
@@ -20,6 +21,7 @@ use Yii;
  *
  * @property Customer $customer
  * @property User $employee
+ * @property Location $location
  * @property OrderProduct[] $orderProducts
  */
 class Order extends \yii\db\ActiveRecord
@@ -38,12 +40,13 @@ class Order extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['invoice_id', 'status_id', 'employee_id', 'customer_id'], 'integer'],
-            [['status_id', 'employee_id', 'customer_id'], 'required'],
+            [['invoice', 'status', 'location_id', 'employee_id', 'customer_id'], 'integer'],
+            [['status', 'location_id', 'employee_id', 'customer_id'], 'required'],
             [['total_tax', 'total'], 'number'],
             [['created_at', 'updated_at'], 'safe'],
             [['customer_id'], 'exist', 'skipOnError' => true, 'targetClass' => Customer::class, 'targetAttribute' => ['customer_id' => 'id']],
             [['employee_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['employee_id' => 'id']],
+            [['location_id'], 'exist', 'skipOnError' => true, 'targetClass' => Location::className(), 'targetAttribute' => ['location_id' => 'id']],
         ];
     }
 
@@ -54,8 +57,9 @@ class Order extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'invoice_id' => 'Invoice ID',
-            'status_id' => 'Status ID',
+            'invoice' => 'Invoice',
+            'status' => 'Status',
+            'location_id' => 'Location ID',
             'employee_id' => 'Employee ID',
             'customer_id' => 'Customer ID',
             'total_tax' => 'Total Tax',
@@ -79,6 +83,14 @@ class Order extends \yii\db\ActiveRecord
     public function getEmployee()
     {
         return $this->hasOne(User::class, ['id' => 'employee_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getLocation()
+    {
+        return $this->hasOne(Location::className(), ['id' => 'location_id']);
     }
 
     /**

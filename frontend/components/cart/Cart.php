@@ -53,6 +53,22 @@ class Cart extends Component
     }
 
     /**
+     * @param int $productId
+     * @param float $price
+     * @param int $quantity
+     * @return Cart
+     */
+    public function update(int $productId, float $price = null, int $quantity = null): self
+    {
+        if ($price)  $this->items[$productId]['price'] = $price;
+        if ($quantity)  $this->items[$productId]['quantity'] = $quantity;
+
+        $this->_storage->save($this);
+
+        return $this;
+    }
+
+    /**
      * @param $id
      * @return Cart
      */
@@ -91,10 +107,18 @@ class Cart extends Component
     /**
      * @return float
      */
-    public function getTax($rate): float
+    public function getTax(): float
+    {
+        return $this->tax;
+    }
+
+    /**
+     * @param float $rate
+     * @return void
+     */
+    public function setTax(float $rate): void
     {
         $this->tax = ($this->total * $rate) / 100;
-        return $this->tax;
     }
 
     /**
