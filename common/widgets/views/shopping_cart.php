@@ -7,6 +7,7 @@
  */
 
 /* @var $this \yii\web\View */
+/* @var $customer \common\models\Customer */
 
 /* @var $cart \frontend\components\cart\Cart */
 
@@ -19,7 +20,7 @@ use yii\widgets\ActiveForm;
 $cart = Yii::$app->cart;
 $location = Yii::$app->params['location'];
 $items = $cart->getItems();
-$cart->setTax(Yii::$app->params['location_tax']);
+$cart->setTax($location->tax_rate);
 ?>
 
     <div class="shopping-cart" style="display: none">
@@ -91,7 +92,8 @@ $cart->setTax(Yii::$app->params['location_tax']);
     </div>
     <div class="cart">
         <ul class="cartWrap">
-            <?php $idx = 0; foreach ($items as $item): ?>
+            <?php $idx = 0;
+            foreach ($items as $item): ?>
                 <?php $product = $item['product'] ?>
                 <li class="items <?= $idx++ % 2 === 0 ? 'odd' : 'even' ?>">
 
@@ -131,7 +133,22 @@ $cart->setTax(Yii::$app->params['location_tax']);
             ]) ?>
         </div>
     </div>
-    <div class="customer-info"></div>
+    <div class="payment-section">
+        <label for="payment-type">Payment Type</label>
+        <?= Html::radioList('payment-type', null, [0 => 'Cash', 1 => 'Credit Card'], ['id' => 'payment-type']) ?>
+    </div>
+    <div class="customer-info">
+        <?php if ($customer): ?>
+            <div>
+                <span class="lighter-text"><strong>Customer:</strong></span>
+                <span class="main-color-text"><?= $customer->firstname ?> <?= $customer->lastname ?></span>
+            </div>
+            <div>
+                <span class="lighter-text"><strong>Email receipt to:</strong></span>
+                <span class="main-color-text"><?= $customer->email ?></span>
+            </div>
+        <?php endif; ?>
+    </div>
 <?php Modal::end() ?>
 
     <!--Find customer-->
@@ -161,6 +178,7 @@ $cart->setTax(Yii::$app->params['location_tax']);
                 <th>Email</th>
                 <th>Phone</th>
                 <th>Date Added</th>
+                <th></th>
             </tr>
             </thead>
             <tbody></tbody>
@@ -214,6 +232,45 @@ $form = ActiveForm::begin([
         <?= Html::submitButton('Create', ['class' => 'btn btn-primary', 'name' => 'create-button']) ?>
     </div>
 <?php ActiveForm::end() ?>
+<?php Modal::end() ?>
+
+
+    <!--payment type-->
+<?php Modal::begin([
+    'header' => Html::tag('h3', 'Payment'),
+    'id' => 'payment-modal',
+    'size' => 'modal-md',
+]) ?>
+    <div class="modal-first">
+        <div class="total"></div>
+        <?php Html::beginForm(['/cart/set-payment'], 'post', [
+            'class' => 'set-payment-form'
+        ]) ?>
+        <div class="total-charged">
+            <?= Html::input('number', 'total-charged', 0, [
+                'min' => 1,
+                'step' => 'any',
+                'class' => 'form-control'
+            ]) ?>
+        </div>
+        <div class="credit-cards">
+            <div class="credit-card">
+                <label for="credit-card-type">Credit Card Type</label>
+                <?= Html::radioList('credit-card-type', null, [0 => 'visa', 1 => 'master card'], ['id' => 'credit-card-type']) ?>
+            </div>
+        </div>
+        <div class="last-digits">
+            <label for="last-digits">Last 4 Digits</label>
+            <?= Html::input('text', 'last-digits', null, [
+                'maxlength' => 4,
+                'placeholder' => '0000',
+                'class' => 'form-control',
+                'id' => 'last-digits',
+            ]) ?>
+        </div>
+        <?= Html::submitButton('OK', ['class' => 'btn btn-md btn-primary']) ?>
+        <?php Html::endForm() ?>
+    </div>
 <?php Modal::end() ?>
 
 <?php $this->registerJsFile('@web/js/shopping_cart.js', [

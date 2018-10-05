@@ -9,12 +9,16 @@
 namespace common\widgets;
 
 
+use Yii;
 use yii\base\Widget;
+use common\models\Customer;
 
 class ShoppingCart extends Widget
 {
     public function run()
     {
-        return $this->render('shopping_cart');
+        return $this->render('shopping_cart', [
+            'customer' => Customer::findOne(Yii::$app->session->get('customer'))
+        ]);
     }
 }

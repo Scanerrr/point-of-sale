@@ -10,6 +10,8 @@ namespace frontend\controllers\access;
 
 
 use common\components\AccessRule;
+use Yii;
+use yii\base\Module;
 use yii\filters\{AccessControl, VerbFilter};
 use yii\web\Controller;
 
@@ -28,7 +30,7 @@ class MainController extends Controller
                 ],
                 'rules' => [
                     [
-                        'actions' => ['login', 'error'],
+                        'actions' => ['login', 'reset-password', 'request-password-reset', 'error'],
                         'allow' => true,
                     ],
                     [
@@ -45,5 +47,12 @@ class MainController extends Controller
                 ],
             ],
         ];
+    }
+
+    protected function _clear()
+    {
+        Yii::$app->session->remove('payment');
+        Yii::$app->session->remove('customer');
+        Yii::$app->cart->clear();
     }
 }

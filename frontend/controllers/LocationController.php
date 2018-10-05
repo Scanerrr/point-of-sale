@@ -12,9 +12,9 @@ namespace frontend\controllers;
 use Yii;
 use common\models\{Category, Location};
 use yii\web\{NotFoundHttpException, ErrorAction};
-use frontend\controllers\access\CookieController;
+use frontend\controllers\access\MainController;
 
-class LocationController extends CookieController
+class LocationController extends MainController
 {
     /**
      * {@inheritdoc}
@@ -39,7 +39,16 @@ class LocationController extends CookieController
     {
         $location = $this->findLocationModelForUser($id, Yii::$app->user->id);
 
-        Yii::$app->session->set('user.location', $location->id);
+        $session = Yii::$app->session;
+
+        // TODO: save cart data to temp var to resurrect when open again
+        if ($location->id !== $session->get('user.location')) $this->_clear();
+
+        $session->set('user.location', $location->id);
+
+        Yii::$app->params['location'] = $location; // set variable for cart in layout
+
+        $this->layout = 'afterLocation';
 
         $categories = Category::find()->forParent()->all();
 

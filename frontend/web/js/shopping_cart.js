@@ -12,9 +12,10 @@ $(document).ready(() => {
             .done(({total}) => {
                 $('#checkout-modal .total').html(total)
             })
-            .fail(err => console.error(err.message))
+            .fail(failHandler)
     })
 
+    // change quantity
     $('.update-quantity').on('change', e => {
         e.preventDefault()
         const $this = $(e.target)
@@ -27,16 +28,42 @@ $(document).ready(() => {
             .done(({success, total}) => {
                 $this.closest('.items').find('.prodTotal p').text(total)
             })
-            .fail(err => console.error(err.message))
+            .fail(failHandler)
     })
 
-    $('.search_customer-form').on('submit', e => {
-        e.preventDefault()
+    // payment type
+    $('input[name=payment-type]').on('change', e => {
+        $('#payment-modal').modal()
+    })
+
+    $('.set-payment-form').on('submit', e => {
+        e.preventDefault();
         const $this = $(e.target)
         $.ajax({
             type: $this.attr('method'),
             url: $this.attr('action'),
             data: $this.serialize(),
+            dataType: 'json'
+        })
+            .done(({success}) => {
+
+            })
+            .fail(failHandler)
+    })
+
+    // search customer form
+    $('.search_customer-form').on('submit', e => {
+        e.preventDefault()
+        const $this = $(e.target)
+        const query = $this.find('input[name=query]').val()
+        if (query.length < 3) {
+            alert('3 letter minimum for search')
+            return false
+        }
+        $.ajax({
+            type: $this.attr('method'),
+            url: $this.attr('action'),
+            data: {query: query},
             dataType: 'json'
         })
             .done(({success, customers}) => {
@@ -51,6 +78,7 @@ $(document).ready(() => {
                             `<td>${customer.email}</td>` +
                             `<td>${customer.phone}</td>` +
                             `<td>${customer.created_at}</td>` +
+                            `<td><a href="#" class="assign-customer" data-customer="${customer.id}">Assign</a></td>` +
                             '</tr>')
                     })
                     table.show()
@@ -60,9 +88,22 @@ $(document).ready(() => {
                     addCustomerModal.modal()
                 }
             })
-            .fail(err => console.error(err.message))
+            .fail(failHandler)
     })
 
+    $('.found-customers').on('click', '.assign-customer', e => {
+        const $this = $(e.target)
+        $.ajax({
+            url: '/customer/assign/?id=' + $this.data('customer'),
+            dataType: 'json'
+        })
+            .done(({success, customer}) => {
+                if (success && customer !== null) appendCustomerInfo(customer)
+            })
+            .fail(failHandler)
+    })
+
+    // create customer form
     $('.create_customer-form').on('beforeSubmit', e => {
         e.preventDefault()
 
@@ -75,24 +116,30 @@ $(document).ready(() => {
             dataType: 'json'
         })
             .done(({success, customer}) => {
-                if (success && customer !== 0) {
-                    $('#add-customer-modal').hide()
-                    $('#search-customer-modal').hide()
-                    const checkoutModal = $('#checkout-modal')
-                    const customerDiv = checkoutModal.find('.customer-info')
-                    customerDiv.append('<div>' +
-                        '<span class="lighter-text"><strong>Customer:</strong></span>' +
-                        `<span class="main-color-text">${customer.firstname} ${customer.lastname}</span>` +
-                        '</div>')
-                    customerDiv.append('<div>' +
-                        '<span class="lighter-text"><strong>Email receipt to:</strong></span>' +
-                        `<span class="main-color-text">${customer.email}</span>` +
-                        '</div>')
-
-                }
+                if (success && customer !== null) appendCustomerInfo(customer)
             })
-            .fail(err => console.error(err.message))
+            .fail(failHandler)
 
         return false
     })
 })
+
+function appendCustomerInfo({firstname, lastname, email}) {
+    $('#add-customer-modal').hide()
+    $('#search-customer-modal').hide()
+    const checkoutModal = $('#checkout-modal')
+    const customerDiv = checkoutModal.find('.customer-info').empty()
+    appendInfo(customerDiv, 'Customer:', `${firstname} ${lastname}`)
+    appendInfo(customerDiv, 'Email receipt to:', `${email}`)
+}
+
+function appendInfo(div, title, text) {
+    div.append('<div>' +
+        '<span class="lighter-text"><strong>Customer:</strong></span>' +
+        `<span class="main-color-text">${text}</span>` +
+        '</div>')
+}
+
+function failHandler(err) {
+    console.error(err.message)
+}

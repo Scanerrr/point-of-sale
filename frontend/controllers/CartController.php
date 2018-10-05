@@ -10,21 +10,22 @@ namespace frontend\controllers;
 
 
 use Yii;
-use yii\helpers\VarDumper;
 use yii\web\Response;
 use yii\web\NotFoundHttpException;
 use frontend\components\cart\Cart;
 use frontend\controllers\access\CookieController;
 use common\models\{Order, OrderProduct, Product, Location};
 
+/**
+ * Class CartController
+ * @package frontend\controllers
+ */
 class CartController extends CookieController
 {
-
-    public function actionIndex()
-    {
-        return 1;
-    }
-
+    /**
+     * @return Response
+     * @throws NotFoundHttpException
+     */
     public function actionAdd()
     {
         if (($productId = Yii::$app->request->post('product_id'))
@@ -39,6 +40,11 @@ class CartController extends CookieController
         return $this->redirect(Yii::$app->request->referrer ?? ['/site/index']);
     }
 
+    /**
+     * @param int $id
+     * @return array
+     * @throws \yii\base\InvalidConfigException
+     */
     public function actionUpdate(int $id)
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
@@ -54,6 +60,9 @@ class CartController extends CookieController
         return ['success' => true, 'total' => Yii::$app->formatter->asCurrency($updatedItem['price'] * $updatedItem['quantity'])];
     }
 
+    /**
+     * @return Response
+     */
     public function actionCheckout()
     {
         /* @var Cart $cart */
@@ -71,7 +80,7 @@ class CartController extends CookieController
         $order->invoice = 0;
         $order->status = 0;
         $order->location_id = $location->id;
-        $order->customer_id = $session->get('customer') ?? 0;
+        $order->customer_id = $session->get('customer');
         $order->employee_id = Yii::$app->user->id;
         $order->total_tax = 0;
         $order->total = 0;
@@ -100,11 +109,32 @@ class CartController extends CookieController
             $order->total_tax = $orderTotalTax;
             $order->save(false);
             $cart->clear();
+            Yii::$app->session->remove('customer');
             Yii::$app->session->setFlash('success', 'Order ' . $order->id . ' created');
         }
         return $this->redirect(Yii::$app->request->referrer ?? ['/site/index']);
     }
 
+    public function actionSetPayment()
+    {
+        $success = false;
+        if (Yii::$app->request->isAjax) {
+            $request = Yii::$app->request;
+            $data = [
+                'type' => $request->post('type'),
+                'price' => $request->post('price')
+            ];
+            Yii::$app->session->set('payment', serialize($data));
+            $success = true;
+        }
+        return ['success' => $success];
+    }
+
+    /**
+     * @param int $id
+     * @return array|Response
+     * @throws \yii\base\InvalidConfigException
+     */
     public function actionDelete(int $id)
     {
         $cart = Yii::$app->cart;

@@ -41,7 +41,7 @@ class Order extends \yii\db\ActiveRecord
     {
         return [
             [['invoice', 'status', 'location_id', 'employee_id', 'customer_id'], 'integer'],
-            [['status', 'location_id', 'employee_id', 'customer_id'], 'required'],
+            [['status', 'location_id', 'employee_id'], 'required'],
             [['total_tax', 'total'], 'number'],
             [['created_at', 'updated_at'], 'safe'],
             [['customer_id'], 'exist', 'skipOnError' => true, 'targetClass' => Customer::class, 'targetAttribute' => ['customer_id' => 'id']],

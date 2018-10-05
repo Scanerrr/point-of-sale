@@ -116,7 +116,7 @@ class Cart extends Component
      * @param float $rate
      * @return void
      */
-    public function setTax(float $rate): void
+    public function setTax(float $rate = 1): void
     {
         $this->tax = ($this->total * $rate) / 100;
     }
