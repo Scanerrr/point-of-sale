@@ -178,11 +178,6 @@ a.desc:after {
   .shopping-cart .btn {
     background: #6394F8; }
 
-#checkout-modal .modal-first {
-  display: flex;
-  justify-content: space-between;
-  align-items: center; }
-
 .cart {
   padding: 1em 0; }
   .cart .button:link, .cart .button:visited {

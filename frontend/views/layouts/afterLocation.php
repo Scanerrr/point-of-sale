@@ -2,6 +2,7 @@
 
 /* @var $this \yii\web\View */
 /* @var $cart \frontend\components\cart\Cart */
+
 /* @var $content string */
 
 use yii\helpers\Html;
@@ -67,18 +68,7 @@ AppAsset::register($this);
 
     <main class="container">
         <?= Alert::widget() ?>
-        <div class="row">
-            <div class="col-md-3 col-sm-4">
-
-                <?= Categories::widget([
-                    'category' => isset($this->params['category']) ? $this->params['category'] : null,
-                ]) ?>
-
-            </div>
-            <div class="col-md-9 col-sm-8">
-                <?= $content ?>
-            </div>
-        </div>
+        <?= $content ?>
     </main>
 </div>
 

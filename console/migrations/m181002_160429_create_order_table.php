@@ -14,7 +14,6 @@ class m181002_160429_create_order_table extends Migration
     {
         $this->createTable('order', [
             'id' => $this->primaryKey(),
-            'invoice' => $this->smallInteger(1)->defaultValue(0),
             'status' => $this->integer()->notNull(),
             'location_id' => $this->integer()->notNull(),
             'employee_id' => $this->integer()->notNull(),

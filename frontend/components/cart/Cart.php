@@ -23,8 +23,6 @@ class Cart extends Component
 
     protected $items;
 
-    public $tax;
-
     /**
      * @return mixed
      */
@@ -109,16 +107,8 @@ class Cart extends Component
      */
     public function getTax(): float
     {
-        return $this->tax;
-    }
-
-    /**
-     * @param float $rate
-     * @return void
-     */
-    public function setTax(float $rate = 1): void
-    {
-        $this->tax = ($this->total * $rate) / 100;
+        $tax_rate = Yii::$app->params['location']->tax_rate ?? 1;
+        return ($this->total * $tax_rate) / 100;
     }
 
     /**

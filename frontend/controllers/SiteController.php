@@ -6,6 +6,7 @@ use frontend\controllers\access\MainController;
 use Yii;
 use yii\base\InvalidArgumentException;
 use yii\captcha\CaptchaAction;
+use yii\helpers\VarDumper;
 use yii\web\{BadRequestHttpException, ErrorAction};
 use common\models\form\LoginForm;
 use frontend\models\{PasswordResetRequestForm, ResetPasswordForm};
@@ -44,7 +45,7 @@ class SiteController extends MainController
         }, $locationIds);
 
         return $this->render('index', [
-            'locations' => $locations
+            'locations' => array_filter($locations)
         ]);
     }
 

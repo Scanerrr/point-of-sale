@@ -11,6 +11,7 @@ namespace frontend\controllers;
 
 use Yii;
 use common\models\{Category, Location};
+use yii\helpers\VarDumper;
 use yii\web\{NotFoundHttpException, ErrorAction};
 use frontend\controllers\access\MainController;
 
@@ -48,9 +49,9 @@ class LocationController extends MainController
 
         Yii::$app->params['location'] = $location; // set variable for cart in layout
 
-        $this->layout = 'afterLocation';
+        $this->layout = 'withCategories';
 
-        $categories = Category::find()->forParent()->all();
+        $categories = Category::find()->active()->forParent()->all();
 
         return $this->render('index', [
             'location' => $location,

@@ -9,7 +9,6 @@ use Yii;
  * This is the model class for table "order".
  *
  * @property int $id
- * @property int $invoice
  * @property int $status
  * @property int $location_id
  * @property int $employee_id
@@ -22,6 +21,7 @@ use Yii;
  * @property Customer $customer
  * @property User $employee
  * @property Location $location
+ * @property OrderPayment[] $orderPayments
  * @property OrderProduct[] $orderProducts
  */
 class Order extends \yii\db\ActiveRecord
@@ -40,7 +40,7 @@ class Order extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['invoice', 'status', 'location_id', 'employee_id', 'customer_id'], 'integer'],
+            [['status', 'location_id', 'employee_id', 'customer_id'], 'integer'],
             [['status', 'location_id', 'employee_id'], 'required'],
             [['total_tax', 'total'], 'number'],
             [['created_at', 'updated_at'], 'safe'],
@@ -57,11 +57,10 @@ class Order extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'invoice' => 'Invoice',
             'status' => 'Status',
             'location_id' => 'Location ID',
             'employee_id' => 'Employee ID',
-            'customer_id' => 'Customer ID',
+            'customer_id' => 'Customer',
             'total_tax' => 'Total Tax',
             'total' => 'Total',
             'created_at' => 'Created At',
@@ -91,6 +90,14 @@ class Order extends \yii\db\ActiveRecord
     public function getLocation()
     {
         return $this->hasOne(Location::className(), ['id' => 'location_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getOrderPayments()
+    {
+        return $this->hasMany(OrderPayment::class, ['order_id' => 'id']);
     }
 
     /**

@@ -18,7 +18,7 @@ use yii\web\Controller;
 class CookieController extends Controller
 {
 
-    public $layout = 'afterLocation';
+    public $layout = 'withCategories';
 
     /**
      * {@inheritdoc}

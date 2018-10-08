@@ -14,7 +14,7 @@ use yii\web\Response;
 use yii\web\NotFoundHttpException;
 use frontend\components\cart\Cart;
 use frontend\controllers\access\CookieController;
-use common\models\{Order, OrderProduct, Product, Location};
+use common\models\{Customer, Order, OrderProduct, PaymentMethod, Product, Location};
 
 /**
  * Class CartController
@@ -22,6 +22,16 @@ use common\models\{Order, OrderProduct, Product, Location};
  */
 class CartController extends CookieController
 {
+
+    public $layout = 'afterLocation';
+
+    public function actionIndex()
+    {
+        return $this->render('index', [
+            'customer' => Customer::findOne(Yii::$app->session->get('customer'))
+        ]);
+    }
+
     /**
      * @return Response
      * @throws NotFoundHttpException
@@ -61,10 +71,12 @@ class CartController extends CookieController
     }
 
     /**
-     * @return Response
+     * @return string|Response
      */
     public function actionCheckout()
     {
+        $model = new Order();
+
         /* @var Cart $cart */
         $cart = Yii::$app->cart;
 
@@ -72,47 +84,54 @@ class CartController extends CookieController
         $location = Yii::$app->params['location'];
 
         $items = $cart->getItems();
-        if (!$items) return $this->redirect(Yii::$app->request->referrer ?? ['/site/index']);
+        if (!$items) return $this->redirect(['/catalog/index']);
 
-        $session = Yii::$app->session;
+        if (Yii::$app->request->isPost) {
 
-        $order = new Order();
-        $order->invoice = 0;
-        $order->status = 0;
-        $order->location_id = $location->id;
-        $order->customer_id = $session->get('customer');
-        $order->employee_id = Yii::$app->user->id;
-        $order->total_tax = 0;
-        $order->total = 0;
-        if ($order->save()) {
 
-            $orderTotal = $orderTotalTax = 0;
-            foreach ($items as $item) {
-                /* @var Product $product */
-                $product = $item['product'];
-                $orderProduct = new OrderProduct();
-                $orderProduct->order_id = $order->id;
-                $orderProduct->product_id = $product->id;
-                $orderProduct->quantity = $item['quantity'];
-                $orderProduct->price = $item['price'];
+            $session = Yii::$app->session;
 
-                $orderTotalTax += $tax = ($item['price'] * $location->tax_rate) / 100; // get tax in $
-                $orderTotal += $total = ($item['price'] + $tax) * $item['quantity'];
-                $orderProduct->tax = $tax;
-                $orderProduct->total = $total;
+            $model->status = 0;
+            $model->location_id = $location->id;
+            $model->customer_id = $session->get('customer');
+            $model->employee_id = Yii::$app->user->id;
+            $model->total_tax = 0;
+            $model->total = 0;
+            if ($model->save()) {
 
-                if (!$orderProduct->save()) Yii::$app->session->setFlash('warning', 'Order was not created');
+                $orderTotal = $orderTotalTax = 0;
+                foreach ($items as $item) {
+                    /* @var Product $product */
+                    $product = $item['product'];
+                    $orderProduct = new OrderProduct();
+                    $orderProduct->order_id = $model->id;
+                    $orderProduct->product_id = $product->id;
+                    $orderProduct->quantity = $item['quantity'];
+                    $orderProduct->price = $item['price'];
+
+                    $orderTotalTax += $tax = ($item['price'] * $location->tax_rate) / 100; // get tax in $
+                    $orderTotal += $total = ($item['price'] + $tax) * $item['quantity'];
+                    $orderProduct->tax = $tax;
+                    $orderProduct->total = $total;
+
+                    if (!$orderProduct->save()) Yii::$app->session->setFlash('warning', 'Order was not created');
+                }
+
+                $model->status = 1;
+                $model->total = $orderTotal;
+                $model->total_tax = $orderTotalTax;
+                $model->save(false);
+                $cart->clear();
+                Yii::$app->session->remove('customer');
+                Yii::$app->session->setFlash('success', 'Order ' . $model->id . ' created');
             }
-
-            $order->status = 1;
-            $order->total = $orderTotal;
-            $order->total_tax = $orderTotalTax;
-            $order->save(false);
-            $cart->clear();
-            Yii::$app->session->remove('customer');
-            Yii::$app->session->setFlash('success', 'Order ' . $order->id . ' created');
+            return $this->redirect(Yii::$app->request->referrer ?? ['/site/index']);
         }
-        return $this->redirect(Yii::$app->request->referrer ?? ['/site/index']);
+        return $this->render('checkout', [
+            'cart' => $cart,
+            'location' => $location,
+            'model' => $model,
+        ]);
     }
 
     public function actionSetPayment()
@@ -122,7 +141,9 @@ class CartController extends CookieController
             $request = Yii::$app->request;
             $data = [
                 'type' => $request->post('type'),
-                'price' => $request->post('price')
+                'price' => $request->post('total-charged'),
+                'card_type' => $request->post('credit-card-type'),
+                'last-digits' => $request->post('last-digits')
             ];
             Yii::$app->session->set('payment', serialize($data));
             $success = true;
@@ -137,12 +158,10 @@ class CartController extends CookieController
      */
     public function actionDelete(int $id)
     {
-        $cart = Yii::$app->cart;
-        $cart->remove($id);
+        Yii::$app->cart->remove($id);
         if (Yii::$app->request->isAjax) {
             Yii::$app->response->format = Response::FORMAT_JSON;
-            // TODO: total with tax
-            return ['total' => Yii::$app->formatter->asCurrency($cart->total)];
+            return ['success' => true];
         }
 
         return $this->redirect(Yii::$app->request->referrer ?? ['/site/index']);
