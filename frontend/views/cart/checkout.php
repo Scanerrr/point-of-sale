@@ -73,7 +73,7 @@ $total = $cart->total + $cart->tax
             <?= Html::hiddenInput('payment_amount', null) ?>
             <?= Html::hiddenInput('payment_method', null) ?>
             <?= Html::hiddenInput('payment_card_number', null) ?>
-
+<!--TODO: MAKE SEVERAL PAYMENTS AND ADD CONDITION IF WHOLE PRICE IS PAID-->
         </div>
     </div>
 
@@ -137,9 +137,8 @@ $form = ActiveForm::begin([
     'size' => 'modal-md',
 ]) ?>
     <div>Total Due <span class="total-due"><?= $total ?></span></div>
-    <div class="payment-by-type">
 
-    </div>
+    <div class="payment-by-type"></div>
 
     <div class="form-group">
         <?= Html::button('Ok', ['class' => 'btn btn-primary assign-payment']) ?>

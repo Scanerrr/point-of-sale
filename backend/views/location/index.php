@@ -1,11 +1,10 @@
 <?php
 
-use yii\helpers\Html;
+use yii\helpers\{Html, Url};
 use yiister\gentelella\widgets\grid\GridView;
 use yii\widgets\Pjax;
-use common\models\Region;
 use kartik\select2\Select2;
-use common\models\Location;
+use common\models\{Location, Region};
 
 /* @var $this yii\web\View */
 /* @var $searchModel common\models\search\LocationSearch */
@@ -28,7 +27,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
+            ['class' => \yii\grid\SerialColumn::class],
 
 //            'id',
 //            'prefix',
@@ -69,7 +68,18 @@ $this->params['breadcrumbs'][] = $this->title;
             //'created_at',
             //'updated_at',
 
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+                'class' => \yii\grid\ActionColumn::class,
+                'buttons' => [
+                    'inventory' => function ($url, $model, $key) {
+                        return Html::a('<span class="glyphicon glyphicon-list-alt"></span>', Url::to(['/inventory/index', 'id' => $key]), [
+                            'title' => 'Inventory',
+                            'aria-label' => 'Inventory',
+                        ]);
+                    }
+                ],
+                'template' => '{inventory} {update} {delete}'
+            ],
         ],
     ]); ?>
     <?php Pjax::end(); ?>

@@ -24,7 +24,7 @@ $this->title = 'Categories';
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
+            ['class' => \yii\grid\SerialColumn::class],
 
             [
                 'attribute' => 'parent_id',
@@ -44,7 +44,7 @@ $this->title = 'Categories';
             ],
 
             [
-                'class' => 'yii\grid\ActionColumn',
+                'class' => \yii\grid\ActionColumn::class,
                 'template' => '{update} {delete}'
             ],
         ],

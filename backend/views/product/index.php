@@ -24,7 +24,7 @@ $this->title = 'Products';
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
+            ['class' => \yii\grid\SerialColumn::class],
             'name',
 //            TODO: fix filter for currency
             'cost_price:currency',
@@ -49,7 +49,7 @@ $this->title = 'Products';
             ],
 
             [
-                'class' => 'yii\grid\ActionColumn',
+                'class' => \yii\grid\ActionColumn::class,
                 'template' => '{update} {delete}'
             ],
         ],

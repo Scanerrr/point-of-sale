@@ -26,7 +26,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
+            ['class' => \yii\grid\SerialColumn::class],
 
             'username',
             'email:email',
@@ -61,7 +61,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
 
             [
-                'class' => 'yii\grid\ActionColumn',
+                'class' => \yii\grid\ActionColumn::class,
                 'buttons' => [
                     'details' => function ($url) {
                         return Html::a('<span class="glyphicon glyphicon-user"></span>', $url, [

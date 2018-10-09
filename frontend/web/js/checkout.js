@@ -1,11 +1,4 @@
 $(() => {
-
-    // payment type
-    $('input[name=payment-type]').on('change', e => {
-        const type = e.target.value
-
-    })
-
     // create customer form
     $('.create_customer-form').on('beforeSubmit', e => {
         e.preventDefault()

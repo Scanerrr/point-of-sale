@@ -23,11 +23,11 @@ $this->title = 'Suppliers';
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
+            ['class' => \yii\grid\SerialColumn::class],
             'name',
             'email:email',
             [
-                'class' => 'yii\grid\ActionColumn',
+                'class' => \yii\grid\ActionColumn::class,
                 'template' => '{update} {delete}'
             ],
         ],
