@@ -10,11 +10,12 @@ namespace frontend\controllers;
 
 
 use Yii;
+use yii\helpers\VarDumper;
 use yii\web\Response;
 use yii\web\NotFoundHttpException;
 use frontend\components\cart\Cart;
 use frontend\controllers\access\CookieController;
-use common\models\{Customer, Order, OrderProduct, PaymentMethod, Product, Location};
+use common\models\{Customer, Order, OrderPayment, OrderProduct, PaymentMethod, Product, Location};
 
 /**
  * Class CartController
@@ -39,8 +40,8 @@ class CartController extends CookieController
     public function actionAdd()
     {
         if (($productId = Yii::$app->request->post('product_id'))
-                && ($price = Yii::$app->request->post('price'))
-                && ($quantity = Yii::$app->request->post('quantity'))) {
+            && ($price = Yii::$app->request->post('price'))
+            && ($quantity = Yii::$app->request->post('quantity'))) {
 
             $product = $this->findModel($productId);
 
@@ -72,6 +73,7 @@ class CartController extends CookieController
 
     /**
      * @return string|Response
+     * @throws \yii\db\Exception
      */
     public function actionCheckout()
     {
@@ -87,46 +89,92 @@ class CartController extends CookieController
         if (!$items) return $this->redirect(['/catalog/index']);
 
         if (Yii::$app->request->isPost) {
+            $post = Yii::$app->request->post();
 
-
-            $session = Yii::$app->session;
+            $model->load($post);
 
             $model->status = 0;
             $model->location_id = $location->id;
-            $model->customer_id = $session->get('customer');
             $model->employee_id = Yii::$app->user->id;
             $model->total_tax = 0;
             $model->total = 0;
-            if ($model->save()) {
 
-                $orderTotal = $orderTotalTax = 0;
-                foreach ($items as $item) {
-                    /* @var Product $product */
-                    $product = $item['product'];
-                    $orderProduct = new OrderProduct();
-                    $orderProduct->order_id = $model->id;
-                    $orderProduct->product_id = $product->id;
-                    $orderProduct->quantity = $item['quantity'];
-                    $orderProduct->price = $item['price'];
+            $transaction = Yii::$app->db->beginTransaction();
 
-                    $orderTotalTax += $tax = ($item['price'] * $location->tax_rate) / 100; // get tax in $
-                    $orderTotal += $total = ($item['price'] + $tax) * $item['quantity'];
-                    $orderProduct->tax = $tax;
-                    $orderProduct->total = $total;
-
-                    if (!$orderProduct->save()) Yii::$app->session->setFlash('warning', 'Order was not created');
-                }
-
-                $model->status = 1;
-                $model->total = $orderTotal;
-                $model->total_tax = $orderTotalTax;
-                $model->save(false);
-                $cart->clear();
-                Yii::$app->session->remove('customer');
-                Yii::$app->session->setFlash('success', 'Order ' . $model->id . ' created');
+            if (!$model->save()) {
+                $transaction->rollback();
+                Yii::$app->session->setFlash('error', 'Order was not created');
             }
-            return $this->redirect(Yii::$app->request->referrer ?? ['/site/index']);
+
+            $orderTotal = $orderTotalTax = 0;
+            foreach ($items as $item) {
+                /* @var Product $product */
+                $product = $item['product'];
+                $orderProduct = new OrderProduct();
+                $orderProduct->order_id = $model->id;
+                $orderProduct->product_id = $product->id;
+                $orderProduct->quantity = $item['quantity'];
+                $orderProduct->price = $item['price'];
+
+                $orderTotalTax += $tax = ($item['price'] * $location->tax_rate) / 100; // get tax in $
+                $orderTotal += $total = ($item['price'] + $tax) * $item['quantity'];
+                $orderProduct->tax = $tax;
+                $orderProduct->total = $total;
+
+                if (!$orderProduct->save()) {
+                    $transaction->rollBack();
+                    Yii::$app->session->setFlash('warning', 'Order product was not created');
+                }
+            }
+
+            $model->status = 1;
+            $model->total = $orderTotal;
+            $model->total_tax = $orderTotalTax;
+
+            if (!$model->save(false)) {
+                $transaction->rollBack();
+                Yii::$app->session->setFlash('error', 'Order was not updated');
+            }
+
+            $orderPayment = new OrderPayment();
+            $orderPayment->order_id = $model->id;
+            $orderPayment->method_id = $post['payment_method'];
+            $orderPayment->amount = $post['payment_amount'];
+
+            $details = [];
+
+            switch ($post->payment_type) {
+                case PaymentMethod::TYPE_CASH:
+                    $orderPayment->method_id = PaymentMethod::find()->select('id')->where(['type_id' => PaymentMethod::TYPE_CASH])->scalar();
+                    $details = [
+                        'tendered' => $post['payment_amount'],
+                        'change' => $orderTotal - $post['payment_amount']
+                    ];
+                    break;
+                case PaymentMethod::TYPE_CREDIT_CARD:
+                    $details = [
+                        'last_digits' => $post['payment_card_number']
+                    ];
+                    break;
+                default:
+                    break;
+            }
+
+            $orderPayment->details = json_encode($details);
+
+            if ($orderPayment->save()) {
+                $transaction->commit();
+                $cart->clear();
+                Yii::$app->session->setFlash('success', 'Order ' . $model->id . ' created');
+
+                return $this->redirect(Yii::$app->request->referrer ?? ['/site/index']);
+            } else {
+                $transaction->rollBack();
+                Yii::$app->session->setFlash('error', 'Order payment was not created');
+            }
+
         }
+
         return $this->render('checkout', [
             'cart' => $cart,
             'location' => $location,
@@ -134,27 +182,38 @@ class CartController extends CookieController
         ]);
     }
 
-    public function actionSetPayment()
+    /**
+     * @return string
+     * @throws NotFoundHttpException
+     */
+    public function actionLoadForm()
     {
-        $success = false;
-        if (Yii::$app->request->isAjax) {
-            $request = Yii::$app->request;
-            $data = [
-                'type' => $request->post('type'),
-                'price' => $request->post('total-charged'),
-                'card_type' => $request->post('credit-card-type'),
-                'last-digits' => $request->post('last-digits')
-            ];
-            Yii::$app->session->set('payment', serialize($data));
-            $success = true;
+        if (!Yii::$app->request->isAjax || !Yii::$app->request->isPost) throw new NotFoundHttpException();
+
+        $type = Yii::$app->request->post('type');
+
+        switch ($type) {
+            case PaymentMethod::TYPE_CASH:
+                $view = '_cash_form';
+                break;
+            case PaymentMethod::TYPE_CREDIT_CARD:
+                $view = '_credit_card_form';
+                break;
+            default:
+                throw new NotFoundHttpException();
+                break;
         }
-        return ['success' => $success];
+
+        $cart = Yii::$app->cart;
+
+        return $this->renderAjax($view, [
+            'total' => $cart->total + $cart->tax
+        ]);
     }
 
     /**
      * @param int $id
      * @return array|Response
-     * @throws \yii\base\InvalidConfigException
      */
     public function actionDelete(int $id)
     {
