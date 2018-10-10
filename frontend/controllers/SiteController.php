@@ -40,6 +40,7 @@ class SiteController extends MainController
     public function actionIndex()
     {
         $locationIds = LocationUser::findAll(['user_id' => Yii::$app->user->id]);
+
         $locations = array_map(function ($locationId) {
             return $locationId->getLocation()->active()->one();
         }, $locationIds);

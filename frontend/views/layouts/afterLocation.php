@@ -2,15 +2,18 @@
 
 /* @var $this \yii\web\View */
 /* @var $cart \frontend\components\cart\Cart */
+/* @var $location \common\models\Location */
 
 /* @var $content string */
 
 use yii\helpers\Html;
 use yii\bootstrap\{Nav, NavBar};
 use frontend\assets\AppAsset;
-use common\widgets\{Categories, Alert, ShoppingCart};
+use common\widgets\{Alert, ShoppingCart};
 
 AppAsset::register($this);
+
+$location = Yii::$app->params['location'];
 ?>
 <?php $this->beginPage() ?>
 <!DOCTYPE html>
@@ -48,6 +51,14 @@ AppAsset::register($this);
                 'options' => ['class' => 'show-cart'],
                 'encode' => false
             ];
+            $menuItems[] = '<li>'
+                . Html::beginForm(['/location/change-status', 'id' => $location->id], 'post', ['class' => 'change-status-form'])
+                . Html::submitButton(
+                    $location->is_open ? 'Open' : 'Closed',
+                    ['class' => 'btn btn-link change-status']
+                )
+                . Html::endForm()
+                . '</li>';
             $menuItems[] = '<li>'
                 . Html::beginForm(['/site/logout'], 'post')
                 . Html::submitButton(

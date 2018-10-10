@@ -104,11 +104,11 @@ a {
 }
 
 .nav {
-  li > form > button.logout {
+  li > form > button {
     padding: 15px;
     border: none;
   }
-  > li > form > button.logout {
+  > li > form > button {
     &:focus {
       text-decoration: none;
       outline: none;
@@ -120,7 +120,7 @@ a {
 }
 
 @media(max-width: 767px) {
-  .nav li > form > button.logout {
+  .nav li > form > button {
     display: block;
     text-align: left;
     width: 100%;

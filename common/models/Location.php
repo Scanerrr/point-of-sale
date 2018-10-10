@@ -21,12 +21,16 @@ use yii\db\ActiveRecord;
  * @property string $address
  * @property string $zip
  * @property string $tax_rate
- * @property int $status
+ * @property int $status 0-disabled, 1-active
+ * @property int $is_open 0-closed, 1-open
  * @property string $created_at
  * @property string $updated_at
  *
  * @property Region $region
+ * @property Inventory[] $inventories
  * @property LocationUser[] $locationUsers
+ * @property LocationWorkHistory[] $locationWorkHistories
+ * @property Order[] $orders
  */
 class Location extends ActiveRecord
 {
@@ -50,8 +54,8 @@ class Location extends ActiveRecord
         return [
             ['status', 'default', 'value' => self::STATUS_ACTIVE],
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED]],
-            [['prefix', 'name', 'region_id', 'email', 'country', 'state'], 'required'],
-            [['region_id', 'status'], 'integer'],
+            [['prefix', 'name', 'region_id', 'email'], 'required'],
+            [['region_id', 'status', 'is_open'], 'integer'],
             [['tax_rate'], 'number', 'min' => 0],
             ['tax_rate', 'default', 'value' => 0],
             [['created_at', 'updated_at'], 'safe'],
@@ -83,9 +87,18 @@ class Location extends ActiveRecord
             'zip' => 'Zip',
             'tax_rate' => 'Tax Rate',
             'status' => 'Status',
+            'is_open' => 'Is Open',
             'created_at' => 'Created At',
             'updated_at' => 'Updated At',
         ];
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getInventories()
+    {
+        return $this->hasMany(Inventory::class, ['location_id' => 'id']);
     }
 
     /**
@@ -102,6 +115,22 @@ class Location extends ActiveRecord
     public function getLocationUsers()
     {
         return $this->hasMany(LocationUser::class, ['location_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getLocationWorkHistories()
+    {
+        return $this->hasMany(LocationWorkHistory::class, ['location_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getOrders()
+    {
+        return $this->hasMany(Order::class, ['location_id' => 'id']);
     }
 
     /**

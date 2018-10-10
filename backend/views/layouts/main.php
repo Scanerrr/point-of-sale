@@ -5,13 +5,14 @@
 /* @var $content string */
 
 use yii\helpers\Html;
+use Scanerrr\Image;
+use common\models\Location;
 use yiister\gentelella\assets\Asset;
-use yiister\gentelella\widgets\Menu;
-use yiister\gentelella\widgets\FlashAlert;
+use yiister\gentelella\widgets\{FlashAlert, Menu};
 
 Asset::register($this);
 $user = Yii::$app->user->identity;
-$avatar = \Scanerrr\Image::resize($user->avatarUrl, 57);
+$avatar = Image::resize($user->avatarUrl, 57);
 ?>
 <?php $this->beginPage() ?>
 <!DOCTYPE html>
@@ -70,6 +71,15 @@ $avatar = \Scanerrr\Image::resize($user->avatarUrl, 57);
                                 'items' => [
                                     ['label' => 'Home', 'url' => '/', 'icon' => 'home'],
                                     ['label' => 'Locations', 'url' => ['location/index'], 'icon' => 'archive'],
+                                    [
+                                        'label' => 'Inventory',
+                                        'url' => ['inventory/index', 'id' => Location::find()
+                                            ->select('id')
+                                            ->orderBy('id')
+                                            ->limit(1)
+                                            ->scalar()],
+                                        'icon' => 'list-alt'
+                                    ],
                                     ['label' => 'Employees', 'url' => ['employee/index'], 'icon' => 'users'],
                                     [
                                         'label' => 'Catalog',

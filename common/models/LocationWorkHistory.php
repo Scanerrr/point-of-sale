@@ -2,29 +2,32 @@
 
 namespace common\models;
 
+use common\models\query\LocationWorkHistoryQuery;
 use Yii;
-use common\models\query\LocationUserQuery;
-use yii\db\ActiveRecord;
-use yii\helpers\VarDumper;
 
 /**
- * This is the model class for table "location_user".
+ * This is the model class for table "location_work_history".
  *
  * @property int $id
  * @property int $location_id
  * @property int $user_id
+ * @property int $event 0-opened, 1-closed
+ * @property string $created_at
  *
  * @property Location $location
  * @property User $user
  */
-class LocationUser extends ActiveRecord
+class LocationWorkHistory extends \yii\db\ActiveRecord
 {
+    const EVENT_OPENED = 0;
+    const EVENT_CLOSED = 1;
+
     /**
      * {@inheritdoc}
      */
     public static function tableName()
     {
-        return 'location_user';
+        return 'location_work_history';
     }
 
     /**
@@ -33,11 +36,12 @@ class LocationUser extends ActiveRecord
     public function rules()
     {
         return [
-            [['location_id', 'user_id'], 'required'],
-            [['location_id', 'user_id'], 'integer'],
+            [['location_id', 'user_id', 'event'], 'required'],
+            [['location_id', 'user_id', 'event'], 'integer'],
+            [['created_at'], 'safe'],
             [['location_id'], 'exist', 'skipOnError' => true, 'targetClass' => Location::class, 'targetAttribute' => ['location_id' => 'id']],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
-            [['location_id', 'user_id'], 'unique', 'targetAttribute' => ['location_id', 'user_id']]
+            [['event'], 'in', 'range' => [self::EVENT_OPENED, self::EVENT_CLOSED]],
         ];
     }
 
@@ -48,8 +52,10 @@ class LocationUser extends ActiveRecord
     {
         return [
             'id' => 'ID',
-            'location_id' => 'Location',
-            'user_id' => 'User',
+            'location_id' => 'Location ID',
+            'user_id' => 'User ID',
+            'event' => 'Event',
+            'created_at' => 'Created At',
         ];
     }
 
@@ -71,29 +77,10 @@ class LocationUser extends ActiveRecord
 
     /**
      * {@inheritdoc}
-     * @return LocationUserQuery the active query used by this AR class.
+     * @return LocationWorkHistoryQuery the active query used by this AR class.
      */
     public static function find()
     {
-        return new LocationUserQuery(get_called_class());
-    }
-
-    /**
-     * save relations between location and user
-     *
-     * @param int $locationID
-     * @param array $employees
-     * @return bool
-     */
-    public static function makeRelation(int $locationID, array $employees)
-    {
-        if (!$employees || !$locationID) return false;
-        foreach ($employees as $employee) {
-            $locationUser = new self();
-            $locationUser->location_id = $locationID;
-            $locationUser->user_id = $employee;
-            $locationUser->save();
-        }
-        return true;
+        return new LocationWorkHistoryQuery(get_called_class());
     }
 }

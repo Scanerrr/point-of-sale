@@ -47,6 +47,7 @@ class InventorySearch extends Inventory
     public function search($params)
     {
         $query = Inventory::find()
+            ->forLocation($params['id'])
             ->with(['product', 'product.category'])
             ->joinWith(['product', 'product.category']);
 
@@ -85,7 +86,7 @@ class InventorySearch extends Inventory
 
         // grid filtering conditions
         $query->andFilterWhere([
-            'id' => $this->id,
+            'inventory.id' => $this->id,
             'location_id' => $this->location_id,
             'product_id' => $this->product_id,
             'quantity' => $this->quantity,

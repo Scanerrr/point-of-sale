@@ -10,11 +10,9 @@ namespace frontend\controllers;
 
 
 use Yii;
-use yii\helpers\VarDumper;
-use yii\web\Response;
-use yii\web\NotFoundHttpException;
 use frontend\components\cart\Cart;
 use frontend\controllers\access\CookieController;
+use yii\web\{NotFoundHttpException, Response};
 use common\models\{Customer, Order, OrderPayment, OrderProduct, PaymentMethod, Product, Location};
 
 /**
@@ -53,13 +51,11 @@ class CartController extends CookieController
 
     /**
      * @param int $id
-     * @return array
+     * @return Response
      * @throws \yii\base\InvalidConfigException
      */
-    public function actionUpdate(int $id)
+    public function actionUpdate(int $id): Response
     {
-        Yii::$app->response->format = Response::FORMAT_JSON;
-
         $cart = Yii::$app->cart;
 
         $quantity = abs(Yii::$app->request->post('quantity'));
@@ -68,7 +64,10 @@ class CartController extends CookieController
 
         $updatedItem = $cart->items[$id];
 
-        return ['success' => true, 'total' => Yii::$app->formatter->asCurrency($updatedItem['price'] * $updatedItem['quantity'])];
+        return $this->asJson([
+            'success' => true,
+            'total' => Yii::$app->formatter->asCurrency($updatedItem['price'] * $updatedItem['quantity'])
+        ]);
     }
 
     /**
@@ -219,8 +218,7 @@ class CartController extends CookieController
     {
         Yii::$app->cart->remove($id);
         if (Yii::$app->request->isAjax) {
-            Yii::$app->response->format = Response::FORMAT_JSON;
-            return ['success' => true];
+            return $this->asJson(['success' => true]);
         }
 
         return $this->redirect(Yii::$app->request->referrer ?? ['/site/index']);

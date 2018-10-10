@@ -14,7 +14,7 @@ class m181001_084723_create_payment_method_table extends Migration
     {
         $this->createTable('payment_method', [
             'id' => $this->primaryKey(),
-            'type_id' => $this->smallInteger(0)->notNull(),
+            'type_id' => $this->smallInteger(0)->notNull()->comment('0-cash, 1-credit card'),
             'name' => $this->string()
         ]);
 

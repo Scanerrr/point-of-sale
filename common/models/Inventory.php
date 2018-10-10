@@ -2,6 +2,7 @@
 
 namespace common\models;
 
+use common\models\query\InventoryQuery;
 use Yii;
 
 /**
@@ -45,8 +46,8 @@ class Inventory extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'location_id' => 'Location ID',
-            'product_id' => 'Product ID',
+            'location_id' => 'Location',
+            'product_id' => 'Product',
             'quantity' => 'Quantity',
         ];
     }
@@ -65,5 +66,14 @@ class Inventory extends \yii\db\ActiveRecord
     public function getProduct()
     {
         return $this->hasOne(Product::class, ['id' => 'product_id']);
+    }
+
+    /**
+     * {@inheritdoc}
+     * @return InventoryQuery the active query used by this AR class.
+     */
+    public static function find()
+    {
+        return new InventoryQuery(get_called_class());
     }
 }

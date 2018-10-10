@@ -19,7 +19,7 @@ class m180925_135434_create_category_table extends Migration
             'name' => $this->string()->notNull(),
             'image' => $this->string()->null(),
 
-            'status' => $this->smallInteger(1)->notNull()->defaultValue(0),
+            'status' => $this->smallInteger(1)->notNull()->defaultValue(0)->comment('0-disabled, 1-active'),
             'created_at' => $this->timestamp()->defaultExpression('CURRENT_TIMESTAMP'),
             'updated_at' => $this->timestamp() . ' on update CURRENT_TIMESTAMP',
         ]);

@@ -4,6 +4,7 @@ namespace backend\controllers;
 
 use Yii;
 use yii\web\NotFoundHttpException;
+use yii2mod\editable\EditableAction;
 use common\models\{Inventory, Location};
 use common\models\search\InventorySearch;
 
@@ -12,6 +13,17 @@ use common\models\search\InventorySearch;
  */
 class InventoryController extends AccessController
 {
+
+    public function actions()
+    {
+        return [
+            'change-quantity' => [
+                'class' => EditableAction::class,
+                'modelClass' => Inventory::class,
+            ],
+        ];
+    }
+
     /**
      * Lists all Inventory models.
      * @param int $id
@@ -20,7 +32,12 @@ class InventoryController extends AccessController
      */
     public function actionIndex(int $id)
     {
+        if (($iSearch = Yii::$app->request->get('InventorySearch')) && isset($iSearch['location_id'])) {
+            return $this->redirect(['index', 'id' => $iSearch['location_id']]);
+        }
+
         $location = Location::find()->where(['id' => $id])->one();
+
         if (!$location) throw new NotFoundHttpException();
 
         $searchModel = new InventorySearch();
@@ -43,7 +60,7 @@ class InventoryController extends AccessController
         $model = new Inventory();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['index']);
+            return $this->redirect(['index', 'id' => $model->location_id]);
         }
 
         return $this->render('create', [
@@ -64,7 +81,7 @@ class InventoryController extends AccessController
 
         if ($model->load(Yii::$app->request->post())) {
             $model->save();
-            return $this->redirect(['index']);
+            return $this->redirect(['index', 'id' => $model->location_id]);
         }
 
         return $this->render('update', [
@@ -83,9 +100,10 @@ class InventoryController extends AccessController
      */
     public function actionDelete(int $id)
     {
-        $this->findModel($id)->delete();
+        $model = $this->findModel($id);
+        $model->delete();
 
-        return $this->redirect(['index']);
+        return $this->redirect(['index', 'id' => $model->location_id]);
     }
 
     /**

@@ -33,7 +33,7 @@ class m180925_135443_create_product_table extends Migration
             'size' => $this->string(64),
             'sku' => $this->string(64),
 
-            'status' => $this->smallInteger(1)->notNull()->defaultValue(0),
+            'status' => $this->smallInteger(1)->notNull()->defaultValue(0)->comment('0-disabled, 1-active'),
             'created_at' => $this->timestamp()->defaultExpression('CURRENT_TIMESTAMP'),
             'updated_at' => $this->timestamp() . ' on update CURRENT_TIMESTAMP',
         ]);

@@ -30,7 +30,9 @@ class m180917_131152_create_location_table extends Migration
 
             'tax_rate' => $this->decimal(5, 2)->defaultValue(0),
 
-            'status' => $this->smallInteger(1)->notNull()->defaultValue(1),
+            'status' => $this->smallInteger(1)->notNull()->defaultValue(1)->comment('0-disabled, 1-active'),
+
+            'is_open' => $this->smallInteger(1)->notNull()->defaultValue(0)->comment('0-closed, 1-open'),
 
             'created_at' => $this->timestamp()->defaultExpression('CURRENT_TIMESTAMP'),
             'updated_at' => $this->timestamp() . ' on update CURRENT_TIMESTAMP',

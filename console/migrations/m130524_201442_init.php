@@ -29,8 +29,8 @@ class m130524_201442_init extends Migration
             'zip' => $this->string(5),
             'address' => $this->string(),
 
-            'role' => $this->smallInteger(1)->notNull()->defaultValue(1),
-            'status' => $this->smallInteger(1)->notNull()->defaultValue(1),
+            'role' => $this->smallInteger(1)->notNull()->defaultValue(1)->comment('1-user, 2-manager, 3-admin'),
+            'status' => $this->smallInteger(1)->notNull()->defaultValue(1)->comment('0-deleted, 1-active'),
 
             'salary_settings' => $this->json(),
 

@@ -4,17 +4,16 @@ namespace frontend\controllers;
 
 use Yii;
 use yii\web\Response;
-use common\models\Customer;
 use frontend\models\CreateCustomerForm;
 use frontend\controllers\access\CookieController;
 
 class CustomerController extends CookieController
 {
-
-    public function actionCreate(): array
+    /**
+     * @return Response
+     */
+    public function actionCreate(): Response
     {
-        Yii::$app->response->format = Response::FORMAT_JSON;
-
         $model = new CreateCustomerForm();
 
         $response = ['success' => false, 'customer' => null];
@@ -27,19 +26,6 @@ class CustomerController extends CookieController
             }
         }
 
-        return $response;
-    }
-
-    public function actionAssign(int $id): array
-    {
-        Yii::$app->response->format = Response::FORMAT_JSON;
-        $response = ['success' => false, 'customer' => null];
-
-        if ($customer = Customer::findOne($id)) {
-            $response = ['success' => true, 'customer' => $customer];
-            Yii::$app->session->set('customer', $customer->id);
-        }
-
-        return $response;
+        return $this->asJson($response);
     }
 }
