@@ -48,11 +48,4 @@ class MainController extends Controller
             ],
         ];
     }
-
-    protected function _clear()
-    {
-        Yii::$app->session->remove('payment');
-        Yii::$app->session->remove('customer');
-        Yii::$app->cart->clear();
-    }
 }

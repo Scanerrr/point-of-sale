@@ -14,8 +14,6 @@ class CatalogController extends CookieController
      */
     public function actionCategory(int $id)
     {
-        $location = Yii::$app->params['location'];
-
         $categories = Category::find()->active()->forParent($id)->orderBy('name')->all();
         $products = Product::find()->active()->forCategory($id)->orderBy('name')->all();
 

@@ -9,12 +9,23 @@ use common\models\search\UserSearch;
 use yii\helpers\FileHelper;
 use yii\web\NotFoundHttpException;
 use yii\web\UploadedFile;
+use yii2mod\editable\EditableAction;
 
 /**
  * EmployeeController implements the CRUD actions for User model.
  */
 class EmployeeController extends AccessController
 {
+
+    public function actions()
+    {
+        return [
+            'change-status' => [
+                'class' => EditableAction::class,
+                'modelClass' => User::class,
+            ],
+        ];
+    }
 
     /**
      * Lists all User models.

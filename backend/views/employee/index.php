@@ -4,6 +4,7 @@ use yii\helpers\Html;
 use yiister\gentelella\widgets\grid\GridView;
 use yii\widgets\Pjax;
 use common\models\User;
+use yii2mod\editable\EditableColumn;
 
 /* @var $this yii\web\View */
 /* @var $searchModel common\models\search\UserSearch */
@@ -49,6 +50,15 @@ $this->params['breadcrumbs'][] = $this->title;
                 }
             ],
             [
+                'class' => EditableColumn::class,
+                'url' => ['change-status'],
+                'type' => 'select',
+                'editableOptions' => function ($model) {
+                    return [
+                        'source' => [User::STATUS_ACTIVE => 'Active', User::STATUS_DELETED => 'Disabled'],
+                        'value' => $model->status,
+                    ];
+                },
                 'filter' => Html::dropDownList('UserSearch[status]', $searchModel->status, [
                     '' => 'All',
                     User::STATUS_ACTIVE => 'Active',

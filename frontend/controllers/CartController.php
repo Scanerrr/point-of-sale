@@ -26,9 +26,7 @@ class CartController extends CookieController
 
     public function actionIndex()
     {
-        return $this->render('index', [
-            'customer' => Customer::findOne(Yii::$app->session->get('customer'))
-        ]);
+        return $this->render('index');
     }
 
     /**

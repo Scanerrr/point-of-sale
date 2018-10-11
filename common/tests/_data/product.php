@@ -27,7 +27,7 @@ for ($i = 1; $i <= 20; $i++) {
         'barcode' => 'ID-' . $faker->ean8,
         'size' => null,
         'sku' => $faker->ean8,
-        'status' => rand(0, 1),
+        'status' => $i % 2 === 0 ? rand(0, 1) : 1,
         'created_at' => date('Y-m-d H:i:s', strtotime('-' . $i * 2 . ' day')),
         'updated_at' => null,
 

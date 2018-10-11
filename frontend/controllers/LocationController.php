@@ -10,24 +10,12 @@ namespace frontend\controllers;
 
 
 use Yii;
-use common\models\{Category, Location, LocationWorkHistory};
-use yii\helpers\VarDumper;
-use yii\web\{NotFoundHttpException, ErrorAction};
+use yii\web\{NotFoundHttpException, Response};
 use frontend\controllers\access\MainController;
+use common\models\{Category, Location, LocationWorkHistory, User};
 
 class LocationController extends MainController
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function actions()
-    {
-        return [
-            'error' => [
-                'class' => ErrorAction::class,
-            ],
-        ];
-    }
 
     /**
      * Displays homepage.
@@ -43,7 +31,7 @@ class LocationController extends MainController
         $session = Yii::$app->session;
 
         // TODO: save cart data to temp var to resurrect when open again
-        if ($location->id !== $session->get('user.location')) $this->_clear();
+        if ($location->id !== $session->get('user.location')) Yii::$app->cart->clear();;
 
         $session->set('user.location', $location->id);
 
@@ -84,8 +72,10 @@ class LocationController extends MainController
      * @return Location the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findLocationModel(int $id): Location
+    protected function findLocationModel(int $id = null): Location
     {
+        if (!$id) $id = Yii::$app->session->get('user.location');
+
         if (($model = Location::find()->where(['id' => $id])->active()->one()) !== null) {
             return $model;
         }
@@ -93,22 +83,41 @@ class LocationController extends MainController
         throw new NotFoundHttpException('The requested page does not exist.');
     }
 
-    public function actionChangeStatus(int $id)
+    /**
+     * @return \yii\web\Response
+     * @throws NotFoundHttpException
+     */
+    public function actionChangeStatus(): Response
     {
-        $location = $this->findLocationModel($id);
+        $location = $this->findLocationModel();
 
         $location->is_open = (int) !$location->is_open;
 
         if (!$location->save()) return $this->asJson(['error' => $location->getErrors()]);
 
-        $locationHistory = new LocationWorkHistory();
-        $locationHistory->location_id = $location->id;
-        $locationHistory->user_id = Yii::$app->user->id;
-        $locationHistory->event = $location->is_open;
+//        $error = LocationWorkHistory::saveHistory($location->id, Yii::$app->user->id, $location->is_open);
 
-        if (!$locationHistory->save()) return $this->asJson(['error' => $locationHistory->getErrors()]);
+        return $this->asJson(['error' => [], 'status' => $location->is_open]);
+    }
 
+    /**
+     * @return Response
+     * @throws NotFoundHttpException
+     */
+    public function actionClock(): Response
+    {
+        $location = $this->findLocationModel();
 
-        return $this->asJson(['error' => false, 'status' => $location->is_open]);
+        if (!$location->is_open) return $this->asJson(['error' => 'Location must be open to work there']);
+
+        /* @var $user User */
+        $user = Yii::$app->user->identity;
+        $user->is_working = (int) !$user->is_working;
+
+        if (!$user->save()) return $this->asJson(['error' => $user->getErrors()]);
+
+//        $error = LocationWorkHistory::saveHistory($location->id, $user->id, $user->is_working);
+
+        return $this->asJson(['error' => [], 'status' => $user->is_working]);
     }
 }

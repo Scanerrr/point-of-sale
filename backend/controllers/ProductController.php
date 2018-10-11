@@ -5,16 +5,25 @@ namespace backend\controllers;
 use Yii;
 use common\models\Product;
 use common\models\search\ProductSearch;
-use backend\controllers\AccessController;
 use yii\web\NotFoundHttpException;
-use yii\filters\VerbFilter;
 use yii\web\UploadedFile;
+use yii2mod\editable\EditableAction;
 
 /**
  * ProductController implements the CRUD actions for Product model.
  */
 class ProductController extends AccessController
 {
+    public function actions()
+    {
+        return [
+            'change-status' => [
+                'class' => EditableAction::class,
+                'modelClass' => Product::class,
+            ],
+        ];
+    }
+
     /**
      * Lists all Product models.
      * @return mixed

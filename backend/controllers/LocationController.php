@@ -9,12 +9,23 @@ use common\models\search\LocationSearch;
 use yii\helpers\ArrayHelper;
 use yii\helpers\VarDumper;
 use yii\web\NotFoundHttpException;
+use yii2mod\editable\EditableAction;
 
 /**
  * LocationController implements the CRUD actions for Location model.
  */
 class LocationController extends AccessController
 {
+
+    public function actions()
+    {
+        return [
+            'change-status' => [
+                'class' => EditableAction::class,
+                'modelClass' => Location::class,
+            ],
+        ];
+    }
 
     /**
      * Lists all Location models.

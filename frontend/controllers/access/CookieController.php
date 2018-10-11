@@ -13,6 +13,7 @@ use Yii;
 use common\components\AccessRule;
 use common\models\Location;
 use yii\filters\{AccessControl, VerbFilter};
+use yii\helpers\VarDumper;
 use yii\web\Controller;
 
 class CookieController extends Controller

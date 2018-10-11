@@ -58,7 +58,7 @@ for ($i = 2; $i <= 11; $i++) {
         'zip' => rand(10000, 99999),
         'address' => $faker->streetAddress,
         'role' => rand(1, 3),
-        'status' => rand(0, 1),
+        'status' => $i % 2 === 0 ? rand(0, 1) : 1,
         'salary_settings' => getSalarySettings(),
         'created_at' => date('Y-m-d H:i:s', strtotime('-' . $i * 2 . ' day')),
         'updated_at' => null,

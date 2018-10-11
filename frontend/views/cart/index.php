@@ -7,8 +7,6 @@
  */
 
 /* @var $cart \frontend\components\cart\Cart */
-/* @var $customer \common\models\Customer */
-
 /* @var $this \yii\web\View */
 
 use Scanerrr\Image;

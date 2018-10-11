@@ -18,12 +18,8 @@ class CustomerController extends CookieController
 
         $response = ['success' => false, 'customer' => null];
 
-        if ($model->load(Yii::$app->request->post())) {
-            if ($customer = $model->create()) {
-                $response = ['success' => true, 'customer' => $customer];
-
-                Yii::$app->session->set('customer', $customer->id);
-            }
+        if ($model->load(Yii::$app->request->post()) && $customer = $model->create()) {
+            $response = ['success' => true, 'customer' => $customer];
         }
 
         return $this->asJson($response);

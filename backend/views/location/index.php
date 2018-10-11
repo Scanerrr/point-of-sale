@@ -5,6 +5,7 @@ use yiister\gentelella\widgets\grid\GridView;
 use yii\widgets\Pjax;
 use kartik\select2\Select2;
 use common\models\{Location, Region};
+use yii2mod\editable\EditableColumn;
 
 /* @var $this yii\web\View */
 /* @var $searchModel common\models\search\LocationSearch */
@@ -51,22 +52,23 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attribute' => 'region.name',
             ],
             'email:email',
-            //'phone',
-            //'country',
-            //'state',
-            //'city',
-            //'address',
-            //'zip',
-            //'tax_rate',
+
             [
+                'class' => EditableColumn::class,
+                'url' => ['change-status'],
+                'type' => 'select',
+                'editableOptions' => function ($model) {
+                    return [
+                        'source' => [Location::STATUS_ACTIVE => 'Active', Location::STATUS_DELETED => 'Disabled'],
+                        'value' => $model->status,
+                    ];
+                },
                 'filter' => Html::dropDownList('LocationSearch[status]', $searchModel->status, ['' => 'All', Location::STATUS_ACTIVE => 'Active', Location::STATUS_DELETED => 'Disabled'], ['class' => 'form-control']),
                 'attribute' => 'status',
                 'value' => function($model) {
                     return $model->status === Location::STATUS_ACTIVE ? 'Active' : 'Disabled';
                 }
             ],
-            //'created_at',
-            //'updated_at',
 
             [
                 'class' => \yii\grid\ActionColumn::class,

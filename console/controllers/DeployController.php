@@ -16,12 +16,15 @@ class DeployController extends Controller
 {
     public function actionIndex()
     {
-        Yii::$app->runAction('migrate');
+        Yii::$app->runAction('migrate', ['interactive' => false]);
     }
 
     public function actionAll()
     {
         $this->actionIndex();
-        Yii::$app->runAction('fixture', ['*']);
+        Yii::$app->runAction('fixture', [
+            '*',
+            'interactive' => false
+        ]);
     }
 }

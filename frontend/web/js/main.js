@@ -13,8 +13,28 @@ $('.change-status-form').on('submit', e => {
         dataType: 'json'
     })
         .done(({error, status}) => {
-            if (!error) {
-                $('.change-status').text(status ? 'Open' : 'Closed')
+            if (error.length > 0) {
+                console.error(error)
+            } else {
+                pjaxReload('.list-location-menu')
+            }
+        })
+        .fail(failHandler)
+})
+
+$('.clock-form').on('submit', e => {
+    e.preventDefault()
+    const $this = $(e.currentTarget)
+    $.ajax({
+        type: $this.attr('method'),
+        url: $this.attr('action'),
+        dataType: 'json'
+    })
+        .done(({error, status}) => {
+            if (error.length > 0) {
+                console.error(error)
+            } else {
+                pjaxReload('.list-location-menu')
             }
         })
         .fail(failHandler)

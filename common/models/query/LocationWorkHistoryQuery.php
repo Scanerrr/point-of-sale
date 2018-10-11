@@ -9,9 +9,13 @@ namespace common\models\query;
  */
 class LocationWorkHistoryQuery extends \yii\db\ActiveQuery
 {
-    public function forEvent(int $event)
+    /**
+     * @param int $event
+     * @return LocationWorkHistoryQuery
+     */
+    public function forEvent(int $event): LocationWorkHistoryQuery
     {
-        return $this->andWhere(['event' => $event]);
+        return $this->andWhere(['event_id' => $event]);
     }
 
     /**

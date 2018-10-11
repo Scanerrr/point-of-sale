@@ -5,16 +5,25 @@ namespace backend\controllers;
 use Yii;
 use common\models\Category;
 use common\models\search\CategorySearch;
-use backend\controllers\AccessController;
 use yii\web\NotFoundHttpException;
-use yii\filters\VerbFilter;
 use yii\web\UploadedFile;
+use yii2mod\editable\EditableAction;
 
 /**
  * CategoryController implements the CRUD actions for Category model.
  */
 class CategoryController extends AccessController
 {
+
+    public function actions()
+    {
+        return [
+            'change-status' => [
+                'class' => EditableAction::class,
+                'modelClass' => Category::class,
+            ],
+        ];
+    }
 
     /**
      * Lists all Category models.
