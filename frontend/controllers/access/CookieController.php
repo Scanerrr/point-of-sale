@@ -13,7 +13,6 @@ use Yii;
 use common\components\AccessRule;
 use common\models\Location;
 use yii\filters\{AccessControl, VerbFilter};
-use yii\helpers\VarDumper;
 use yii\web\Controller;
 
 class CookieController extends Controller
@@ -36,17 +35,21 @@ class CookieController extends Controller
                     [
                         'allow' => true,
                         'roles' => ['@'],
-                        'matchCallback' => function ($rule, $action) {
+                        'matchCallback' => function () {
                             // allow only if user is assigned to location
-                            if (($locationId = Yii::$app->session->get('user.location')) !== null) {
-                                if (($model = Location::find()->where(['id' => $locationId])->active()->one()) !== null) {
-                                    if ($model->getLocationUsers()->forUser(Yii::$app->user->id)->one() !== null) {
-                                        Yii::$app->params['location'] = $model;
-                                        return true;
-                                    }
-                                }
-                            }
-                            return false;
+                            $locationId = Yii::$app->session->get('user.location');
+                            if (!$locationId) return false;
+
+                            $location = Location::find()->where(['id' => $locationId])->active()->one();
+                            if (!$location) return false;
+
+                            $locationUser = $location->getLocationUsers()->forUser(Yii::$app->user->id)->one();
+                            if (!$locationUser) return false;
+
+                            Yii::$app->params['location'] = $location;
+                            Yii::$app->params['location_user'] = $locationUser;
+
+                            return true;
                         }
                     ],
                 ],
