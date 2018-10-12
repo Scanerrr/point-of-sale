@@ -16,6 +16,11 @@ class LocationQuery extends \yii\db\ActiveQuery
         return $this->andWhere(['status' => Location::STATUS_ACTIVE]);
     }
 
+    public function isOpen()
+    {
+        return $this->active()->andWhere(['is_open' => Location::STATUS_ACTIVE]);
+    }
+
     /**
      * {@inheritdoc}
      * @return \common\models\Location[]|array

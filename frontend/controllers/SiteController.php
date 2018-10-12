@@ -1,13 +1,13 @@
 <?php
 namespace frontend\controllers;
 
+use common\models\Location;
 use common\models\LocationUser;
 use frontend\controllers\access\MainController;
 use Yii;
 use yii\base\InvalidArgumentException;
 use yii\captcha\CaptchaAction;
-use yii\helpers\VarDumper;
-use yii\web\{BadRequestHttpException, ErrorAction};
+use yii\web\{BadRequestHttpException, ErrorAction, ForbiddenHttpException};
 use common\models\form\LoginForm;
 use frontend\models\{PasswordResetRequestForm, ResetPasswordForm};
 
@@ -16,6 +16,14 @@ use frontend\models\{PasswordResetRequestForm, ResetPasswordForm};
  */
 class SiteController extends MainController
 {
+
+    public function behaviors(): array
+    {
+        $behaviors = parent::behaviors();
+        $behaviors['verbs']['actions']['assign-location'] = ['post'];
+        return $behaviors;
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -133,5 +141,28 @@ class SiteController extends MainController
         return $this->render('resetPassword', [
             'model' => $model,
         ]);
+    }
+
+    /**
+     * @param int $id
+     * @return \yii\web\Response
+     * @throws ForbiddenHttpException
+     */
+    public function actionAssignLocation(int $id)
+    {
+        $location = Location::find()->where(['id' => $id])->active()->one();
+
+        // check if user belongs to location
+        if (!$location || !$location->getLocationUsers()->forUser(Yii::$app->user->id)->one()) {
+            throw new ForbiddenHttpException('User does not belong to this location');
+        }
+
+        $session = Yii::$app->session;
+
+        if ($location->id !== $session->get('user.location')) Yii::$app->cart->clear();;
+
+        $session->set('user.location', $location->id);
+
+        return $this->redirect(['/location/index']);
     }
 }

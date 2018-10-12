@@ -13,6 +13,7 @@ use yii\helpers\VarDumper;
  * @property int $id
  * @property int $location_id
  * @property int $user_id
+ * @property int $is_working 0-not working, 1-working
  *
  * @property Location $location
  * @property User $user
@@ -35,6 +36,7 @@ class LocationUser extends ActiveRecord
         return [
             [['location_id', 'user_id'], 'required'],
             [['location_id', 'user_id'], 'integer'],
+            [['is_working'], 'boolean'],
             [['location_id'], 'exist', 'skipOnError' => true, 'targetClass' => Location::class, 'targetAttribute' => ['location_id' => 'id']],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
             [['location_id', 'user_id'], 'unique', 'targetAttribute' => ['location_id', 'user_id']]
@@ -50,6 +52,7 @@ class LocationUser extends ActiveRecord
             'id' => 'ID',
             'location_id' => 'Location',
             'user_id' => 'User',
+            'is_working' => 'User Working Status',
         ];
     }
 

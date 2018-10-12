@@ -10,34 +10,33 @@ namespace frontend\controllers;
 
 
 use Yii;
-use yii\web\{NotFoundHttpException, Response};
-use frontend\controllers\access\MainController;
-use common\models\{Category, Location, LocationWorkHistory, User};
+use yii\helpers\VarDumper;
+use yii\web\{ForbiddenHttpException, NotFoundHttpException, Response};
+use frontend\controllers\access\CookieController;
+use common\models\{Category, Location, LocationUser, LocationWorkHistory, User};
 
-class LocationController extends MainController
+class LocationController extends CookieController
 {
+
+    public function behaviors(): array
+    {
+        $behaviors = parent::behaviors();
+        $behaviors['verbs']['actions']['change-status'] = ['post'];
+        $behaviors['verbs']['actions']['clock'] = ['post'];
+        return $behaviors;
+    }
 
     /**
      * Displays homepage.
      *
-     * @param int $id
      * @return string
-     * @throws NotFoundHttpException
+     * @throws ForbiddenHttpException
      */
-    public function actionIndex(int $id)
+    public function actionIndex()
     {
-        $location = $this->findLocationModelForUser($id, Yii::$app->user->id);
+        $location = Yii::$app->params['location'];
 
-        $session = Yii::$app->session;
-
-        // TODO: save cart data to temp var to resurrect when open again
-        if ($location->id !== $session->get('user.location')) Yii::$app->cart->clear();;
-
-        $session->set('user.location', $location->id);
-
-        Yii::$app->params['location'] = $location; // set variable for cart in layout
-
-        $this->layout = 'withCategories';
+        if (!$location) throw new ForbiddenHttpException('Location not found!');
 
         $categories = Category::find()->active()->forParent()->all();
 
@@ -95,9 +94,7 @@ class LocationController extends MainController
 
         if (!$location->save()) return $this->asJson(['error' => $location->getErrors()]);
 
-//        $error = LocationWorkHistory::saveHistory($location->id, Yii::$app->user->id, $location->is_open);
-
-        return $this->asJson(['error' => [], 'status' => $location->is_open]);
+        return $this->asJson(['error' => []]);
     }
 
     /**
@@ -111,13 +108,39 @@ class LocationController extends MainController
         if (!$location->is_open) return $this->asJson(['error' => 'Location must be open to work there']);
 
         /* @var $user User */
+        /* @var $locationUser LocationUser */
         $user = Yii::$app->user->identity;
-        $user->is_working = (int) !$user->is_working;
+        $locationUser = $user->getLocationUsers()->forLocation($location->id)->one();
+        $locationUser->is_working = (int) !$locationUser->is_working;
 
-        if (!$user->save()) return $this->asJson(['error' => $user->getErrors()]);
+        /*TODO: redo change user to locationuser*/
+        VarDumper::dump($locationUser,10,1); die();
 
-//        $error = LocationWorkHistory::saveHistory($location->id, $user->id, $user->is_working);
+        if (!$locationUser->save()) return $this->asJson(['error' => $locationUser->getErrors()]);
+        die();
 
-        return $this->asJson(['error' => [], 'status' => $user->is_working]);
+        $workedTime = null;
+        if (!$locationUser->is_working) {
+            $workStart = $locationUser->getLocationWorkHistories()
+                ->select('created_at')
+                ->forEvent(LocationWorkHistory::EVENT_WORKING)
+                ->orderBy('created_at DESC')
+                ->scalar();
+            $now = new \DateTime();
+            $interval = (new \DateTime($workStart))
+                ->diff($now);
+            $workedTime = $interval->format('%h Hours %i Minutes %s Seconds');
+        } else {
+            // check if user is clocked in from another location...
+            $signedLocation = $user->getLocationWorkHistories()
+                ->forEvent(LocationWorkHistory::EVENT_WORKING)
+                ->orderBy('created_at DESC')
+                ->one();
+            if ($location->id !== $signedLocation->location_id) {
+                return $this->asJson(['error' => 'User Clocked In from another location']);
+            }
+        }
+
+        return $this->asJson(['error' => [], 'workedTime' => $workedTime]);
     }
 }

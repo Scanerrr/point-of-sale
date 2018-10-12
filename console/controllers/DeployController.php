@@ -10,10 +10,18 @@ namespace console\controllers;
 
 
 use Yii;
+use yii\base\Module;
 use yii\console\Controller;
 
 class DeployController extends Controller
 {
+
+    public function __construct(string $id, Module $module, array $config = [])
+    {
+        $this->flushSchemaCache();
+        parent::__construct($id, $module, $config);
+    }
+
     public function actionIndex()
     {
         Yii::$app->runAction('migrate', ['interactive' => false]);
@@ -26,5 +34,18 @@ class DeployController extends Controller
             '*',
             'interactive' => false
         ]);
+    }
+
+    protected function flushSchemaCache()
+    {
+        Yii::$app->runAction('cache/flush-schema', [
+            'interactive' => false
+        ]);
+    }
+
+
+    public function __destruct()
+    {
+        $this->flushSchemaCache();
     }
 }

@@ -29,6 +29,7 @@
     "kartik-v/yii2-grid": "@dev",
     "scanerrr/yii2-local-image": "dev-master",
     "ext-json": "*",
+    "ext-gd": "*",
     "kartik-v/yii2-popover-x": "dev-master",
     "yii2mod/yii2-editable": "*"
   },

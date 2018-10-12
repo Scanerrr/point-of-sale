@@ -9,9 +9,30 @@ namespace common\models\query;
  */
 class LocationUserQuery extends \yii\db\ActiveQuery
 {
-    public function forUser(int $user_id)
+    /**
+     * @param int $userId
+     * @return LocationUserQuery
+     */
+    public function forUser(int $userId)
     {
-        return $this->andWhere(['user_id' => $user_id]);
+        return $this->andWhere(['user_id' => $userId]);
+    }
+
+    /**
+     * @param int $locationId
+     * @return LocationUserQuery
+     */
+    public function forLocation(int $locationId)
+    {
+        return $this->andWhere(['location_id' => $locationId]);
+    }
+
+    /**
+     * @return LocationUserQuery
+     */
+    public function isWorking()
+    {
+        return $this->andWhere(['is_working' => 1]);
     }
 
     /**

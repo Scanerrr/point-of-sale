@@ -32,8 +32,6 @@ class m130524_201442_init extends Migration
             'role' => $this->smallInteger(1)->notNull()->defaultValue(1)->comment('1-user, 2-manager, 3-admin'),
             'status' => $this->smallInteger(1)->notNull()->defaultValue(1)->comment('0-deleted, 1-active'),
 
-            'is_working' => $this->smallInteger(1)->notNull()->defaultValue(0)->comment('0-not working, 1-working'),
-
             'salary_settings' => $this->json(),
 
             'created_at' => $this->timestamp()->defaultExpression('CURRENT_TIMESTAMP'),

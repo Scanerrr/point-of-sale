@@ -15,6 +15,7 @@ use common\widgets\{Alert, ShoppingCart};
 AppAsset::register($this);
 
 $location = Yii::$app->params['location'];
+$locationUser = Yii::$app->params['location_user'];
 $user = Yii::$app->user->identity;
 ?>
 <?php $this->beginPage() ?>
@@ -56,7 +57,7 @@ $user = Yii::$app->user->identity;
             $menuItems[] = '<li>'
                 . Html::beginForm(['/location/change-status'], 'post', ['class' => 'change-status-form'])
                 . Html::submitButton(
-                    !$location->is_open ? '<i class="fa fa-unlock"></i> to Open' : '<i class="fa fa-lock"></i> To Close',
+                    !$location->is_open ? '<i class="fa fa-unlock"></i> Open' : '<i class="fa fa-lock"></i> Close',
                     ['class' => 'btn btn-link']
                 )
                 . Html::endForm()
@@ -65,7 +66,7 @@ $user = Yii::$app->user->identity;
                 $menuItems[] = '<li>'
                     . Html::beginForm(['/location/clock'], 'post', ['class' => 'clock-form'])
                     . Html::submitButton('<i class="fa fa-clock-o"></i> Clock'
-                        . ($user->is_working ? '-Out' : '-In'),
+                        . ($locationUser->is_working ? '-Out' : '-In'),
                         ['class' => 'btn btn-link']
                     )
                     . Html::endForm()

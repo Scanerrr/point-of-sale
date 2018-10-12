@@ -2,6 +2,8 @@
 
 namespace common\models\query;
 
+use common\models\LocationWorkHistory;
+
 /**
  * This is the ActiveQuery class for [[\common\models\LocationWorkHistory]].
  *
@@ -10,12 +12,28 @@ namespace common\models\query;
 class LocationWorkHistoryQuery extends \yii\db\ActiveQuery
 {
     /**
-     * @param int $event
+     * @param int|array $event
      * @return LocationWorkHistoryQuery
      */
-    public function forEvent(int $event): LocationWorkHistoryQuery
+    public function forEvent($event): LocationWorkHistoryQuery
     {
         return $this->andWhere(['event_id' => $event]);
+    }
+
+    /**
+     * @return LocationWorkHistoryQuery
+     */
+    public function forLocation(): LocationWorkHistoryQuery
+    {
+        return $this->forEvent([LocationWorkHistory::EVENT_OPENED, LocationWorkHistory::EVENT_CLOSED]);
+    }
+
+    /**
+     * @return LocationWorkHistoryQuery
+     */
+    public function forWork(): LocationWorkHistoryQuery
+    {
+        return $this->forEvent([LocationWorkHistory::EVENT_WORKING, LocationWorkHistory::EVENT_NOT_WORKING]);
     }
 
     /**

@@ -12,7 +12,7 @@ $('.change-status-form').on('submit', e => {
         url: $this.attr('action'),
         dataType: 'json'
     })
-        .done(({error, status}) => {
+        .done(({error}) => {
             if (error.length > 0) {
                 console.error(error)
             } else {
@@ -30,10 +30,11 @@ $('.clock-form').on('submit', e => {
         url: $this.attr('action'),
         dataType: 'json'
     })
-        .done(({error, status}) => {
+        .done(({error, workedTime}) => {
             if (error.length > 0) {
                 console.error(error)
             } else {
+                workedTime && alert('You worked for: ' + workedTime)
                 pjaxReload('.list-location-menu')
             }
         })
