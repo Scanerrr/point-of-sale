@@ -275,12 +275,4 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return $this->hasMany(LocationWorkHistory::class, ['user_id' => 'id']);
     }
-
-    public function afterSave($insert, $changedAttributes)
-    {
-        if (!$insert && isset($changedAttributes['is_working']) && $locationId = Yii::$app->session->get('user.location')) {
-            LocationWorkHistory::saveHistory($locationId, $this->id, $this->is_working, 'user');
-        }
-        parent::afterSave($insert, $changedAttributes);
-    }
 }

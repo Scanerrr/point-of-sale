@@ -99,4 +99,17 @@ class LocationUser extends ActiveRecord
         }
         return true;
     }
+
+
+    /**
+     * @param bool $insert
+     * @param array $changedAttributes
+     */
+    public function afterSave($insert, $changedAttributes)
+    {
+        if (!$insert && isset($changedAttributes['is_working'])) {
+            LocationWorkHistory::saveHistory($this->location_id, $this->user_id, $this->is_working, 'user');
+        }
+        parent::afterSave($insert, $changedAttributes);
+    }
 }

@@ -10,9 +10,8 @@ namespace frontend\controllers;
 
 
 use Yii;
-use yii\helpers\VarDumper;
-use yii\web\{ForbiddenHttpException, NotFoundHttpException, Response};
 use frontend\controllers\access\CookieController;
+use yii\web\{ForbiddenHttpException, NotFoundHttpException, Response};
 use common\models\{Category, Location, LocationUser, LocationWorkHistory, User};
 
 class LocationController extends CookieController
@@ -75,6 +74,8 @@ class LocationController extends CookieController
     {
         if (!$id) $id = Yii::$app->session->get('user.location');
 
+        if (isset(Yii::$app->params['location']) && Yii::$app->params['location']->id === $id) return Yii::$app->params['location'];
+
         if (($model = Location::find()->where(['id' => $id])->active()->one()) !== null) {
             return $model;
         }
@@ -111,17 +112,27 @@ class LocationController extends CookieController
         /* @var $locationUser LocationUser */
         $user = Yii::$app->user->identity;
         $locationUser = $user->getLocationUsers()->forLocation($location->id)->one();
+
+        // Check if user is signed in another location
+        if (!$locationUser->is_working) {
+            $signedLocation = $user->getLocationUsers()
+                ->forLocation($location->id, true)
+                ->isWorking()
+                ->one();
+
+            // If signed then not clock in
+            if ($signedLocation !== null) {
+                return $this->asJson(['error' => 'User Clocked In from another location']);
+            }
+        }
+
         $locationUser->is_working = (int) !$locationUser->is_working;
 
-        /*TODO: redo change user to locationuser*/
-        VarDumper::dump($locationUser,10,1); die();
-
         if (!$locationUser->save()) return $this->asJson(['error' => $locationUser->getErrors()]);
-        die();
 
         $workedTime = null;
         if (!$locationUser->is_working) {
-            $workStart = $locationUser->getLocationWorkHistories()
+            $workStart = $user->getLocationWorkHistories()
                 ->select('created_at')
                 ->forEvent(LocationWorkHistory::EVENT_WORKING)
                 ->orderBy('created_at DESC')
@@ -130,15 +141,6 @@ class LocationController extends CookieController
             $interval = (new \DateTime($workStart))
                 ->diff($now);
             $workedTime = $interval->format('%h Hours %i Minutes %s Seconds');
-        } else {
-            // check if user is clocked in from another location...
-            $signedLocation = $user->getLocationWorkHistories()
-                ->forEvent(LocationWorkHistory::EVENT_WORKING)
-                ->orderBy('created_at DESC')
-                ->one();
-            if ($location->id !== $signedLocation->location_id) {
-                return $this->asJson(['error' => 'User Clocked In from another location']);
-            }
         }
 
         return $this->asJson(['error' => [], 'workedTime' => $workedTime]);

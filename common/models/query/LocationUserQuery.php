@@ -20,11 +20,14 @@ class LocationUserQuery extends \yii\db\ActiveQuery
 
     /**
      * @param int $locationId
+     * @param bool $notEq
      * @return LocationUserQuery
      */
-    public function forLocation(int $locationId)
+    public function forLocation(int $locationId, bool $notEq = false)
     {
-        return $this->andWhere(['location_id' => $locationId]);
+        $condition = ['location_id' => $locationId];
+        if ($notEq) $condition = ['<>', 'location_id', $locationId];
+        return $this->andWhere($condition);
     }
 
     /**
