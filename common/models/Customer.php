@@ -88,4 +88,9 @@ class Customer extends \yii\db\ActiveRecord
     {
         return $this->hasMany(Order::class, ['customer_id' => 'id']);
     }
+
+    public function getFullName()
+    {
+        return $this->firstname . ' ' . $this->lastname;
+    }
 }

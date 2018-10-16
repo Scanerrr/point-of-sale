@@ -15,6 +15,11 @@ class InventoryQuery extends \yii\db\ActiveQuery
         return $this->andWhere(['location_id' => $id]);
     }
 
+    public function forProduct(int $id)
+    {
+        return $this->andWhere(['product_id' => $id]);
+    }
+
     /**
      * {@inheritdoc}
      * @return \common\models\Location[]|array

@@ -73,4 +73,20 @@ class OrderProduct extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Product::class, ['id' => 'product_id']);
     }
+
+    /**
+     * @param bool $insert
+     * @param array $changedAttributes
+     */
+    public function afterSave($insert, $changedAttributes)
+    {
+        if ($insert) {
+            // subtract ordered product quantity from inventory
+            if ($inventoryProduct = Inventory::find()->forLocation($this->order->location_id)->forProduct($this->product_id)->one()) {
+                $inventoryProduct->quantity = $inventoryProduct->quantity - $this->quantity;
+                $inventoryProduct->save();
+            }
+        }
+        parent::afterSave($insert, $changedAttributes);
+    }
 }

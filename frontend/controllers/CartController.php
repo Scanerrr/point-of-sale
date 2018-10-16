@@ -13,7 +13,7 @@ use Yii;
 use frontend\components\cart\Cart;
 use frontend\controllers\access\CookieController;
 use yii\web\{NotFoundHttpException, Response};
-use common\models\{Customer, Order, OrderPayment, OrderProduct, PaymentMethod, Product, Location};
+use common\models\{Order, OrderPayment, OrderProduct, PaymentMethod, Product, Location};
 
 /**
  * Class CartController
@@ -74,7 +74,7 @@ class CartController extends CookieController
      */
     public function actionCheckout()
     {
-        $model = new Order();
+        $order = new Order();
 
         /* @var Cart $cart */
         $cart = Yii::$app->cart;
@@ -88,17 +88,17 @@ class CartController extends CookieController
         if (Yii::$app->request->isPost) {
             $post = Yii::$app->request->post();
 
-            $model->load($post);
+            $order->load($post);
 
-            $model->status = 0;
-            $model->location_id = $location->id;
-            $model->employee_id = Yii::$app->user->id;
-            $model->total_tax = 0;
-            $model->total = 0;
+            $order->status = Order::STATUS_NEW;
+            $order->location_id = $location->id;
+            $order->employee_id = Yii::$app->user->id;
+            $order->total_tax = 0;
+            $order->total = 0;
 
             $transaction = Yii::$app->db->beginTransaction();
 
-            if (!$model->save()) {
+            if (!$order->save()) {
                 $transaction->rollback();
                 Yii::$app->session->setFlash('error', 'Order was not created');
             }
@@ -108,7 +108,7 @@ class CartController extends CookieController
                 /* @var Product $product */
                 $product = $item['product'];
                 $orderProduct = new OrderProduct();
-                $orderProduct->order_id = $model->id;
+                $orderProduct->order_id = $order->id;
                 $orderProduct->product_id = $product->id;
                 $orderProduct->quantity = $item['quantity'];
                 $orderProduct->price = $item['price'];
@@ -124,17 +124,17 @@ class CartController extends CookieController
                 }
             }
 
-            $model->status = 1;
-            $model->total = $orderTotal;
-            $model->total_tax = $orderTotalTax;
+            $order->status = Order::STATUS_PENDING;
+            $order->total = $orderTotal;
+            $order->total_tax = $orderTotalTax;
 
-            if (!$model->save(false)) {
+            if (!$order->save(false)) {
                 $transaction->rollBack();
                 Yii::$app->session->setFlash('error', 'Order was not updated');
             }
 
             $orderPayment = new OrderPayment();
-            $orderPayment->order_id = $model->id;
+            $orderPayment->order_id = $order->id;
             $orderPayment->method_id = $post['payment_method'];
             $orderPayment->amount = $post['payment_amount'];
 
@@ -160,9 +160,14 @@ class CartController extends CookieController
             $orderPayment->details = json_encode($details);
 
             if ($orderPayment->save()) {
+                $order->status = Order::STATUS_COMPLETE;
+                if (!$order->save(false)) {
+                    $transaction->rollBack();
+                    Yii::$app->session->setFlash('error', 'Order was not updated');
+                }
                 $transaction->commit();
                 $cart->clear();
-                Yii::$app->session->setFlash('success', 'Order ' . $model->id . ' created');
+                Yii::$app->session->setFlash('success', 'Order ' . $order->id . ' created');
 
                 return $this->redirect(Yii::$app->request->referrer ?? ['/site/index']);
             } else {
@@ -175,7 +180,7 @@ class CartController extends CookieController
         return $this->render('checkout', [
             'cart' => $cart,
             'location' => $location,
-            'model' => $model,
+            'model' => $order,
         ]);
     }
 

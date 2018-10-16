@@ -92,6 +92,15 @@ $avatar = Image::resize($user->avatarUrl, 57);
                                         ],
                                     ],
                                     [
+                                        'label' => 'Sales',
+                                        'icon' => 'shopping-cart',
+                                        'url' => '#',
+                                        'items' => [
+                                            ['label' => 'Order', 'url' => ['order/index']],
+                                            ['label' => 'Refunds', 'url' => ['#']],
+                                        ],
+                                    ],
+                                    [
                                         'label' => 'Badges',
                                         'url' => '#',
                                         'icon' => 'table',

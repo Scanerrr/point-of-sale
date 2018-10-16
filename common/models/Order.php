@@ -4,6 +4,7 @@ namespace common\models;
 
 use common\models\query\OrderQuery;
 use Yii;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "order".
@@ -26,6 +27,12 @@ use Yii;
  */
 class Order extends \yii\db\ActiveRecord
 {
+    const STATUS_REFUND = -1;
+    const STATUS_DELETED = 0;
+    const STATUS_NEW = 1;
+    const STATUS_PENDING = 2;
+    const STATUS_COMPLETE = 3;
+
     /**
      * {@inheritdoc}
      */
@@ -58,8 +65,8 @@ class Order extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'status' => 'Status',
-            'location_id' => 'Location ID',
-            'employee_id' => 'Employee ID',
+            'location_id' => 'Location',
+            'employee_id' => 'Employee',
             'customer_id' => 'Customer',
             'total_tax' => 'Total Tax',
             'total' => 'Total',
@@ -115,5 +122,20 @@ class Order extends \yii\db\ActiveRecord
     public static function find()
     {
         return new OrderQuery(get_called_class());
+    }
+
+    public static function statusList(): array
+    {
+        return [
+            self::STATUS_DELETED => 'Deleted',
+            self::STATUS_NEW => 'New',
+            self::STATUS_PENDING => 'Pending',
+            self::STATUS_COMPLETE => 'Complete',
+        ];
+    }
+
+    public static function statusName(int $status): string
+    {
+        return ArrayHelper::getValue(self::statusList(), $status);
     }
 }

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9785d7b4cb6f3b5f3146e18e00d8a98d",
+    "content-hash": "a4186f8a63a300d62e3d91073a2455ff",
     "packages": [
         {
             "name": "bower-asset/bootstrap",
@@ -775,12 +775,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Scanerrr/yii2-local-image.git",
-                "reference": "aca1492332aab8b1f7c9f450c7e097b04b92b6a1"
+                "reference": "26b79919d3c5b490aa647d693665276f94ac6fef"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Scanerrr/yii2-local-image/zipball/aca1492332aab8b1f7c9f450c7e097b04b92b6a1",
-                "reference": "aca1492332aab8b1f7c9f450c7e097b04b92b6a1",
+                "url": "https://api.github.com/repos/Scanerrr/yii2-local-image/zipball/26b79919d3c5b490aa647d693665276f94ac6fef",
+                "reference": "26b79919d3c5b490aa647d693665276f94ac6fef",
                 "shasum": ""
             },
             "require": {
@@ -815,7 +815,7 @@
                 "yii2",
                 "yii2-images"
             ],
-            "time": "2018-10-01T14:56:32+00:00"
+            "time": "2018-10-16T10:13:47+00:00"
         },
         {
             "name": "swiftmailer/swiftmailer",
@@ -2150,16 +2150,16 @@
         },
         {
             "name": "phpunit/php-code-coverage",
-            "version": "6.0.8",
+            "version": "6.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-code-coverage.git",
-                "reference": "848f78b3309780fef7ec8c4666b7ab4e6b09b22f"
+                "reference": "0685fb6a43aed1b2e09804d1aaf17144c82861f8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/848f78b3309780fef7ec8c4666b7ab4e6b09b22f",
-                "reference": "848f78b3309780fef7ec8c4666b7ab4e6b09b22f",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/0685fb6a43aed1b2e09804d1aaf17144c82861f8",
+                "reference": "0685fb6a43aed1b2e09804d1aaf17144c82861f8",
                 "shasum": ""
             },
             "require": {
@@ -2183,7 +2183,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "6.0-dev"
+                    "dev-master": "6.1-dev"
                 }
             },
             "autoload": {
@@ -2209,7 +2209,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2018-10-04T03:41:23+00:00"
+            "time": "2018-10-16T05:37:37+00:00"
         },
         {
             "name": "phpunit/php-file-iterator",
@@ -3870,7 +3870,8 @@
     "prefer-lowest": false,
     "platform": {
         "php": ">=7.2.0",
-        "ext-json": "*"
+        "ext-json": "*",
+        "ext-gd": "*"
     },
     "platform-dev": []
 }
