@@ -20,6 +20,7 @@ use yii\helpers\ArrayHelper;
  * @property string $updated_at
  *
  * @property Customer $customer
+ * @property bool $isRefunded
  * @property User $employee
  * @property Location $location
  * @property OrderPayment[] $orderPayments
@@ -53,7 +54,7 @@ class Order extends \yii\db\ActiveRecord
             [['created_at', 'updated_at'], 'safe'],
             [['customer_id'], 'exist', 'skipOnError' => true, 'targetClass' => Customer::class, 'targetAttribute' => ['customer_id' => 'id']],
             [['employee_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['employee_id' => 'id']],
-            [['location_id'], 'exist', 'skipOnError' => true, 'targetClass' => Location::className(), 'targetAttribute' => ['location_id' => 'id']],
+            [['location_id'], 'exist', 'skipOnError' => true, 'targetClass' => Location::class, 'targetAttribute' => ['location_id' => 'id']],
         ];
     }
 
@@ -96,7 +97,7 @@ class Order extends \yii\db\ActiveRecord
      */
     public function getLocation()
     {
-        return $this->hasOne(Location::className(), ['id' => 'location_id']);
+        return $this->hasOne(Location::class, ['id' => 'location_id']);
     }
 
     /**
@@ -127,6 +128,7 @@ class Order extends \yii\db\ActiveRecord
     public static function statusList(): array
     {
         return [
+            self::STATUS_REFUND => 'Refund',
             self::STATUS_DELETED => 'Deleted',
             self::STATUS_NEW => 'New',
             self::STATUS_PENDING => 'Pending',
@@ -137,5 +139,13 @@ class Order extends \yii\db\ActiveRecord
     public static function statusName(int $status): string
     {
         return ArrayHelper::getValue(self::statusList(), $status);
+    }
+
+    /**
+     * @return bool
+     */
+    public function getIsRefunded(): bool
+    {
+        return $this->status === Order::STATUS_REFUND;
     }
 }

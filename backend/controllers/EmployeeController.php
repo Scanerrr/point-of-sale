@@ -3,6 +3,7 @@
 namespace backend\controllers;
 
 use backend\models\EmployeeForm;
+use backend\models\EmployeeSalaryForm;
 use Yii;
 use common\models\User;
 use common\models\search\UserSearch;
@@ -50,10 +51,28 @@ class EmployeeController extends AccessController
      */
     public function actionDetails(int $id)
     {
-//        TODO: implement
         $user = $this->findModel($id);
+        $model = new EmployeeSalaryForm();
+
+//        if ($model->load(Yii::$app->request->post())) {
+//            if ($user = $model->create()) {
+//
+//                $model->imageFile = UploadedFile::getInstance($model, 'imageFile');
+//
+//                if ($model->imageFile) {
+//
+//                    if (!$model->upload($user)) {
+//                        Yii::$app->session->setFlash('error', 'An error occurred while uploading file');
+//                    }
+//
+//                }
+//                return $this->redirect(['details', 'id' => $user->id]);
+//            }
+//        }
+
         return $this->render('details', [
             'user' => $user,
+            'model' => $model,
         ]);
     }
 

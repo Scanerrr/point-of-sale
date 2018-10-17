@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a4186f8a63a300d62e3d91073a2455ff",
+    "content-hash": "a0f793fd84f04b74940660d6d5f4fc1e",
     "packages": [
         {
             "name": "bower-asset/bootstrap",
@@ -775,12 +775,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Scanerrr/yii2-local-image.git",
-                "reference": "26b79919d3c5b490aa647d693665276f94ac6fef"
+                "reference": "1c65efe307d18ce7321e86558d1f42b2766c3b1b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Scanerrr/yii2-local-image/zipball/26b79919d3c5b490aa647d693665276f94ac6fef",
-                "reference": "26b79919d3c5b490aa647d693665276f94ac6fef",
+                "url": "https://api.github.com/repos/Scanerrr/yii2-local-image/zipball/1c65efe307d18ce7321e86558d1f42b2766c3b1b",
+                "reference": "1c65efe307d18ce7321e86558d1f42b2766c3b1b",
                 "shasum": ""
             },
             "require": {
@@ -815,7 +815,7 @@
                 "yii2",
                 "yii2-images"
             ],
-            "time": "2018-10-16T10:13:47+00:00"
+            "time": "2018-10-16T10:16:10+00:00"
         },
         {
             "name": "swiftmailer/swiftmailer",
@@ -3863,8 +3863,8 @@
     "stability-flags": {
         "kartik-v/yii2-widget-select2": 20,
         "kartik-v/yii2-grid": 20,
-        "scanerrr/yii2-local-image": 20,
-        "kartik-v/yii2-popover-x": 20
+        "kartik-v/yii2-popover-x": 20,
+        "scanerrr/yii2-local-image": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,

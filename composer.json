@@ -21,17 +21,17 @@
   "minimum-stability": "dev",
   "require": {
     "php": ">=7.2.0",
+    "ext-json": "*",
+    "ext-gd": "*",
     "yiisoft/yii2": "~2.0.6",
     "yiisoft/yii2-bootstrap": "~2.0.0",
     "yiisoft/yii2-swiftmailer": "~2.0.0 || ~2.1.0",
+    "yii2mod/yii2-editable": "*",
     "yiister/yii2-gentelella": "~1.0",
     "kartik-v/yii2-widget-select2": "@dev",
     "kartik-v/yii2-grid": "@dev",
-    "scanerrr/yii2-local-image": "dev-master",
-    "ext-json": "*",
-    "ext-gd": "*",
     "kartik-v/yii2-popover-x": "dev-master",
-    "yii2mod/yii2-editable": "*"
+    "scanerrr/yii2-local-image": "dev-master"
   },
   "require-dev": {
     "yiisoft/yii2-debug": "~2.0.0",

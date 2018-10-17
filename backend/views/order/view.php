@@ -12,6 +12,12 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="order-view">
 
+    <?php if ($model->status !== \common\models\Order::STATUS_REFUND): ?>
+        <p>
+            <?= Html::a('Refund', ['order/refund', 'id' => $model->id], ['class' => 'btn btn-danger', 'data-method' => 'post']) ?>
+        </p>
+    <?php endif; ?>
+
     <div class="row">
         <div class="col-md-4">
             <div class="panel panel-default">
@@ -89,6 +95,11 @@ $this->params['breadcrumbs'][] = $this->title;
                         </tbody>
                     </table>
                 </div>
+            </div>
+        <?php endif; ?>
+        <?php if ($model->isRefunded): ?>
+            <div class="col-md-4">
+                <h4 class="text-danger">This order represents a refund.</h4>
             </div>
         <?php endif; ?>
     </div>

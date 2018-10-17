@@ -97,7 +97,7 @@ $avatar = Image::resize($user->avatarUrl, 57);
                                         'url' => '#',
                                         'items' => [
                                             ['label' => 'Order', 'url' => ['order/index']],
-                                            ['label' => 'Refunds', 'url' => ['#']],
+                                            ['label' => 'Refunds', 'url' => ['order/refunded']],
                                         ],
                                     ],
                                     [

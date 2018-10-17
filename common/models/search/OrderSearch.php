@@ -38,11 +38,16 @@ class OrderSearch extends Order
      *
      * @param array $params
      *
+     * @param bool $isRefund
      * @return ActiveDataProvider
      */
-    public function search($params)
+    public function search($params, bool $isRefund = false)
     {
-        $query = Order::find()->with([
+        $query = Order::find();
+
+        if ($isRefund) $query = $query->forStatus(Order::STATUS_REFUND);
+
+        $query = $query->with([
             'location',
             'customer',
             'employee',

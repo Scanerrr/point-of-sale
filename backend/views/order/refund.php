@@ -9,7 +9,7 @@ use common\models\Order;
 /* @var $searchModel common\models\search\OrderSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Orders';
+$this->title = 'Refunded Orders';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="order-index">
@@ -21,20 +21,10 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
-        'rowOptions' => function (Order $model) {
-            if ($model->status === Order::STATUS_REFUND) {
-                return ['class' => 'danger'];
-            }
-        },
+
         'columns' => [
+
             'id',
-            [
-                'filter' => Html::dropDownList('OrderSearch[status]', $searchModel->status, array_merge(['' => 'All'], Order::statusList()), ['class' => 'form-control']),
-                'attribute' => 'status',
-                'value' => function (Order $model) {
-                    return Order::statusName($model->status);
-                },
-            ],
             [
                 'attribute' => 'location_id',
                 'value' => 'location.name',

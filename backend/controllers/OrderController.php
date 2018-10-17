@@ -12,6 +12,12 @@ use yii\web\NotFoundHttpException;
  */
 class OrderController extends AccessController
 {
+    public function behaviors(): array
+    {
+        $behaviors = parent::behaviors();
+        $behaviors['verbs']['actions']['refund'] = ['post'];
+        return $behaviors;
+    }
     /**
      * Lists all Order models.
      * @return mixed
@@ -28,12 +34,27 @@ class OrderController extends AccessController
     }
 
     /**
+     * Lists all Order models.
+     * @return mixed
+     */
+    public function actionRefunded()
+    {
+        $searchModel = new OrderSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, true);
+
+        return $this->render('refund', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+
+    /**
      * Displays a single Order model.
      * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionView($id)
+    public function actionView(int $id)
     {
         return $this->render('view', [
             'model' => $this->findModel($id),
@@ -49,7 +70,7 @@ class OrderController extends AccessController
      * @throws \Throwable
      * @throws \yii\db\StaleObjectException
      */
-    public function actionDelete($id)
+    public function actionDelete(int $id)
     {
         $this->findModel($id)->delete();
 
@@ -63,12 +84,26 @@ class OrderController extends AccessController
      * @return Order the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($id)
+    protected function findModel(int $id)
     {
         if (($model = Order::findOne($id)) !== null) {
             return $model;
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    /**
+     * @param int $id
+     * @return bool
+     * @throws NotFoundHttpException
+     */
+    public function actionRefund(int $id)
+    {
+        $model = $this->findModel($id);
+
+        $model->status = Order::STATUS_REFUND;
+        $model->save(false);
+        return $this->redirect(['view', 'id' => $model->id]);
     }
 }
