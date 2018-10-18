@@ -6,7 +6,7 @@ $('.show-cart a').on('click', e => {
 
 $('.change-status-form').on('submit', e => {
     e.preventDefault()
-    const $this = $(e.currentTarget)
+    const $this = $(e.target)
     $.ajax({
         type: $this.attr('method'),
         url: $this.attr('action'),
@@ -24,7 +24,7 @@ $('.change-status-form').on('submit', e => {
 
 $('.clock-form').on('submit', e => {
     e.preventDefault()
-    const $this = $(e.currentTarget)
+    const $this = $(e.target)
     $.ajax({
         type: $this.attr('method'),
         url: $this.attr('action'),

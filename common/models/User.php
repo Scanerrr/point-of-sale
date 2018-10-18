@@ -1,11 +1,13 @@
 <?php
+
 namespace common\models;
 
-use common\models\query\UserQuery;
 use Yii;
-use yii\base\NotSupportedException;
+use yii\helpers\Json;
 use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
+use yii\base\NotSupportedException;
+use common\models\query\UserQuery;
 
 /**
  * User model
@@ -164,7 +166,7 @@ class User extends ActiveRecord implements IdentityInterface
             return false;
         }
 
-        $timestamp = (int) substr($token, strrpos($token, '_') + 1);
+        $timestamp = (int)substr($token, strrpos($token, '_') + 1);
         $expire = Yii::$app->params['user.passwordResetTokenExpire'];
         return $timestamp + $expire >= time();
     }
@@ -274,5 +276,48 @@ class User extends ActiveRecord implements IdentityInterface
     public function getLocationWorkHistories()
     {
         return $this->hasMany(LocationWorkHistory::class, ['user_id' => 'id']);
+    }
+
+    public function validateSalaryInfo($salary)
+    {
+
+        $flat = isset($salary['flat']['rate']) && !empty($salary['flat']['rate']) ? ['rate' => $salary['flat']['rate']] : false;
+
+        $product = isset($salary['products']) && $salary['products'] === 'on';
+
+        $hourly = isset($salary['hourly']['rate']) && !empty($salary['hourly']['rate']) ? [
+            'rate' => $salary['hourly']['rate'],
+            'notIncludeBreaks' => true
+        ] : false;
+
+        if ($hourly && isset($salary['hourly']['notIncludeBreaks']) && $salary['hourly']['notIncludeBreaks'] === 'on') {
+            $hourly['notIncludeBreaks'] = false;
+        }
+
+        $base = isset($salary['base']['rate']) && !empty($salary['base']['rate']) ? [
+            'rate' => rand(1000, 5000),
+            'added' => 'Weekly',
+            'on' => 'Monday'
+        ] : false;
+
+        if ($base && isset($salary['base']['added'])) {
+            $base['added'] = $salary['base']['added'];
+        }
+
+        if ($base && isset($salary['base']['on'])) {
+            $base['on'] = $salary['base']['on'];
+        }
+
+        // TODO: finish up steps
+        return Json::encode([
+//                'steps' => [
+//                    0 => ['from' => 0, 'to' => 500, 'commission' => rand(5, 10)],
+//                    1 => ['from' => 501, 'to' => 1000, 'commission' => rand(11, 15)],
+//                ],
+            'flat' => $flat,
+            'product' => $product,
+            'hourly' => $hourly,
+            'base' => $base
+        ]);
     }
 }
