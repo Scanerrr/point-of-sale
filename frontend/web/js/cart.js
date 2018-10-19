@@ -9,8 +9,7 @@ $(() => {
             data: {quantity: $this.val()},
             dataType: 'json',
         })
-            .done(({success, total}) => {
-                $this.closest('.items').find('.prodTotal p').text(total)
+            .done(() => {
                 pjaxReload('#cart-idx-total')
             })
             .fail(failHandler)

@@ -9,6 +9,10 @@ use yii\base\{Component, InvalidArgumentException};
 
 /**
  * Class Cart
+ * @property float totalDiscount
+ * @property float totalTax
+ * @property float subTotal
+ * @property mixed total
  * @package frontend\components\cart
  */
 class Cart extends Component
@@ -32,55 +36,69 @@ class Cart extends Component
     }
 
     /**
-     * @param Product $product
-     * @param float $price
-     * @param int $quantity
-     * @return Cart
+     * @param int $id
+     * @param float $discount
      */
-    public function add(Product &$product, float $price, int $quantity = 1): self
+    public function addDiscount(int $id, float $discount): void
     {
-        // TODO: add same item with different price
-        $this->items[$product->id] = [
-            'product' => $product,
-            'price' => $price,
-            'quantity' => $quantity,
-        ];
-        $this->_storage->save($this);
-
-        return $this;
+        if ($discount > 0) {
+            $this->items[$id]['discount'] = $discount;
+            $this->saveItems();
+        }
     }
 
     /**
-     * @param int $productId
-     * @param float $price
+     * @param Product $product
      * @param int $quantity
-     * @return Cart
      */
-    public function update(int $productId, float $price = null, int $quantity = null): self
+    public function add(Product &$product, int $quantity = 1): void
     {
-        if ($price)  $this->items[$productId]['price'] = $price;
-        if ($quantity)  $this->items[$productId]['quantity'] = $quantity;
+        if (isset($this->items[$product->id])) {
+            $this->plus($product->id, $quantity);
+        } else {
+            $this->items[$product->id] = [
+                'product' => $product,
+                'quantity' => $quantity,
+            ];
+            $this->saveItems();
+        }
+    }
 
-        $this->_storage->save($this);
+    /**
+     * Adding item quantity in the cart
+     * @param integer $id
+     * @param integer $quantity
+     * @return void
+     */
+    public function plus(int $id, int $quantity): void
+    {
+        if (isset($this->items[$id])) {
+            $this->items[$id]['quantity'] = $quantity + $this->items[$id]['quantity'];
+        }
+        $this->saveItems();
+    }
 
-        return $this;
+    /**
+     * @param int $id
+     * @param int $quantity
+     */
+    public function update(int $id, int $quantity = null): void
+    {
+        if ($quantity) $this->items[$id]['quantity'] = $quantity;
+
+        $this->saveItems();
     }
 
     /**
      * @param $id
-     * @return Cart
      */
-    public function remove($id): self
+    public function remove($id): void
     {
-        if (!isset($this->items[$id])) {
-            throw new InvalidArgumentException('Item not found');
+        if (isset($this->items[$id])) {
+            unset($this->items[$id]);
         }
 
-        unset($this->items[$id]);
-
-        $this->_storage->save($this);
-
-        return $this;
+        $this->saveItems();
     }
 
     /**
@@ -94,21 +112,44 @@ class Cart extends Component
     /**
      * @return float
      */
-    public function getTotal(): float
+    public function getSubTotal(): float
     {
-        // TODO: add discount
         return array_sum(array_map(function ($item) {
-            return $item['price'] * $item['quantity'];
+            return $item['product']->markup_price * $item['quantity'];
         }, $this->items));
     }
 
     /**
      * @return float
      */
-    public function getTax(): float
+    public function getTotal(): float
+    {
+        return $this->subTotal + $this->totalTax - $this->totalDiscount;
+    }
+
+    /**
+     * @return float
+     */
+    public function getTotalTax(): float
     {
         $tax_rate = Yii::$app->params['location']->tax_rate ?? 1;
-        return ($this->total * $tax_rate) / 100;
+
+        return ($this->subTotal * $tax_rate) / 100;
+    }
+
+    /**
+     * @return float
+     */
+    public function getTotalDiscount(): float
+    {
+        //sum every item with discount
+        return array_sum(
+            array_map(function ($item) {
+                return $item['discount'] * $item['quantity'];
+            }, array_filter($this->items, function ($item) {
+                return isset($item['discount']);
+            }))
+        );
     }
 
     /**
@@ -146,7 +187,12 @@ class Cart extends Component
     public function clear(bool $save = true): self
     {
         $this->items = [];
-        $save && $this->_storage->save($this);
+        $save && $this->saveItems();
         return $this;
+    }
+
+    private function saveItems()
+    {
+        $this->_storage->save($this->items);
     }
 }

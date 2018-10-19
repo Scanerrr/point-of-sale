@@ -1,6 +1,7 @@
 <?php
 /* @var $this yii\web\View */
 /* @var $categories \common\models\Category */
+/* @var $model \frontend\models\AddToCartForm */
 /* @var $products \common\models\Product */
 
 use yii\helpers\Html;
@@ -65,24 +66,38 @@ use yii\bootstrap\ActiveForm;
                                         <?= $product->name ?>
                                     </div>
                                 </div>
+
+                                <?php $form = ActiveForm::begin() ?>
+
+                                <?= $form->field($model, 'productId')->hiddenInput(['value' => $product->id])->label(false) ?>
+
                                 <div class="product-actions">
-                                    <button class="btn btn-default btn-sm">Discount</button>
-                                    <button class="btn btn-default btn-sm">Discount</button>
+                                    <div class="col-sm-8">
+                                        <?= $form->field($model, 'discount')->textInput([
+                                            'type' => 'number',
+                                            'min' => 0,
+                                            'max' => 100,
+                                            'step' => 'any',
+                                        ]) ?>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <?= $form->field($model, 'discountType')->dropDownList($model::DISCOUNT_TYPES, [
+                                            'data-markup-price' => $product->markup_price,
+                                            'class' => 'discount-select'
+                                        ]) ?>
+                                    </div>
                                 </div>
                                 <?= $product->size ?>
 
-                                <?php ActiveForm::begin(['action' => ['/cart/add'], 'options' => ['class' => 'product-form']]) ?>
-                                    <?= Html::hiddenInput('product_id', $product->id) ?>
-                                    <div class="col-sm-6">
-                                        <?= Html::input('number', 'price', $product->markup_price, ['min' => 0, 'step' => 'any', 'class' => 'form-control']) ?>
-                                    </div>
-                                    <div class="col-sm-6">
-                                        <?= Html::input('number', 'quantity', 1, ['min' => 1, 'class' => 'form-control']) ?>
-                                    </div>
-                                    <div class="col-sm-12 text-right">
-                                        <?= Html::submitButton('Add', ['class' => 'btn btn-primary']) ?>
-                                    </div>
+                                <div class="col-sm-6">
+                                    <?= $form->field($model, 'quantity')->textInput(['type' => 'number', 'min' => 1]) ?>
+                                </div>
+                                <div class="col-sm-12 text-right">
+                                    <?= Html::submitButton('Add', ['class' => 'btn btn-primary']) ?>
+                                </div>
+
                                 <?php ActiveForm::end() ?>
+
                             </div>
 
                         </div>

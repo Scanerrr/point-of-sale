@@ -19,6 +19,8 @@ $items = $cart->getItems();
 <?php if ($items): ?>
 
     <div class="cart">
+        <?php Pjax::begin(['id' => 'cart-idx-total']) ?>
+
         <ul class="cartWrap">
             <?php $idx = 0 ?>
             <?php foreach ($items as $item): ?>
@@ -35,13 +37,13 @@ $items = $cart->getItems();
                                     'min' => 1,
                                     'class' => 'qty update-quantity',
                                     'data-id' => $product->id
-                                ]) ?> x <?= Yii::$app->formatter->asCurrency($item['price']) ?></p>
+                                ]) ?> x <?= Yii::$app->formatter->asCurrency($product->markup_price) ?></p>
 
                             <p class="stockStatus">In Stock</p>
                         </div>
 
                         <div class="prodTotal cartSection">
-                            <p><?= Yii::$app->formatter->asCurrency($item['price'] * $item['quantity']) ?></p>
+                            <p><?= Yii::$app->formatter->asCurrency($product->markup_price * $item['quantity']) ?></p>
                         </div>
                         <div class="cartSection removeWrap">
                             <?= Html::a('x', '#', [
@@ -54,16 +56,17 @@ $items = $cart->getItems();
                 </li>
             <?php endforeach; ?>
         </ul>
-        <?php Pjax::begin(['id' => 'cart-idx-total']) ?>
 
         <div class="subtotal cf">
             <ul class="list-unstyled">
                 <li class="totalRow"><span class="label">Subtotal</span><span
-                            class="value"><?= Yii::$app->formatter->asCurrency($cart->total) ?></span></li>
+                            class="value"><?= Yii::$app->formatter->asCurrency($cart->subTotal) ?></span></li>
                 <li class="totalRow"><span class="label">Tax</span><span
-                            class="value"><?= Yii::$app->formatter->asCurrency($cart->tax) ?></span></li>
+                            class="value"><?= Yii::$app->formatter->asCurrency($cart->totalTax) ?></span></li>
+                <li class="totalRow"><span class="label">Discount</span><span
+                            class="value"><?= Yii::$app->formatter->asCurrency($cart->totalDiscount) ?></span></li>
                 <li class="totalRow final"><span class="label">Total</span><span
-                            class="value"><?= Yii::$app->formatter->asCurrency($cart->total + $cart->tax) ?></span></li>
+                            class="value"><?= Yii::$app->formatter->asCurrency($cart->total) ?></span></li>
                 <li class="totalRow">
                     <?= Html::a('Checkout', ['/cart/checkout'], [
                         'class' => 'button continue create-order',

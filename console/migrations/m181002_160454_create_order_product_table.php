@@ -18,6 +18,7 @@ class m181002_160454_create_order_product_table extends Migration
             'product_id' => $this->integer()->notNull(),
             'quantity' => $this->integer(),
             'price' => $this->decimal(15, 2)->defaultValue(0),
+            'discount' => $this->decimal(15, 2)->defaultValue(0),
             'tax' => $this->decimal(15, 2)->defaultValue(0),
             'total' => $this->decimal(15, 2)->defaultValue(0),
         ]);

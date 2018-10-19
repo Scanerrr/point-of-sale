@@ -25,32 +25,18 @@ class SessionStorage extends BaseObject
     public $key = 'cart';
 
     /**
-     * @param Cart $cart
      * @return array|mixed
      */
-    public function load(Cart $cart)
+    public function load()
     {
-        $cartData = [];
-
-        if (false !== ($session = $this->session->get($this->key, false))) {
-            $cartData = unserialize($session);
-        }
-        return $cartData;
-    }
-
-    public function save(Cart $cart)
-    {
-        $sessionData = serialize($cart->getItems());
-
-        $this->session->set($this->key, $sessionData);
+        return Yii::$app->session->get($this->key, []);
     }
 
     /**
-     * @return null|object
-     * @throws \yii\base\InvalidConfigException
+     * @param array $items
      */
-    public function getSession()
+    public function save($items)
     {
-        return Yii::$app->get('session');
+        Yii::$app->session->set($this->key, $items);
     }
 }

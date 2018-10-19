@@ -12,6 +12,7 @@ use Yii;
  * @property int $product_id
  * @property int $quantity
  * @property string $price
+ * @property string $discount
  * @property string $tax
  * @property string $total
  *
@@ -36,7 +37,7 @@ class OrderProduct extends \yii\db\ActiveRecord
         return [
             [['order_id', 'product_id'], 'required'],
             [['order_id', 'product_id', 'quantity'], 'integer'],
-            [['price', 'tax', 'total'], 'number'],
+            [['price', 'tax', 'total', 'discount'], 'number'],
             [['order_id'], 'exist', 'skipOnError' => true, 'targetClass' => Order::class, 'targetAttribute' => ['order_id' => 'id']],
             [['product_id'], 'exist', 'skipOnError' => true, 'targetClass' => Product::class, 'targetAttribute' => ['product_id' => 'id']],
         ];
@@ -53,6 +54,7 @@ class OrderProduct extends \yii\db\ActiveRecord
             'product_id' => 'Product ID',
             'quantity' => 'Quantity',
             'price' => 'Price',
+            'discount' => 'Discount',
             'tax' => 'Tax',
             'total' => 'Total',
         ];

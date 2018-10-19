@@ -2,18 +2,14 @@
 
 function getSalarySettings() {
     return json_encode([
-        'commissions' => [
-            'steps' => [
-                0 => ['from' => 0, 'to' => 500, 'commission' => rand(5, 10)],
-                1 => ['from' => 501, 'to' => 1000, 'commission' => rand(11, 15)],
-            ],
-            'flat' => rand(5, 10),
-            'product' => true
-        ],
-        'salaries' => [
-            'hourly' => ['rate' => rand(10, 100), 'includeBreaks' => false],
-            'base' => ['rate' => rand(1000, 5000), 'added' => 'Weekly', 'on' => 'Monday']
-        ]
+//            'steps' => [
+//                0 => ['from' => 0, 'to' => 500, 'commission' => rand(5, 10)],
+//                1 => ['from' => 501, 'to' => 1000, 'commission' => rand(11, 15)],
+//            ],
+            'flat' => rand(0, 1) ? ['rate' => rand(5, 10)]: false,
+            'product' => rand(0, 1) ? true: false,
+            'hourly' => rand(0, 1) ? ['rate' => rand(10, 100), 'notIncludeBreaks' => false] : false,
+            'base' => rand(0, 1) ? ['rate' => rand(1000, 5000), 'added' => 'Weekly', 'on' => 'Monday'] : false
     ]);
 }
 $users = [];

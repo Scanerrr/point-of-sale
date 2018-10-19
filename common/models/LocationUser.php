@@ -10,7 +10,6 @@ use yii\helpers\VarDumper;
 /**
  * This is the model class for table "location_user".
  *
- * @property int $id
  * @property int $location_id
  * @property int $user_id
  * @property int $is_working 0-not working, 1-working
@@ -49,7 +48,6 @@ class LocationUser extends ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => 'ID',
             'location_id' => 'Location',
             'user_id' => 'User',
             'is_working' => 'User Working Status',

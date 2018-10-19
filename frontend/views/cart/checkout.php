@@ -20,7 +20,7 @@ use common\models\{Customer, OrderPayment, PaymentMethod};
 
 
 $colors = ['default', 'primary', 'success', 'danger', 'warning', 'info'];
-$total = $cart->total + $cart->tax
+$total = $cart->total
 ?>
     <div class="panel panel-default">
         <div class="panel-body">

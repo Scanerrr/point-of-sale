@@ -19,22 +19,25 @@ use yii\widgets\ActiveForm;
 
 $cart = Yii::$app->cart;
 $items = $cart->getItems();
-$total = $cart->total
 ?>
 
 <div class="shopping-cart" style="display: none">
     <div class="shopping-cart-header text-right">
         <div>
             <span class="lighter-text"><strong>Subtotal:</strong></span>
-            <span class="main-color-text"><?= Yii::$app->formatter->asCurrency($total) ?></span>
+            <span class="main-color-text"><?= Yii::$app->formatter->asCurrency($cart->subTotal) ?></span>
         </div>
         <div>
             <span class="lighter-text"><strong>Tax:</strong></span>
-            <span class="main-color-text"><?= Yii::$app->formatter->asCurrency($cart->tax) ?></span>
+            <span class="main-color-text"><?= Yii::$app->formatter->asCurrency($cart->totalTax) ?></span>
+        </div>
+        <div>
+            <span class="lighter-text"><strong>Discount:</strong></span>
+            <span class="main-color-text"><?= Yii::$app->formatter->asCurrency($cart->totalDiscount) ?></span>
         </div>
         <div>
             <span class="lighter-text"><strong>Total:</strong></span>
-            <span class="main-color-text"><?= Yii::$app->formatter->asCurrency($total + $cart->tax) ?></span>
+            <span class="main-color-text"><?= Yii::$app->formatter->asCurrency($cart->total) ?></span>
         </div>
     </div>
     <?php if ($items): ?>
@@ -42,15 +45,10 @@ $total = $cart->total
             <?php foreach ($items as $item): ?>
                 <?php $product = $item['product'] ?>
                 <li class="clearfix">
-                    <?php /*if($product->image): */ ?><!--
-                        <div>
-                            <? /*= Html::img(Image::resize($product->imageUrl, 70), ['width' => 70, 'class' => 'img-rounded']) */ ?>
-                        </div>
-                    --><?php /*endif; */ ?>
                     <div class="item-mid-content">
                         <span class="item-name text-capitalize"><?= Html::encode($product->name) ?></span>
                         <div>
-                            <span class="item-price"><?= Yii::$app->formatter->asCurrency($item['price']) ?></span>
+                            <span class="item-price"><?= Yii::$app->formatter->asCurrency($product->markup_price) ?></span>
                             <span class="item-quantity">Quantity: <?= $item['quantity'] ?></span>
                         </div>
                     </div>
