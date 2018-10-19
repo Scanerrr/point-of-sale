@@ -2,6 +2,7 @@
 /* @var $this yii\web\View */
 /* @var $categories \common\models\Category */
 /* @var $model \frontend\models\AddToCartForm */
+
 /* @var $products \common\models\Product */
 
 use yii\helpers\Html;
@@ -76,7 +77,7 @@ use yii\bootstrap\ActiveForm;
                                         <?= $form->field($model, 'discount')->textInput([
                                             'type' => 'number',
                                             'min' => 0,
-                                            'max' => 100,
+                                            'max' => $product->markup_price,
                                             'step' => 'any',
                                         ]) ?>
                                     </div>
