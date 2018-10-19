@@ -283,7 +283,7 @@ class User extends ActiveRecord implements IdentityInterface
 
         $flat = isset($salary['flat']['rate']) && !empty($salary['flat']['rate']) ? ['rate' => $salary['flat']['rate']] : false;
 
-        $product = isset($salary['products']) && $salary['products'] === 'on';
+        $product = isset($salary['product']) && $salary['product'] === 'on';
 
         $hourly = isset($salary['hourly']['rate']) && !empty($salary['hourly']['rate']) ? [
             'rate' => $salary['hourly']['rate'],
@@ -308,6 +308,8 @@ class User extends ActiveRecord implements IdentityInterface
             $base['on'] = $salary['base']['on'];
         }
 
+        $commissionOrHourly = isset($salary['commissionOrHourly']) && $salary['commissionOrHourly'] === 'on';
+
         // TODO: finish up steps
         return Json::encode([
 //                'steps' => [
@@ -317,7 +319,8 @@ class User extends ActiveRecord implements IdentityInterface
             'flat' => $flat,
             'product' => $product,
             'hourly' => $hourly,
-            'base' => $base
+            'base' => $base,
+            'commissionOrHourly' => $commissionOrHourly
         ]);
     }
 }

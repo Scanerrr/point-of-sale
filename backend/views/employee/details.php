@@ -8,12 +8,13 @@ use kartik\select2\Select2;
 /* @var $this yii\web\View */
 /* @var $user User */
 
-$this->title = $user->name;
+$this->title = 'Salary settings';
 $salary = Json::decode($user->salary_settings);
 ?>
     <div class="user-details">
 
         <h1><?= Html::encode($this->title) ?></h1>
+        <h2><?= Html::encode($user->name) ?></h2>
 
         <p>
             <?= Html::a('Update', ['update', 'id' => $user->id], ['class' => 'btn btn-primary']) ?>
@@ -29,39 +30,39 @@ $salary = Json::decode($user->salary_settings);
         <?php $form = ActiveForm::begin(['options' => ['class' => 'salary-setting-form']]) ?>
 
         <!-- COMMISSION STEPS -->
-        <div>
-            <label class="control-label">
-                <input type="checkbox" name="steps"> Commission Steps
-            </label>
-            <table>
-                <thead>
-                <tr>
-                    <th></th>
-                    <th>From ($)</th>
-                    <th>To ($)</th>
-                    <th>Commission (%)</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr class="step-0">
-                    <td></td>
-                    <td><input type="text"="0"></td>
-                    <td><input name="steps[0][to]" type="number" min="0" max="99999" step="any"></td>
-                    <td><input name="steps[0][rate]" type="number" min="0" max="100" step="any"></td>
-                </tr>
-                <tr class="step-1">
-                    <td>
-                        <label>
-                            <input type="checkbox" name="steps][1]"> Step 2
-                        </label>
-                    </td>
-                    <td><input type="text"></td>
-                    <td><input name="steps[1][to]" type="number" min="0" max="99999" step="any"></td>
-                    <td><input name="steps[1][rate]" type="number" min="0" max="100" step="any"></td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
+<!--        <div>-->
+<!--            <label class="control-label">-->
+<!--                <input type="checkbox" name="steps"> Commission Steps-->
+<!--            </label>-->
+<!--            <table>-->
+<!--                <thead>-->
+<!--                <tr>-->
+<!--                    <th></th>-->
+<!--                    <th>From ($)</th>-->
+<!--                    <th>To ($)</th>-->
+<!--                    <th>Commission (%)</th>-->
+<!--                </tr>-->
+<!--                </thead>-->
+<!--                <tbody>-->
+<!--                <tr class="step-0">-->
+<!--                    <td></td>-->
+<!--                    <td><input type="text"="0"></td>-->
+<!--                    <td><input name="steps[0][to]" type="number" min="0" max="99999" step="any"></td>-->
+<!--                    <td><input name="steps[0][rate]" type="number" min="0" max="100" step="any"></td>-->
+<!--                </tr>-->
+<!--                <tr class="step-1">-->
+<!--                    <td>-->
+<!--                        <label>-->
+<!--                            <input type="checkbox" name="steps][1]"> Step 2-->
+<!--                        </label>-->
+<!--                    </td>-->
+<!--                    <td><input type="text"></td>-->
+<!--                    <td><input name="steps[1][to]" type="number" min="0" max="99999" step="any"></td>-->
+<!--                    <td><input name="steps[1][rate]" type="number" min="0" max="100" step="any"></td>-->
+<!--                </tr>-->
+<!--                </tbody>-->
+<!--            </table>-->
+<!--        </div>-->
 
         <!-- SALARY HOURLY -->
         <div>
@@ -99,7 +100,7 @@ $salary = Json::decode($user->salary_settings);
         <!-- COMMISSION or Hourly -->
         <div>
             <label class="control-label">
-                <input type="checkbox" name="commissions[compare]"> Higher of Commission or Hourly
+                <input type="checkbox" name="commissionOrHourly" <?= $salary['commissionOrHourly'] ? 'checked' : null ?>> Higher of Commission or Hourly
             </label>
         </div>
 
@@ -144,7 +145,7 @@ $salary = Json::decode($user->salary_settings);
                 <label class="control-label">Copy salary information from:</label>
                 <?= Select2::widget([
                     'name' => 'user_settings',
-                    'data' => User::find()->select('name')->indexBy('id')->column(),
+                    'data' => User::find()->select('name')->orderBy('name')->indexBy('id')->column(),
                     'theme' => Select2::THEME_DEFAULT,
                     'options' => [
                         'placeholder' => 'Select a user ...',
@@ -160,10 +161,12 @@ $copyUrl = Url::to(['/employee/copy']);
 $script = <<< JS
 $('.copy-salary-info').on('click', e => {
     e.preventDefault()
+    const id = $('[name=user_settings]').val()
+    if (!id) return;
     $.ajax({
         type: 'POST',
         url: '$copyUrl',
-        data: {id: $('[name=user_settings]').val()},
+        data: {id: id},
         dataType: 'json'
     })
         .done(({base, flat, product, hourly}) => {
@@ -173,8 +176,23 @@ $('.copy-salary-info').on('click', e => {
                 $('[name=flat]').prop('checked', true)
                 $('[name="flat[rate]"]').val(flat.rate)
             }
-            
-            //todo: finish copying data 
+
+            if (product) {
+                $('[name=product]').prop('checked', true)
+            }
+
+            if (base && base.rate) {
+                $('[name=base]').prop('checked', true)
+                $('[name="base[rate]"]').val(base.rate)
+                $('[name="base[added]"]').val(base.added)
+                $('[name="base[on]"]').val(base.on)
+            }
+
+            if (hourly && hourly.rate) {
+                $('[name=hourly]').prop('checked', true)
+                $('[name="hourly[rate]"]').val(hourly.rate)
+                $('[name="hourly[notIncludeBreaks]"]').val(hourly.notIncludeBreaks)
+            }
         })
         .fail(err => console.error(err.responseText))
 })
@@ -188,11 +206,12 @@ function clearForm(form) {
         switch(fieldType) {
         
             case 'text':
+            case 'number':
             case 'password':
             case 'textarea':
             // case "hidden":
-            
                 el.value = '';
+
                 break;
             
             case 'radio':
