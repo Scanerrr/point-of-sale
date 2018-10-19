@@ -2,9 +2,9 @@
 
 namespace frontend\components\cart;
 
-use common\models\Product;
 use Yii;
-use yii\base\{Component, InvalidArgumentException};
+use yii\base\Component;
+use common\models\Product;
 
 
 /**
