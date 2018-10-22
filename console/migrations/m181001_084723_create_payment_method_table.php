@@ -20,8 +20,11 @@ class m181001_084723_create_payment_method_table extends Migration
 
         $this->batchInsert('payment_method', ['type_id', 'name'], [
             [0, 'Cash'],
+            [1, 'Amex'],
             [1, 'Visa'],
             [1, 'Master Card'],
+            [1, 'Discover'],
+            [1, 'Other'],
         ]);
     }
 
