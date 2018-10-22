@@ -1,7 +1,7 @@
 <?php
 
 use yii\helpers\Html;
-use yii\grid\GridView;
+use yiister\gentelella\widgets\grid\GridView;
 use yii\widgets\Pjax;
 use common\models\Order;
 
@@ -29,7 +29,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             'id',
             [
-                'filter' => Html::dropDownList('OrderSearch[status]', $searchModel->status, array_merge(['' => 'All'], Order::statusList()), ['class' => 'form-control']),
+                'filter' => Html::dropDownList('OrderSearch[status]', $searchModel->status, ['' => 'All'] + Order::statusList(), ['class' => 'form-control']),
                 'attribute' => 'status',
                 'value' => function (Order $model) {
                     return Order::statusName($model->status);
@@ -47,7 +47,6 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attribute' => 'customer_id',
                 'value' => 'customer.fullName',
             ],
-            //'total_tax',
             'total:currency',
             'created_at',
 

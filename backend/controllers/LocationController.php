@@ -2,14 +2,11 @@
 
 namespace backend\controllers;
 
-use common\models\LocationUser;
 use Yii;
-use common\models\Location;
-use common\models\search\LocationSearch;
-use yii\helpers\ArrayHelper;
-use yii\helpers\VarDumper;
 use yii\web\NotFoundHttpException;
 use yii2mod\editable\EditableAction;
+use common\models\search\LocationSearch;
+use common\models\{Location, LocationUser, Order};
 
 /**
  * LocationController implements the CRUD actions for Location model.
@@ -128,5 +125,52 @@ class LocationController extends AccessController
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    public function actionReport()
+    {
+        $dateFormat = 'Y-m-d';
+        $startDate = date($dateFormat, strtotime('monday this week'));
+        $endDate = date($dateFormat);
+
+        if (Yii::$app->request->isPost) {
+            $post = Yii::$app->request->post();
+
+            $locationId = $post['location'];
+
+            $startDate = $post['from'];
+            $endDate = $post['to'];
+
+            $orders = Order::find()
+                ->select(['id', 'total_tax', 'total', 'created_at'])
+                ->complete()
+                ->forLocation($locationId)
+                ->forDateRange($startDate, $endDate)
+                ->orderBy('created_at DESC')
+                ->all();
+
+            $d1 = new \DateTime($startDate);
+            $d2 = new \DateTime($endDate);
+
+            $interval = \DateInterval::createFromDateString('+1 day');
+
+            $datePeriod = new \DatePeriod($d1, $interval, $d2);
+
+            /*$total = $totalTax = 0;
+            foreach ($orders as $order) {
+                $total += $order->total;
+                $totalTax += $order->total_tax;
+            }
+            */
+        }
+
+        return $this->render('report', [
+            'orders' => $orders ?? null,
+            'dateFormat' => $dateFormat,
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+            'location' => $locationId ?? null,
+            'datePeriod' => $datePeriod ?? null
+        ]);
     }
 }

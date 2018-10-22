@@ -1,6 +1,6 @@
 <?php
 $orders = [];
-for ($i = 1; $i <= 15; $i++) {
+for ($i = 1; $i <= 1500; $i++) {
     $faker = Faker\Factory::create();
     $orders[] = [
         'id' => $i,

@@ -70,7 +70,14 @@ $avatar = Image::resize($user->avatarUrl, 57);
                             [
                                 'items' => [
                                     ['label' => 'Home', 'url' => '/', 'icon' => 'home'],
-                                    ['label' => 'Locations', 'url' => ['location/index'], 'icon' => 'archive'],
+                                    [
+                                        'label' => 'Locations',
+                                        'url' => '#',
+                                        'items' => [
+                                            ['label' => 'Settings', 'url' => ['location/index']],
+                                            ['label' => 'Reports', 'url' => ['location/report']],
+                                        ],
+                                        'icon' => 'archive'],
                                     [
                                         'label' => 'Inventory',
                                         'url' => ['inventory/index', 'id' => Location::find()

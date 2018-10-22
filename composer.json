@@ -31,7 +31,8 @@
     "kartik-v/yii2-widget-select2": "@dev",
     "kartik-v/yii2-grid": "@dev",
     "kartik-v/yii2-popover-x": "dev-master",
-    "scanerrr/yii2-local-image": "dev-master"
+    "scanerrr/yii2-local-image": "dev-master",
+    "kartik-v/yii2-date-range": "dev-master"
   },
   "require-dev": {
     "yiisoft/yii2-debug": "~2.0.0",
