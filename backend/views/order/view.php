@@ -115,6 +115,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <th class="text-left">Barcode</th>
                     <th class="text-right">Quantity</th>
                     <th class="text-right">Unit Price</th>
+                    <th class="text-right">Discount</th>
                     <th class="text-right">Tax</th>
                     <th class="text-right">Total</th>
                 </tr>
@@ -129,17 +130,18 @@ $this->params['breadcrumbs'][] = $this->title;
                         <td class="text-left"><?= Html::encode($product->barcode) ?></td>
                         <td class="text-right"><?= $orderProduct->quantity ?></td>
                         <td class="text-right"><?= Yii::$app->formatter->asCurrency($orderProduct->price) ?></td>
+                        <td class="text-right"><?= Yii::$app->formatter->asCurrency($orderProduct->discount) ?></td>
                         <td class="text-right"><?= Yii::$app->formatter->asCurrency($orderProduct->tax) ?></td>
                         <td class="text-right"><?= Yii::$app->formatter->asCurrency($orderProduct->total) ?></td>
                     </tr>
                 <?php endforeach; ?>
 
                 <tr>
-                    <td colspan="5" class="text-right">Tax</td>
+                    <td colspan="6" class="text-right">Tax</td>
                     <td class="text-right"><?= Yii::$app->formatter->asCurrency($model->total_tax) ?></td>
                 </tr>
                 <tr>
-                    <td colspan="5" class="text-right">Total</td>
+                    <td colspan="6" class="text-right">Total</td>
                     <td class="text-right"><?= Yii::$app->formatter->asCurrency($model->total) ?></td>
                 </tr>
                 </tbody>
