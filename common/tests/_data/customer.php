@@ -16,7 +16,7 @@ for ($i = 1; $i <= 15; $i++) {
         'city' => $faker->city,
         'address' => $faker->address,
         'zip' => $faker->randomNumber(5),
-        'created_at' => date('Y-m-d H:i:s'),
+        'created_at' => $faker->dateTimeBetween('-2 year')->format('Y-m-d'),
         'updated_at' => null,
     ];
 }

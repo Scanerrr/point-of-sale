@@ -26,7 +26,7 @@ for ($i = 1; $i <= 5; $i++) {
         'zip' => rand(10000, 99999),
         'tax_rate' => $faker->randomFloat(5, 0, 100),
         'status' => $i % 2 === 0 ? rand(0, 1) : 1,
-        'created_at' => date('Y-m-d H:i:s', strtotime('-' . $i * 2 . ' day')),
+        'created_at' => $faker->dateTimeBetween('-2 year')->format('Y-m-d'),
         'updated_at' => null,
     ];
 }

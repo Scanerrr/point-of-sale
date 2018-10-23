@@ -28,7 +28,7 @@ for ($i = 1; $i <= 20; $i++) {
         'size' => null,
         'sku' => $faker->ean8,
         'status' => $i % 2 === 0 ? rand(0, 1) : 1,
-        'created_at' => date('Y-m-d H:i:s', strtotime('-' . $i * 2 . ' day')),
+        'created_at' => $faker->dateTimeBetween('-2 year')->format('Y-m-d'),
         'updated_at' => null,
 
 
