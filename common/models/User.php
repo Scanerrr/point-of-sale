@@ -323,4 +323,19 @@ class User extends ActiveRecord implements IdentityInterface
             'commissionOrHourly' => $commissionOrHourly
         ]);
     }
+
+    /**
+     * {@inheritdoc}
+     * @return array
+     */
+    public function fields()
+    {
+        $fields = parent::fields();
+
+        // удаляем поля, содержащие конфиденциальную информацию
+        unset($fields['auth_key'], $fields['password_hash'], $fields['password_reset_token']);
+
+        return $fields;
+    }
+
 }

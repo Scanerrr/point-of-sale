@@ -12,6 +12,7 @@ use Yii;
  * @property string $name
  *
  * @property Order[] $orders
+ * @property bool $isCash
  */
 class PaymentMethod extends \yii\db\ActiveRecord
 {
@@ -55,5 +56,13 @@ class PaymentMethod extends \yii\db\ActiveRecord
     public function getOrders()
     {
         return $this->hasMany(Order::class, ['payment_method_id' => 'id']);
+    }
+
+    /**
+     * @return bool
+     */
+    public function getIsCash()
+    {
+        return $this->type_id === self::TYPE_CASH;
     }
 }

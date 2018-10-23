@@ -73,7 +73,7 @@ class CartController extends CookieController
             $order->location_id = $location->id;
             $order->employee_id = Yii::$app->user->id;
             $order->total_tax = $cart->totalTax;
-            $order->total = $total;
+            $order->total = $total; //todo: check for payment
 
             $transaction = Yii::$app->db->beginTransaction();
 

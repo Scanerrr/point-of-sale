@@ -1,0 +1,12 @@
+.location {
+  &-daily-sales-table,
+  &-location-invoices-table,
+  &-employee-sales-table {
+    max-height: 250px;
+    position: relative;
+    overflow-y: auto;
+  }
+  &-report-section {
+    margin-bottom: 15px;
+  }
+}

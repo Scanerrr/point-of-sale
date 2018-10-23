@@ -1,0 +1,8 @@
+.location-daily-sales-table, .location-location-invoices-table, .location-employee-sales-table {
+  max-height: 250px;
+  position: relative;
+  overflow-y: auto; }
+.location-report-section {
+  margin-bottom: 15px; }
+
+/*# sourceMappingURL=location_report.css.map */

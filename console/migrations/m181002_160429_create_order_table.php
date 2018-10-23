@@ -25,6 +25,8 @@ class m181002_160429_create_order_table extends Migration
             'updated_at' => $this->timestamp() . ' on update CURRENT_TIMESTAMP',
         ]);
 
+        $this->createIndex('idx-order-created_at', 'order', 'created_at');
+
         $this->addForeignKey('fk-order-location', 'order', 'location_id', 'location', 'id');
         $this->addForeignKey('fk-order-employee', 'order', 'employee_id', 'user', 'id');
         $this->addForeignKey('fk-order-customer', 'order', 'customer_id', 'customer', 'id');

@@ -1,0 +1,7 @@
+{
+"version": 3,
+"mappings": "AACE,8FAEuB;EACrB,UAAU,EAAE,KAAK;EACjB,QAAQ,EAAE,QAAQ;EAClB,UAAU,EAAE,IAAI;AAElB,wBAAiB;EACf,aAAa,EAAE,IAAI",
+"sources": ["location_report.scss"],
+"names": [],
+"file": "location_report.css"
+}

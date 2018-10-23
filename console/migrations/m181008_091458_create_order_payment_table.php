@@ -23,6 +23,8 @@ class m181008_091458_create_order_payment_table extends Migration
             'updated_at' => $this->timestamp() . ' on update CURRENT_TIMESTAMP',
         ]);
 
+        $this->createIndex('idx-order_payment-order_id', 'order_payment', 'order_id');
+
         $this->addForeignKey('fk-order_payment-order', 'order_payment', 'order_id', 'order', 'id');
         $this->addForeignKey('fk-order_payment-payment_method', 'order_payment', 'method_id', 'payment_method', 'id');
     }

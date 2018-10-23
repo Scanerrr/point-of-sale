@@ -6,6 +6,8 @@
  * Time: 1:25 PM
  */
 
+/* @var $orders \common\models\Order[] */
+
 use yii\helpers\Html;
 use common\models\Location;
 use kartik\daterange\DateRangePicker;
@@ -13,14 +15,6 @@ use yiister\gentelella\widgets\StatsTile;
 
 $this->title = 'Location Report';
 
-
-$orderTotal = $orderTotalTax = 0;
-if ($orders) {
-    foreach ($orders as $order) { // TODO: get rid of this foreach
-        $orderTotal += $order->total;
-        $orderTotalTax += $order->total_tax;
-    }
-}
 ?>
 
     <div class="location-reports">
@@ -61,7 +55,7 @@ if ($orders) {
         <?php Html::endForm() ?>
 
         <?php if ($orders): ?>
-            <div class="location-stats">
+            <section class="location-report-section">
                 <div class="row">
                     <div class="col-xs-12 col-md-3">
                         <?= StatsTile::widget(
@@ -69,7 +63,7 @@ if ($orders) {
 //                        'icon' => 'list-alt',
                                 'header' => 'Total Net',
 //                        'text' => 'Average Daily Net Sales',
-                                'number' => $orderTotal - $orderTotalTax,
+                                'number' => Yii::$app->formatter->asCurrency($orderTotal - $orderTotalTax),
                             ]
                         ) ?>
                     </div>
@@ -79,7 +73,7 @@ if ($orders) {
 //                        'icon' => 'pie-chart',
                                 'header' => 'Total Tax',
 //                        'text' => 'Users to orders',
-                                'number' => $orderTotalTax,
+                                'number' => Yii::$app->formatter->asCurrency($orderTotalTax),
                             ]
                         ) ?>
                     </div>
@@ -89,7 +83,7 @@ if ($orders) {
 //                        'icon' => 'users',
                                 'header' => 'Total Gross',
 //                        'text' => 'Count of registered users',
-                                'number' => $orderTotal,
+                                'number' => Yii::$app->formatter->asCurrency($orderTotal),
                             ]
                         ) ?>
                     </div>
@@ -104,31 +98,61 @@ if ($orders) {
                         ) ?>
                     </div>
                 </div>
-            </div>
-
-            <div class="row">
-                <div class="col-sm-3">
-                    <h3>Location Daily Sales</h3>
-                    <div class="location-daily-sales"></div>
+            </section>
+            <section class="location-report-section">
+                <div class="row">
+                    <div class="col-sm-3">
+                        <h3>Location Daily Sales</h3>
+                        <div class="location-daily-sales-table"></div>
+                    </div>
+                    <div class="col-sm-9">
+                        <div class="location-daily-sales-chart"></div>
+                    </div>
                 </div>
-                <div class="col-sm-9">
-                    <div class="location-chart"></div>
+            </section>
+
+            <section class="location-report-section">
+                <div class="row">
+                    <div class="col-sm-3">
+                        <h3>Location Payment Methods</h3>
+                        <div class="location-daily-sales-table"></div>
+                    </div>
+                    <div class="col-sm-9">
+                        <div class="location-daily-sales-chart"></div>
+                    </div>
                 </div>
-            </div>
+            </section>
 
-<!--        <div class="row">-->
-<!--            <div class="col-sm-12">-->
-<!--                <h3>Location Payment Methods</h3>-->
-<!-- TODO-->
-<!--            </div>-->
-<!--        </div>-->
-
-        <div class="row">
-            <div class="col-sm-12">
-                <h3>Location Invoices</h3>
-                <div class="location-invoices"></div>
-            </div>
-        </div>
+            <section class="location-report-section">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <h3>Location Invoices</h3>
+                        <div class="location-invoices-table"></div>
+                    </div>
+                </div>
+            </section>
+            <section class="location-report-section">
+                <div class="row">
+                    <div class="col-sm-3">
+                        <h3>Location Products Sold</h3>
+                        <div class="location-products-sold-table"></div>
+                    </div>
+                    <div class="col-sm-9">
+                        <div class="location-products-sold-chart"></div>
+                    </div>
+                </div>
+            </section>
+            <section class="location-report-section">
+                <div class="row">
+                    <div class="col-sm-3">
+                        <h3>Location Employee Sales</h3>
+                        <div class="location-employee-sales-table"></div>
+                    </div>
+                    <div class="col-sm-9">
+                        <div class="location-employee-sales-chart"></div>
+                    </div>
+                </div>
+            </section>
         <?php endif; ?>
     </div>
 
@@ -138,15 +162,62 @@ if ($orders) {
 
         google.charts.load('current', {'packages': ['corechart', 'table']});
 
-        google.charts.setOnLoadCallback(draw);
+        google.charts.setOnLoadCallback(drawDaily);
+        google.charts.setOnLoadCallback(drawInvoices);
+        google.charts.setOnLoadCallback(drawProducts);
+        google.charts.setOnLoadCallback(drawEmployee);
 
-        function draw() {
+        function drawDaily() {
 
-            let dataChart = new google.visualization.DataTable();
-            let dataTable = new google.visualization.DataTable();
+            const dataChart = new google.visualization.DataTable(),
+                dataTable = new google.visualization.DataTable();
 
             dataChart.addColumn('string', 'Date');
             dataChart.addColumn('number', 'Total');
+
+            dataTable.addColumn('date', 'Date');
+            dataTable.addColumn('number', 'Sub');
+            dataTable.addColumn('number', 'Tax');
+            dataTable.addColumn('number', 'Total');
+
+            let $ordersByDays = <?= json_encode($ordersByDays) ?>;
+            $.each($ordersByDays, (key, order) => {
+                let total = parseFloat(order.total),
+                    totalTax = parseFloat(order.total_tax);
+                dataChart.addRow([key, total]);
+                dataTable.addRow([
+                    new Date(key),
+                    total - totalTax,
+                    totalTax,
+                    total,
+                ]);
+            })
+
+            const formatter = new google.visualization.NumberFormat({prefix: '$'});
+
+            formatter.format(dataChart, 1);
+
+            formatter.format(dataTable, 1);
+            formatter.format(dataTable, 1);
+            formatter.format(dataTable, 2);
+
+            let options = {
+                height: 300,
+                vAxis: {
+                    format: 'currency'
+                }
+            };
+
+            const dailyChart = new google.visualization.LineChart(document.querySelector('.location-daily-sales-chart')),
+                dailyTable = new google.visualization.Table(document.querySelector('.location-daily-sales-table'));
+
+            dailyChart.draw(dataChart, options);
+            dailyTable.draw(dataTable, {width: '100%', height: '250px'});
+        }
+
+        function drawInvoices() {
+
+            const dataTable = new google.visualization.DataTable();
 
             dataTable.addColumn('number', 'Invoice');
             dataTable.addColumn('date', 'Date');
@@ -154,50 +225,110 @@ if ($orders) {
             dataTable.addColumn('number', 'Tax');
             dataTable.addColumn('number', 'Total');
 
-            <?php foreach ($orders as $order): ?>
-            dataChart.addRow([
-                {
-                    v: '<?= $order->created_at ?>',
-                    f: '<?= date('M d, Y', strtotime($order->created_at)) ?>'
-                },
-                {
-                    v: <?= $order->total ?>,
-                    f: '<?= Yii::$app->formatter->asCurrency($order->total) ?>'
-                }
-            ]);
+            let $orders = <?= json_encode(\yii\helpers\ArrayHelper::toArray($orders)) ?>;
+            $.each($orders, (key, order) => {
+                let total = parseFloat(order.total),
+                    totalTax = parseFloat(order.total_tax);
+                dataTable.addRow([
+                    parseInt(order.id),
+                    new Date(order.created_at),
+                    total - totalTax,
+                    totalTax,
+                    total,
+                ])
+            })
 
-            dataTable.addRow([
-                <?= $order->id ?>,
+            const formatter = new google.visualization.NumberFormat({prefix: '$'});
+            formatter.format(dataTable, 2);
+            formatter.format(dataTable, 3);
+            formatter.format(dataTable, 4);
 
-                new Date('<?= $order->created_at ?>'),
-                {
-                    v: <?= $order->total - $order->total_tax ?>,
-                    f: '<?= Yii::$app->formatter->asCurrency($order->total - $order->total_tax) ?>'
+            const invoicesTable = new google.visualization.Table(document.querySelector('.location-invoices-table'));
+
+            invoicesTable.draw(dataTable, {width: '100%', height: '250px'});
+        }
+
+        function drawProducts() {
+
+            const data = new google.visualization.DataTable();
+
+            data.addColumn('string', 'Product Name');
+            data.addColumn('number', 'Quantity');
+            data.addColumn('number', 'Average net price');
+
+            let $ordersProducts = <?= json_encode($ordersProducts) ?>;
+            $.each($ordersProducts, (key, $orderProduct) => {
+                let total = parseFloat($orderProduct.total),
+                    quantity = parseInt($orderProduct.quantity);
+                data.addRow([
+                    $orderProduct.name,
+                    quantity,
+                    total / quantity,
+                ])
+            })
+
+            const formatter = new google.visualization.NumberFormat({prefix: '$'});
+
+            formatter.format(data, 2);
+
+            let options = {
+                height: 300,
+                series: {
+                    0: {targetAxisIndex: 0},
+                    1: {targetAxisIndex: 1, format: 'currency'}
                 },
-                {
-                    v: <?= $order->total_tax ?>,
-                    f: '<?= Yii::$app->formatter->asCurrency($order->total_tax) ?>'
-                },
-                {
-                    v: <?= $order->total ?>,
-                    f: '<?= Yii::$app->formatter->asCurrency($order->total) ?>'
-                }
-            ]);
-            <?php endforeach; ?>
+                focusTarget: 'category',
+            };
+
+            const chart = new google.visualization.ColumnChart(document.querySelector('.location-products-sold-chart')),
+                table = new google.visualization.Table(document.querySelector('.location-products-sold-table'));
+
+            chart.draw(data, options);
+            table.draw(data, {width: '100%', height: '250px'});
+        }
+
+        function drawEmployee() {
+
+            const data = new google.visualization.DataTable();
+
+            data.addColumn('string', 'Employee Name');
+            data.addColumn('number', 'Total net sales');
+
+            let $ordersEmployees = <?= json_encode($ordersEmployees) ?>;
+            $.each($ordersEmployees, (key, orderEmployee) => {
+                let total = parseFloat(orderEmployee.total);
+                data.addRow([
+                    orderEmployee.name,
+                    total,
+                ])
+            })
+
+            const formatter = new google.visualization.NumberFormat({prefix: '$'});
+
+            formatter.format(data, 1);
 
             let options = {
                 height: 300,
                 vAxis: {
                     format: 'currency'
-                },
-                theme: 'material'
+                }
             };
 
-            let chart = new google.visualization.LineChart(document.querySelector('.location-chart')),
-                table = new google.visualization.Table(document.querySelector('.location-invoices'));
+            const view = new google.visualization.DataView(data);
+            view.setColumns([0, 1]);
 
-            chart.draw(dataChart, options);
-            table.draw(dataTable, {width: '100%', height: '100%'});
+            const chart = new google.visualization.ColumnChart(document.querySelector('.location-employee-sales-chart')),
+                table = new google.visualization.Table(document.querySelector('.location-employee-sales-table'));
+
+            chart.draw(view, options);
+            table.draw(view, {width: '100%', height: '250px'});
+
+            google.visualization.events.addListener(table, 'sort',
+                function (event) {
+                    data.sort([{column: event.column, desc: !event.ascending}]);
+                    chart.draw(view);
+                });
         }
+
     </script>
 <?php endif; ?>

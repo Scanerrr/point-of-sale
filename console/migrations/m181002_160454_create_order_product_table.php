@@ -23,6 +23,9 @@ class m181002_160454_create_order_product_table extends Migration
             'total' => $this->decimal(15, 2)->defaultValue(0),
         ]);
 
+        $this->createIndex('idx-order_product-order_id', 'order_product', 'order_id');
+        $this->createIndex('idx-order_product-product_id', 'order_product', 'product_id');
+
         $this->addForeignKey('fk-order_product-order', 'order_product', 'order_id', 'order', 'id', 'CASCADE', 'RESTRICT');
         $this->addForeignKey('fk-order_product-product', 'order_product', 'product_id', 'product', 'id');
     }

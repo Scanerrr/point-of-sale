@@ -3,10 +3,13 @@
 namespace backend\controllers;
 
 use Yii;
+use yii\db\ActiveQuery;
+use yii\helpers\ArrayHelper;
+use yii\helpers\VarDumper;
 use yii\web\NotFoundHttpException;
 use yii2mod\editable\EditableAction;
 use common\models\search\LocationSearch;
-use common\models\{Location, LocationUser, Order};
+use common\models\{Location, LocationUser, Order, PaymentMethod, Product, User};
 
 /**
  * LocationController implements the CRUD actions for Location model.
@@ -142,27 +145,102 @@ class LocationController extends AccessController
             $endDate = $post['to'];
 
             $orders = Order::find()
-                ->select(['id', 'total_tax', 'total', 'created_at'])
+                ->with([
+                    'orderProducts',
+                    'orderProducts.product' => function (ActiveQuery $query) {
+                        return $query->select('name');
+                    },
+                    'orderPayments',
+                    'orderPayments.method' => function (ActiveQuery $query) {
+                        return $query->select(['id', 'type_id']);
+                    },
+                    'employee' => function (ActiveQuery $query) {
+                        return $query->select(['id', 'name']);
+                    },
+                ])
+                ->select(['id', 'total_tax', 'total', 'employee_id', 'created_at'])
                 ->complete()
                 ->forLocation($locationId)
                 ->forDateRange($startDate, $endDate)
-                ->orderBy('created_at DESC')
+                ->orderBy('created_at ASC')
                 ->all();
 
-            $d1 = new \DateTime($startDate);
-            $d2 = new \DateTime($endDate);
-
-            $interval = \DateInterval::createFromDateString('+1 day');
-
-            $datePeriod = new \DatePeriod($d1, $interval, $d2);
-
-            /*$total = $totalTax = 0;
+            $ordersByDays = $ordersPayments = $ordersProducts = $ordersEmployees = [];
+            $total = $totalTax = 0;
             foreach ($orders as $order) {
+
+                // statistic by days
+                $createdAt = date($dateFormat, strtotime($order->created_at));
+                $ordersByDays[$createdAt] = [
+                    'total_tax' => isset($ordersByDays[$createdAt]['total_tax'])
+                        ? $ordersByDays[$createdAt]['total_tax'] + $order->total_tax
+                        : $order->total_tax,
+                    'total' => isset($ordersByDays[$createdAt]['total'])
+                        ? $ordersByDays[$createdAt]['total'] + $order->total
+                        : $order->total,
+                    'count' => isset($ordersByDays[$createdAt]['total'])
+                        ? $ordersByDays[$createdAt]['count'] + 1
+                        : 1
+                ];
+
+//                // payment statistic
+//                foreach ($order->orderPayments as $orderPayment) {
+//                    if ($orderPayment->method->isCash) {
+//                        $ordersPayments[$orderPayment->method_id] = [
+//                            'isCash' => $orderPayment->method->isCash,
+//                            'total' => isset($orderPayment[$orderPayment->method_id]['total'])
+//                                ? $orderPayment[$orderPayment->method_id]['total'] + $orderPayment->amount
+//                                : $orderPayment->amount,
+//                            'count' => isset($orderPayment[$orderPayment->method_id]['count'])
+//                                ? $orderPayment[$orderPayment->method_id]['count'] + 1
+//                                : 1,
+//                    }
+//                    $ordersPayments[$orderPayment->method_id] = [
+//                        'isCash' => $orderPayment->method->isCash,
+//                        'total' => isset($orderPayment[$orderPayment->method_id]['total'])
+//                            ? $orderPayment[$orderPayment->method_id]['total'] + $orderPayment->amount
+//                            : $orderPayment->amount,
+//                        'count' => isset($orderPayment[$orderPayment->method_id]['count'])
+//                            ? $orderPayment[$orderPayment->method_id]['count'] + 1
+//                            : 1,
+//                    ];
+//                }
+
+                // statistic by products
+                foreach ($order->orderProducts as $orderProduct) {
+                    $ordersProducts[$orderProduct->product_id] = [
+                        'name' => $orderProduct->product->name,
+                        'quantity' => isset($ordersProducts[$orderProduct->product_id]['quantity'])
+                            ? $ordersProducts[$orderProduct->product_id]['quantity'] + $orderProduct->quantity
+                            : $orderProduct->quantity,
+                        'total' => isset($ordersProducts[$orderProduct->product_id]['total'])
+                            ? $ordersProducts[$orderProduct->product_id]['total'] + $orderProduct->tax + $orderProduct->price // get net price
+                            : $orderProduct->tax + $orderProduct->price,
+                        'count' => isset($ordersProducts[$orderProduct->product_id]['count'])
+                            ? $ordersProducts[$orderProduct->product_id]['count'] + 1
+                            : 1,
+                    ];
+                }
+
+                // employees statistic
+                $employee = $order->employee;
+                if ($employee) {
+                    $ordersEmployees[$employee->id]['name'] = $employee->name;
+                    $ordersEmployees[$employee->id]['total'] = isset($ordersEmployees[$employee->id]['total'])
+                        ? $ordersEmployees[$employee->id]['total'] + $order->total - $order->total_tax
+                        : $order->total - $order->total_tax;
+                    $ordersEmployees[$employee->id]['count'] = isset($ordersEmployees[$employee->id]['count'])
+                        ? $ordersEmployees[$employee->id]['count'] + 1
+                        : 1;
+                }
                 $total += $order->total;
                 $totalTax += $order->total_tax;
             }
-            */
         }
+
+//        VarDumper::dump($ordersPayments, 10, 1); die();
+
+        $this->view->registerCssFile('/css/location_report.css');
 
         return $this->render('report', [
             'orders' => $orders ?? null,
@@ -170,7 +248,11 @@ class LocationController extends AccessController
             'startDate' => $startDate,
             'endDate' => $endDate,
             'location' => $locationId ?? null,
-            'datePeriod' => $datePeriod ?? null
+            'orderTotal' => $total ?? 0,
+            'orderTotalTax' => $totalTax ?? 0,
+            'ordersByDays' => $ordersByDays ?? null,
+            'ordersProducts' => $ordersProducts ?? null,
+            'ordersEmployees' => $ordersEmployees ?? null,
         ]);
     }
 }
