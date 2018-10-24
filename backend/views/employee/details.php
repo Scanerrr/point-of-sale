@@ -232,4 +232,4 @@ function clearForm(form) {
     })
 }
 JS;
-$this->registerJs($script, $this::POS_READY);
+$this->registerJs($script);

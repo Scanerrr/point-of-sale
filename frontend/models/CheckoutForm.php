@@ -3,12 +3,11 @@ namespace frontend\models;
 
 use Yii;
 use yii\base\Model;
-use common\models\Product;
 
 /**
  * Create customer form
  */
-class AddToCartForm extends Model
+class CheckoutForm extends Model
 {
     public $productId;
     public $price;

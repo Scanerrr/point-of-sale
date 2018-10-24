@@ -41,24 +41,6 @@ $('.clock-form').on('submit', e => {
         .fail(failHandler)
 })
 
-$('.discount-select').on('change', e => {
-    e.preventDefault()
-    const $this = $(e.target)
-    const discountInput = $('input[name=discount]')
-    switch ($this.val()) {
-        case 'percent':
-            discountInput.attr('max', 100)
-            break;
-        case 'currency':
-            discountInput.attr('max', $this.data('markup-price'))
-            break;
-        default:
-            break;
-    }
-    discountInput.val(0)
-
-})
-
 function failHandler(err) {
     console.error(err.responseText)
 }

@@ -9,6 +9,7 @@
 namespace frontend\controllers;
 
 
+use frontend\models\CreateCustomerForm;
 use Yii;
 use frontend\components\cart\Cart;
 use frontend\controllers\access\CookieController;
@@ -26,6 +27,7 @@ class CartController extends CookieController
 
     public function actionIndex()
     {
+        $this->view->registerCssFile('/css/checkout-index.css');
         return $this->render('index');
     }
 
@@ -89,12 +91,12 @@ class CartController extends CookieController
                 $orderProduct->order_id = $order->id;
                 $orderProduct->product_id = $product->id;
                 $orderProduct->quantity = $item['quantity'];
-                $orderProduct->price = $product->markup_price;
+                $orderProduct->price = $item['price'];
                 $orderProduct->discount = $item['discount'] * $item['quantity'];
 
-                $tax = ($product->markup_price * $location->tax_rate) / 100; // get tax in $
+                $tax = ($item['price'] * $location->tax_rate) / 100; // get tax in $
                 $orderProduct->tax = $tax;
-                $orderProduct->total = ($product->markup_price + $tax) * $item['quantity'];
+                $orderProduct->total = ($item['price'] + $tax) * $item['quantity'];
 
                 if (!$orderProduct->save()) {
                     $transaction->rollBack();
@@ -145,6 +147,7 @@ class CartController extends CookieController
             'cart' => $cart,
             'location' => $location,
             'model' => $order,
+            'customerModel' => new CreateCustomerForm()
         ]);
     }
 

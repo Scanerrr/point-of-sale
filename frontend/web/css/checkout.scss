@@ -1,0 +1,55 @@
+$leftBg: #f2f4f5;
+$rightBg: #f4f6f8;
+$sectionBg: #e1e5ea;
+$purple: #7681cd;
+
+%flex-shared {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+body {
+  background: $leftBg !important
+}
+
+.col-left {
+  border-right: 1px solid darken($sectionBg, 10%);
+
+  .checkout-section {
+    background: #fff;
+    margin-bottom: 15px;
+    border: 1px solid $sectionBg;
+    font-size: 18px;
+
+    &-flex {
+      @extend %flex-shared;
+    }
+
+    &.customer {
+      padding: 20px 15px;
+      a {
+        color: $purple
+      }
+    }
+
+    .item {
+      @extend %flex-shared;
+
+      border-bottom: 1px solid $sectionBg;
+      padding: 20px 15px;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      &-c {
+        border-bottom: none;
+        padding: 5px 15px;
+        span:first-child {
+          color: $purple
+        }
+      }
+    }
+  }
+}

@@ -8,19 +8,19 @@
 
 /* @var $cart \frontend\components\cart\Cart */
 /* @var $location \common\models\Location */
-
 /* @var $model \common\models\Order */
+
+/* @var $customerModel \frontend\models\CreateCustomerForm */
 
 use yii\helpers\{Html, Url};
 use yii\widgets\{ActiveForm, Pjax};
 use yii\bootstrap\Modal;
 use kartik\select2\Select2;
-use frontend\models\CreateCustomerForm;
-use common\models\{Customer, OrderPayment, PaymentMethod};
-
+use common\models\{Customer, PaymentMethod};
 
 $colors = ['default', 'primary', 'success', 'danger', 'warning', 'info'];
-$total = $cart->total
+$total = $cart->total;
+/*
 ?>
     <div class="panel panel-default">
         <div class="panel-body">
@@ -29,7 +29,7 @@ $total = $cart->total
         </div>
     </div>
 <?php $form = ActiveForm::begin(['options' => ['class' => 'checkout-form']]) ?>
-    <div class="panel panel-<?= $colors[array_rand($colors)] ?>">
+    <div class="panel panel-primary">
         <div class="panel-heading">Customer</div>
         <div class="panel-body">
 
@@ -53,13 +53,13 @@ $total = $cart->total
             <?php Pjax::end() ?>
 
             <?= Html::button('Create customer', [
-                'class' => 'btn btn-sm btn-success add-customer',
+                'class' => 'btn btn-sm btn-default add-customer',
                 'data' => ['toggle' => 'modal', 'target' => '#add-customer-modal']
             ]) ?>
 
         </div>
     </div>
-    <div class="panel panel-<?= $colors[array_rand($colors)] ?>">
+    <div class="panel panel-primary">
         <div class="panel-heading">Payment</div>
         <div class="panel-body">
 
@@ -73,11 +73,10 @@ $total = $cart->total
             <?= Html::hiddenInput('payment_amount', null) ?>
             <?= Html::hiddenInput('payment_method', null) ?>
             <?= Html::hiddenInput('payment_card_number', null) ?>
-<!--TODO: MAKE SEVERAL PAYMENTS AND ADD CONDITION IF WHOLE PRICE IS PAID-->
         </div>
     </div>
 
-    <?= Html::submitButton('Checkout') ?>
+<?= Html::submitButton('Checkout') ?>
 <?php ActiveForm::end() ?>
 
     <!--Add customer-->
@@ -86,8 +85,6 @@ $total = $cart->total
     'id' => 'add-customer-modal',
     'size' => 'modal-md',
 ]);
-
-$customerModel = new CreateCustomerForm();
 
 $form = ActiveForm::begin([
     'action' => ['/customer/create'],
@@ -196,3 +193,97 @@ $this->registerJs($script, $this::POS_END);
 $this->registerJsFile('@web/js/checkout.js', [
     'depends' => [\yii\web\JqueryAsset::class],
 ]);
+*/
+
+$this->registerCssFile('/css/checkout.css');
+?>
+
+<div class="checkout-form">
+    <span class="row">
+        <div class="col-sm-5 col-left">
+            <h2 class="text-center">Checkout Information</h2>
+            <section class="checkout-section cart-items">
+                <div class="item">
+                    <span>Products</span>
+                </div>
+                <div class="item item-c checkout-section-flex">
+                    <span>test</span>
+                    <span>$123</span>
+                </div>
+                <div class="item item-c checkout-section-flex">
+                    <span>test</span>
+                    <span>$123</span>
+                </div>
+            </section>
+
+            <section class="checkout-section checkout-section-flex customer">
+                <a href="">
+                    <span>Add customer</span>
+                </a>
+                <a href="">
+                    <span><i class="fa fa-plus-circle"></i></span>
+                </a>
+            </section>
+
+            <section class="checkout-section totals">
+                <div class="item checkout-section-flex">
+                    <span>Total</span>
+                    <span>$500</span>
+                </div>
+                <div class="item item-c checkout-section-flex">
+                    <span>Tax</span>
+                    <span>$10</span>
+                </div>
+                <div class="item item-c checkout-section-flex">
+                    <span>Discount</span>
+                    <span>$5</span>
+                </div>
+                <div class="item item-c checkout-section-flex">
+                    <span>Subtotal</span>
+                    <span>$123</span>
+                </div>
+            </section>
+
+            <section class="checkout-section payments">
+                <div class="item">
+                    <span>Paid</span>
+                    <span>$500</span>
+                </div>
+                <div class="item item-c checkout-section-flex">
+                    <span>cash</span>
+                    <span>$10</span>
+                </div>
+                <div class="item item-c checkout-section-flex">
+                    <span>visa</span>
+                    <span>$5</span>
+                </div>
+            </section>
+        </div>
+
+        <div class="col-sm-7">
+            <section class="checkout-section total-due">
+                <h1>$500</h1>
+            </section>
+            <section class="checkout-section payment">
+                <div class="payment-cards">
+                    <div class="payment-card">
+                        <div class="payment-icon">
+                            <div class="fa fa-cash"></div>
+                        </div>
+                        <div class="payment-title">Cash</div>
+                    </div>
+                    <div class="payment-card">
+                        <div class="payment-icon">
+                            <div class="fa fa-visa"></div>
+                        </div>
+                        <div class="payment-title">Credit</div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="checkout-section payment-actions">
+                <button>Add payment</button>
+            </section>
+        </div>
+    </div>
+</div>

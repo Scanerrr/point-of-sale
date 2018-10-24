@@ -49,15 +49,17 @@ class Cart extends Component
 
     /**
      * @param Product $product
+     * @param float $price
      * @param int $quantity
      */
-    public function add(Product &$product, int $quantity = 1): void
+    public function add(Product &$product, float $price, int $quantity = 1): void
     {
         if (isset($this->items[$product->id])) {
-            $this->plus($product->id, $quantity);
+            $this->plus($product->id, $price, $quantity);
         } else {
             $this->items[$product->id] = [
                 'product' => $product,
+                'price' => $price,
                 'quantity' => $quantity,
             ];
             $this->saveItems();
@@ -67,13 +69,15 @@ class Cart extends Component
     /**
      * Adding item quantity in the cart
      * @param integer $id
+     * @param float $price
      * @param integer $quantity
      * @return void
      */
-    public function plus(int $id, int $quantity): void
+    public function plus(int $id, float $price, int $quantity): void
     {
         if (isset($this->items[$id])) {
             $this->items[$id]['quantity'] = $quantity + $this->items[$id]['quantity'];
+            $this->items[$id]['price'] = $price + $this->items[$id]['price'];
         }
         $this->saveItems();
     }
@@ -115,7 +119,7 @@ class Cart extends Component
     public function getSubTotal(): float
     {
         return array_sum(array_map(function ($item) {
-            return $item['product']->markup_price * $item['quantity'];
+            return $item['price'] * $item['quantity'];
         }, $this->items));
     }
 
