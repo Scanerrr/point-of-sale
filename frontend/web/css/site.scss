@@ -7,10 +7,6 @@ $color_apple_blossom: #a94442;
 $color_vista_white: #fdf7f7;
 $color_vanilla_ice: #eed3d7;
 
-$color_sea_pink: #5b66d3;
-$color_persian_red: #001bd3;
-$color_fair_pink: #bdcaff69;
-
 $main-color: #6394F8;
 $light-text: #ABB0BE;
 
@@ -146,51 +142,6 @@ a {
   }
 }
 
-/* CARDS */
-.cards {
-  display: flex;
-  flex-wrap: wrap;
-}
-
-.card {
-  width: 150px;
-  display: flex;
-  flex-direction: column;
-  border: 1px solid $color_sea_pink;
-  border-radius: 4px;
-  overflow: hidden;
-  margin: 5px;
-  //height: 100%;
-
-  &-header {
-    color: $color_persian_red;
-    text-align: center;
-    font-size: 12px;
-    font-weight: 600;
-    border-bottom: 1px solid $color_sea_pink;
-    background-color: $color_fair_pink;
-    padding: 5px 10px;
-  }
-
-  &-main {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 15px 0;
-    height: 100%;
-
-    &-thumb {
-      margin-bottom: 10px;
-    }
-
-    &-description {
-      color: $color_persian_red;
-      font-size: 12px;
-    }
-  }
-}
-
 /* SHOPPING CART */
 .shopping-cart {
   margin: 20px 0;
@@ -273,4 +224,3 @@ a {
     background: $main-color;
   }
 }
-

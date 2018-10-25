@@ -1,0 +1,35 @@
+/* CARDS */
+.cards {
+  display: flex;
+  flex-wrap: wrap; }
+
+.card {
+  width: 150px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #5b66d3;
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 5px; }
+  .card-header {
+    color: #001bd3;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 600;
+    border-bottom: 1px solid #5b66d3;
+    background-color: #bdcaff69;
+    padding: 5px 10px; }
+  .card-main {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 15px 0;
+    height: 100%; }
+    .card-main-thumb {
+      margin-bottom: 10px; }
+    .card-main-description {
+      color: #001bd3;
+      font-size: 12px; }
+
+/*# sourceMappingURL=catalog.css.map */

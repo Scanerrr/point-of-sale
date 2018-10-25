@@ -24,18 +24,15 @@ use yii\helpers\Html;
 <?php
 
 $script = <<< JS
-$(() => {
+$('input[name=payment_amount]').on('change', e => {
     const formatter = new Intl.NumberFormat('en-US', {
         style: 'currency',
         currency: 'USD',
     })
-    
-    $('input[name=payment_amount]').on('change', e => {
-        const value = e.target.value
-        const result = formatter.format($total - value)
-        $('.change-due').text(result)
-    })
+    const value = e.target.value
+    const result = formatter.format($total - value)
+    $('.change-due').text(result)
 })
 JS;
 
-$this->registerJs($script, $this::POS_END);
+$this->registerJs($script);

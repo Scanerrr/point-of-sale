@@ -8,9 +8,8 @@
 
 /* @var $cart \frontend\components\cart\Cart */
 /* @var $location \common\models\Location */
-/* @var $model \common\models\Order */
 
-/* @var $customerModel \frontend\models\CreateCustomerForm */
+/* @var $model \common\models\Order */
 
 use yii\helpers\{Html, Url};
 use yii\widgets\{ActiveForm, Pjax};
@@ -18,7 +17,6 @@ use yii\bootstrap\Modal;
 use kartik\select2\Select2;
 use common\models\{Customer, PaymentMethod};
 
-$colors = ['default', 'primary', 'success', 'danger', 'warning', 'info'];
 $total = $cart->total;
 /*
 ?>
@@ -78,55 +76,6 @@ $total = $cart->total;
 
 <?= Html::submitButton('Checkout') ?>
 <?php ActiveForm::end() ?>
-
-    <!--Add customer-->
-<?php Modal::begin([
-    'header' => Html::tag('h3', 'Add Customer'),
-    'id' => 'add-customer-modal',
-    'size' => 'modal-md',
-]);
-
-$form = ActiveForm::begin([
-    'action' => ['/customer/create'],
-    'options' => ['class' => 'create_customer-form']
-]) ?>
-    <div class="col-sm-6">
-        <?= $form->field($customerModel, 'firstname')->textInput(['class' => 'form-control customer-firstname']) ?>
-    </div>
-    <div class="col-sm-6">
-        <?= $form->field($customerModel, 'lastname')->textInput(['class' => 'form-control customer-lastname']) ?>
-    </div>
-    <div class="col-sm-12">
-        <?= $form->field($customerModel, 'email')->textInput() ?>
-    </div>
-    <div class="col-sm-8">
-        <?= $form->field($customerModel, 'phone')->textInput() ?>
-    </div>
-    <div class="col-sm-4">
-        <?= $form->field($customerModel, 'gender')->dropDownList(['male' => 'Male', 'female' => 'Female']) ?>
-    </div>
-    <div class="col-sm-4">
-        <?= $form->field($customerModel, 'country')->textInput(['value' => $location->country]) ?>
-    </div>
-    <div class="col-sm-4">
-        <?= $form->field($customerModel, 'state')->textInput(['value' => $location->state]) ?>
-    </div>
-    <div class="col-sm-4">
-        <?= $form->field($customerModel, 'city')->textInput(['value' => $location->city]) ?>
-    </div>
-    <div class="col-sm-6">
-        <?= $form->field($customerModel, 'address')->textInput(['value' => $location->address]) ?>
-    </div>
-    <div class="col-sm-6">
-        <?= $form->field($customerModel, 'zip')->textInput(['value' => $location->zip]) ?>
-    </div>
-
-    <div class="form-group">
-        <?= Html::submitButton('Create', ['class' => 'btn btn-primary', 'name' => 'create-button']) ?>
-    </div>
-<?php ActiveForm::end() ?>
-<?php Modal::end() ?>
-
 
 <?php Modal::begin([
     'header' => Html::tag('h3', 'Payment - Cash'),
@@ -193,13 +142,10 @@ $this->registerJs($script, $this::POS_END);
 $this->registerJsFile('@web/js/checkout.js', [
     'depends' => [\yii\web\JqueryAsset::class],
 ]);
-*/
-
-$this->registerCssFile('/css/checkout.css');
-?>
+*/ ?>
 
 <div class="checkout-form">
-    <span class="row">
+    <div class="row">
         <div class="col-sm-5 col-left">
             <h2 class="text-center">Checkout Information</h2>
             <section class="checkout-section cart-items">
@@ -216,31 +162,48 @@ $this->registerCssFile('/css/checkout.css');
                 </div>
             </section>
 
-            <section class="checkout-section checkout-section-flex customer">
-                <a href="">
-                    <span>Add customer</span>
-                </a>
-                <a href="">
-                    <span><i class="fa fa-plus-circle"></i></span>
+            <section class="checkout-section customer">
+                <?php Pjax::begin(['id' => 'customer-load']) ?>
+                <?= Select2::widget([
+                    'name' => 'customer',
+                    'data' => Customer::find()
+                        ->select(['CONCAT(firstname, " ", lastname, " (", email , ")") AS name'])
+                        ->orderBy('name')
+                        ->indexBy('id')
+                        ->column(),
+                    'theme' => Select2::THEME_BOOTSTRAP,
+                    'options' => [
+                        'placeholder' => 'Select a customer ...',
+                        'id' => 'assigned-customer'
+                    ],
+                    'pluginOptions' => [
+                        'allowClear' => true
+                    ],
+                ]) ?>
+                <?php Pjax::end() ?>
+                <a href="#" class="add-customer" data-toggle="modal" data-target="#add-customer-modal">
+                    <div class="text-center">
+                        <span>Add customer</span>
+                    </div>
                 </a>
             </section>
 
             <section class="checkout-section totals">
                 <div class="item checkout-section-flex">
                     <span>Total</span>
-                    <span>$500</span>
+                    <span><?= Yii::$app->formatter->asCurrency($total) ?></span>
                 </div>
                 <div class="item item-c checkout-section-flex">
                     <span>Tax</span>
-                    <span>$10</span>
+                    <span><?= Yii::$app->formatter->asCurrency($cart->totalTax) ?></span>
                 </div>
                 <div class="item item-c checkout-section-flex">
                     <span>Discount</span>
-                    <span>$5</span>
+                    <span><?= Yii::$app->formatter->asCurrency($cart->totalDiscount) ?></span>
                 </div>
                 <div class="item item-c checkout-section-flex">
                     <span>Subtotal</span>
-                    <span>$123</span>
+                    <span><?= Yii::$app->formatter->asCurrency($cart->subTotal) ?></span>
                 </div>
             </section>
 
@@ -260,30 +223,47 @@ $this->registerCssFile('/css/checkout.css');
             </section>
         </div>
 
-        <div class="col-sm-7">
-            <section class="checkout-section total-due">
-                <h1>$500</h1>
-            </section>
-            <section class="checkout-section payment">
-                <div class="payment-cards">
-                    <div class="payment-card">
-                        <div class="payment-icon">
-                            <div class="fa fa-cash"></div>
+        <div class="col-sm-7 col-right">
+            <div class="wrapper">
+                <section class="checkout-section total-due">
+                    <h1 class="text-center">$500</h1>
+                </section>
+                <section class="checkout-section payment">
+                    <h3 class="text-center">Select Payment</h3>
+                    <div class="cards">
+                        <div class="card" data-payment_method="0">
+                            <div class="icon">
+                                <i class="fa fa-4x fa-money"></i>
+                            </div>
+                            <div class="title">Cash</div>
                         </div>
-                        <div class="payment-title">Cash</div>
-                    </div>
-                    <div class="payment-card">
-                        <div class="payment-icon">
-                            <div class="fa fa-visa"></div>
+                        <div class="card" data-payment_method="1">
+                            <div class="icon">
+                                <i class="fa fa-4x fa-credit-card"></i>
+                            </div>
+                            <div class="title">Credit</div>
                         </div>
-                        <div class="payment-title">Credit</div>
                     </div>
-                </div>
-            </section>
+                </section>
 
-            <section class="checkout-section payment-actions">
-                <button>Add payment</button>
-            </section>
+                <section class="checkout-section payment-by-type"></section>
+
+                <section class="checkout-section payment-actions">
+                    <button class="card add-payment" disabled>Add payment</button>
+                </section>
+            </div>
         </div>
     </div>
 </div>
+
+<?php
+// Add customer modal
+Modal::begin([
+    'header' => Html::tag('h3', 'Add Customer'),
+    'id' => 'add-customer-modal',
+    'size' => 'modal-md',
+]) ?>
+
+<?= $this->render('_add_customer_form') ?>
+
+<?php Modal::end() ?>

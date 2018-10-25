@@ -25,6 +25,8 @@ class CatalogController extends CookieController
         $categories = Category::find()->active()->forParent($id)->orderBy('name')->all();
         $products = Product::find()->active()->forCategory($id)->orderBy('name')->all();
 
+        $this->view->registerCssFile('/css/catalog.css');
+
         return $this->render('category', [
             'categories' => $categories,
             'products' => $products,

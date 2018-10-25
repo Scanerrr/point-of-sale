@@ -80,6 +80,7 @@ use yii\bootstrap\ActiveForm;
                                                 'min' => 0,
                                                 'max' => $product->markup_price,
                                                 'step' => 'any',
+                                                'class' => 'discount-input form-control'
                                             ]) ?>
                                         </div>
                                         <div class="col-sm-4">
@@ -94,9 +95,9 @@ use yii\bootstrap\ActiveForm;
                                             <?= $form->field($model, 'price')->textInput([
                                                 'type' => 'number',
                                                 'min' => 0,
-//                                            'max' => $product->markup_price,
                                                 'value' => $product->markup_price,
                                                 'step' => 'any',
+                                                'class' => 'price-input form-control'
                                             ]) ?>
                                         </div>
                                         <div class="col-sm-4">
@@ -129,10 +130,11 @@ use yii\bootstrap\ActiveForm;
 <?php
 $script = <<< 'JS'
 
-$('#addtocartform-discounttype').on('change', e => {
+$('.discount-select').on('change', e => {
     e.preventDefault()
     const $this = $(e.target)
-    const discountInput = $('#addtocartform-discount')
+    const form = $this.closest('form')
+    const discountInput = form.find('.discount-input')
     const productPrice = $this.data('markup-price')
     switch ($this.val()) {
         case 'percent':
@@ -148,28 +150,30 @@ $('#addtocartform-discounttype').on('change', e => {
     discountInput.trigger('change')
 })
 
-$('#addtocartform-discount').on('change', e => {
+$('.discount-input').on('change', e => {
     e.preventDefault()
     const $this = $(e.target)
-    const discountTypeInput = $('#addtocartform-discounttype')
-    const priceInput = $('#addtocartform-price')
-    const totalPriceSpan = $('h5 .total-price')
+    const form = $this.closest('form')
+    const discountTypeInput = form.find('.discount-select')
+    const priceInput = form.find('.price-input')
+    const totalPriceSpan = form.find('h5 .total-price')
     const productPrice = discountTypeInput.data('markup-price')
     
-    const newPrice = getDiscountPrice(productPrice, discountTypeInput.val())
+    const newPrice = getDiscountPrice(productPrice, $this.val(), discountTypeInput.val())
     
     priceInput.val(newPrice)
     totalPriceSpan.text('$' + newPrice)
 })
 
-$('#addtocartform-price').on('change', e => {
+$('.price-input').on('change', e => {
     e.preventDefault()
     const $this = $(e.target)
-    const discountTypeInput = $('#addtocartform-discounttype')
-    const discountInput = $('#addtocartform-discount')
-    const totalPriceSpan = $('h5 .total-price')
+    const form = $this.closest('form')
+    const discountTypeInput = form.find('.discount-select')
+    const discountInput = form.find('.discount-input')
+    const totalPriceSpan = form.find('h5 .total-price')
     const productPrice = discountTypeInput.data('markup-price')
-    const newPrice = $(e.target).val()
+    const newPrice = $this.val()
     
     if (newPrice <= productPrice) {
         discountTypeInput.val('currency')
@@ -179,9 +183,7 @@ $('#addtocartform-price').on('change', e => {
     totalPriceSpan.text('$' + newPrice);
 })
 
-function getDiscountPrice(price, discountType) {
-    const discount = $('#addtocartform-discount').val()
-    
+function getDiscountPrice(price, discount, discountType) {
     if (!discount) return price;
     
     switch (discountType) {

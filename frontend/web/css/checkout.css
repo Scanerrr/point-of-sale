@@ -1,0 +1,81 @@
+.col-left .checkout-section-flex, .col-left .checkout-section .item, .col-right .checkout-section .cards {
+  display: flex;
+  justify-content: space-between;
+  align-items: center; }
+
+body {
+  background: #f2f4f5 !important; }
+
+.col-left {
+  padding-right: 0 !important;
+  border-right: 1px solid #c3cbd5; }
+  @media (max-width: 768px) {
+    .col-left {
+      padding-right: 15px !important; } }
+  .col-left .checkout-section {
+    background: #fff;
+    border: 1px solid #e1e5ea;
+    border-right: none; }
+    .col-left .checkout-section.customer {
+      padding: 15px 25px; }
+      .col-left .checkout-section.customer a {
+        color: #7681cd;
+        font-size: 14px; }
+      .col-left .checkout-section.customer .select2 {
+        margin-bottom: 5px; }
+    .col-left .checkout-section .item {
+      border-bottom: 1px solid #e1e5ea;
+      padding: 15px 25px; }
+      .col-left .checkout-section .item:last-child {
+        border-bottom: none; }
+      .col-left .checkout-section .item-c {
+        border-bottom: none;
+        padding: 7px 25px; }
+        .col-left .checkout-section .item-c span:first-child {
+          color: #7681cd; }
+.col-right .wrapper {
+  margin: 0 15%; }
+  @media (max-width: 768px) {
+    .col-right .wrapper {
+      margin: 0; } }
+.col-right .checkout-section.payment h3 {
+  padding-bottom: 15px;
+  border-bottom: 1px solid #e7eaee; }
+.col-right .checkout-section.payment .card {
+  transition: .2s ease-out; }
+  .col-right .checkout-section.payment .card:hover {
+    border: 1px solid #7681cd;
+    cursor: pointer; }
+    .col-right .checkout-section.payment .card:hover .icon {
+      color: #7681cd; }
+  .col-right .checkout-section.payment .card.active {
+    border: 1px solid #6370c6; }
+.col-right .checkout-section.payment-actions {
+  color: #a5b1c0; }
+  .col-right .checkout-section.payment-actions:hover {
+    color: #3f4b5a; }
+  .col-right .checkout-section.payment-actions button:disabled {
+    cursor: not-allowed;
+    color: #a5b1c0; }
+.col-right .checkout-section .card {
+  width: 100%;
+  text-align: center;
+  font-size: 18px;
+  padding: 15px 0;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.125);
+  border-radius: .25rem;
+  margin-right: 25px; }
+  .col-right .checkout-section .card:last-child {
+    margin-right: 0; }
+  .col-right .checkout-section .card .icon {
+    color: #8992d4; }
+
+.checkout-section {
+  margin-bottom: 15px;
+  font-size: 18px; }
+  .checkout-section label {
+    font-size: 14px;
+    font-weight: normal; }
+
+/*# sourceMappingURL=checkout.css.map */

@@ -10,6 +10,7 @@ use yii\helpers\Html;
 use common\models\PaymentMethod;
 
 ?>
+
 <div class="form-group">
     <label for="">Total Charged</label>
     <?= Html::textInput('payment_amount', $total, [
@@ -27,7 +28,6 @@ use common\models\PaymentMethod;
         PaymentMethod::find()
             ->select('name')
             ->where(['type_id' => PaymentMethod::TYPE_CREDIT_CARD])
-            ->orderBy('name')
             ->indexBy('id')
             ->column(),
         ['class' => 'form-control']

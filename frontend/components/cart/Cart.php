@@ -128,7 +128,7 @@ class Cart extends Component
      */
     public function getTotal(): float
     {
-        return $this->subTotal + $this->totalTax - $this->totalDiscount;
+        return $this->subTotal + $this->totalTax/* - $this->totalDiscount*/;
     }
 
     /**

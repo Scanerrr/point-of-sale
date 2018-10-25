@@ -53,6 +53,8 @@ class SiteController extends MainController
             return $locationId->getLocation()->active()->one();
         }, $locationIds);
 
+        $this->view->registerCssFile('/css/catalog.css');
+
         return $this->render('index', [
             'locations' => array_filter($locations)
         ]);

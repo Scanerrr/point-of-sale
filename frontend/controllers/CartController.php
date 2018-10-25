@@ -13,7 +13,7 @@ use frontend\models\CreateCustomerForm;
 use Yii;
 use frontend\components\cart\Cart;
 use frontend\controllers\access\CookieController;
-use yii\web\{NotFoundHttpException, Response};
+use yii\web\{JqueryAsset, NotFoundHttpException, Response};
 use common\models\{Order, OrderPayment, OrderProduct, PaymentMethod, Product, Location};
 
 /**
@@ -143,11 +143,15 @@ class CartController extends CookieController
 
         }
 
+        $this->view->registerJsFile('/js/checkout.js', ['depends' => JqueryAsset::class]);
+        $this->view->registerCssFile('/css/checkout.css');
+
+        $this->resetPayment();
+        
         return $this->render('checkout', [
             'cart' => $cart,
             'location' => $location,
-            'model' => $order,
-            'customerModel' => new CreateCustomerForm()
+            'model' => $order
         ]);
     }
 
@@ -206,5 +210,32 @@ class CartController extends CookieController
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    public function actionAssignPayment()
+    {
+        if (Yii::$app->request->isPost) {
+            $post = Yii::$app->request->post();
+// TODO: finish
+            $price = $post['price'];
+
+            switch ($post['type']) {
+                case PaymentMethod::TYPE_CASH:
+
+                    break;
+                case PaymentMethod::TYPE_CREDIT_CARD:
+
+                    break;
+                default:
+                    break;
+            }
+
+
+        }
+    }
+
+    protected function resetPayment()
+    {
+        Yii::$app->session->remove('payment.');
     }
 }

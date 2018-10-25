@@ -27,10 +27,19 @@ class CreateCustomerForm extends Model
     public function rules()
     {
         return [
+            [['firstname', 'lastname', 'phone', 'email'], 'atLeastOne', 'skipOnEmpty' => false],
             [['gender'], 'in', 'range' => ['male', 'female']],
             [['firstname', 'lastname', 'phone', 'email', 'country', 'state', 'city', 'address'], 'string', 'max' => 255],
+            [['firstname', 'lastname', 'phone', 'email', 'country', 'state', 'city', 'address', 'zip'], 'trim'],
             [['zip'], 'string', 'max' => 5],
         ];
+    }
+
+    public function atLeastOne($attribute)
+    {
+        if (empty($this->firstname) || empty($this->lastname) || empty($this->phone) || empty($this->email)) {
+            $this->addError($attribute, 'At least 1 of the field must be filled up properly');
+        }
     }
 
     /**

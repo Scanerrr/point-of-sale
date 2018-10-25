@@ -39,6 +39,8 @@ class LocationController extends CookieController
 
         $categories = Category::find()->active()->forParent()->all();
 
+        $this->view->registerCssFile('/css/catalog.css');
+
         return $this->render('index', [
             'location' => $location,
             'categories' => $categories
