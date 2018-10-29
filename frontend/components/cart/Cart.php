@@ -76,8 +76,8 @@ class Cart extends Component
     public function plus(int $id, float $price, int $quantity): void
     {
         if (isset($this->items[$id])) {
-            $this->items[$id]['quantity'] = $quantity + $this->items[$id]['quantity'];
-            $this->items[$id]['price'] = $price + $this->items[$id]['price'];
+            $this->items[$id]['quantity'] += $quantity;
+            $this->items[$id]['price'] += $price;
         }
         $this->saveItems();
     }

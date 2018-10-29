@@ -65,4 +65,9 @@ class PaymentMethod extends \yii\db\ActiveRecord
     {
         return $this->type_id === self::TYPE_CASH;
     }
+
+    public static function getTypeIdById(int $id): int
+    {
+        return self::find()->select('type_id')->where(['id' => $id])->scalar();
+    }
 }

@@ -1,5 +1,4 @@
-$leftBg: #f2f4f5;
-$rightBg: #f4f6f8;
+$mainBg: #f2f4f5;
 $lightGrey: #e1e5ea;
 $purple: #7681cd;
 $indentRL: 25px; //right-left
@@ -14,7 +13,7 @@ $fontSizeSmall: 14px;
 }
 
 body {
-  background: $leftBg !important
+  background: $mainBg !important
 }
 
 .col {
@@ -30,10 +29,6 @@ body {
       border: 1px solid $lightGrey;
       border-right: none;
 
-      &-flex {
-        @extend %flex-shared;
-      }
-
       &.customer {
         padding: $indentTB $indentRL;
         a {
@@ -45,24 +40,7 @@ body {
         }
       }
 
-      .item {
-        @extend %flex-shared;
 
-        border-bottom: 1px solid $lightGrey;
-        padding: $indentTB $indentRL;
-
-        &:last-child {
-          border-bottom: none;
-        }
-
-        &-c {
-          border-bottom: none;
-          padding: 7px $indentRL;
-          span:first-child {
-            color: $purple
-          }
-        }
-      }
     }
   }
   &-right {
@@ -77,9 +55,15 @@ body {
     .checkout-section {
 
       &.payment {
+        margin-bottom: $indentTB * 3;
         h3 {
           padding-bottom: $indentTB;
           border-bottom: 1px solid lighten($lightGrey, 2%);
+        }
+        .select-payment-type {
+          &.disabled {
+            background: pink;
+          }
         }
 
         .card {
@@ -99,15 +83,27 @@ body {
 
       &.payment-actions {
         color: darken($lightGrey, 20%);
-
-        &:hover {
-          color: darken($lightGrey, 60%);
-        }
+        display: flex;
 
         button {
+          transition: .2s ease-out;
+
           &:disabled {
             cursor: not-allowed;
-            color: darken($lightGrey, 20%)
+            color: darken($lightGrey, 20%);
+            background: #eee;
+          }
+          &:hover:enabled {
+            color: darken($lightGrey, 60%);
+            border-color: darken($lightGrey, 60%);
+          }
+        }
+
+        .complete-sale {
+          color: lighten($purple, 5%);
+
+          &:hover:enabled {
+            border-color: lighten($purple, 5%);
           }
         }
       }
@@ -124,7 +120,7 @@ body {
         background: #fff;
         border: 1px solid rgba(0, 0, 0, .125);
         border-radius: .25rem;
-        margin-right: $indentRL;
+        margin-right: $indentRL / 2;
 
         &:last-child {
           margin-right: 0;
@@ -145,5 +141,36 @@ body {
   label {
     font-size: $fontSizeSmall;
     font-weight: normal;
+  }
+
+  &-flex {
+    @extend %flex-shared;
+  }
+
+  .item {
+    @extend %flex-shared;
+
+    border-bottom: 1px solid $lightGrey;
+    padding: $indentTB $indentRL;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &-c {
+      border-bottom: none;
+      padding: 7px $indentRL;
+      span:first-child {
+        color: $purple
+      }
+    }
+
+    .change-due {
+      color: green;
+
+      &.negative {
+        color: red
+      }
+    }
   }
 }

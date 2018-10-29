@@ -25,9 +25,11 @@ $(() => {
     })
 
     // load form by payment type
-    $('.card[data-payment_method]').on('click', e => {
+    $('.select-payment-type')
+        .not('.disabled')
+        .find('.card[data-payment_type]').on('click', e => {
         const $this = $(e.currentTarget)
-        const type = $this.data('payment_method')
+        const type = $this.data('payment_type')
         $this.parent().find('.active').removeClass('active')
         $this.addClass('active')
         $.ajax({
@@ -37,7 +39,7 @@ $(() => {
         })
             .done(data => {
                 $('.payment-by-type').html(data)
-                $('.payment-actions button').attr('disabled', false);
+                $('.add-payment').attr('disabled', false)
             })
             .fail(failHandler)
     })
@@ -45,17 +47,46 @@ $(() => {
     // assign payment to session
     $('.add-payment').on('click', e => {
         e.preventDefault()
+        const price = $('input[name=payment_amount]').val()
+        const method = $('[name=payment_method]').val()
+        const type = $('.select-payment-type .card[data-payment_type].active').data('payment_type')
+        const data = {
+            price: price,
+            method: method
+        }
+        if (type === 1) {
+            data.card_number = $('input[name=payment_card_number]').val()
+        }
         $.ajax({
             type: 'POST',
             url: '/cart/assign-payment',
-            data: {
-                type: type,
-                price: price
-            }
+            data: data
         })
-            .done(data => {
-                $('.payment-by-type').html(data)
-                $('.payment-actions button').attr('disabled', false);
+            .done(({success, allowCheckout}) => {
+                    if (!success) {
+                        alert('wrong')
+                        return;
+                    }
+                    pjaxReload('#payments-load')
+                    $('.payment-by-type').html('')
+
+                    if (allowCheckout) {
+                        $('.complete-sale').attr('disabled', false)
+                    }
+                }
+            )
+            .fail(failHandler)
+    })
+
+    $('.complete-sale').on('click', e => {
+        e.preventDefault()
+        $.ajax({
+            type: 'POST',
+            url: '/cart/checkout',
+            data: {customer: $('[name=customer]').val()}
+        })
+            .done(({url}) => {
+                location.href = url
             })
             .fail(failHandler)
     })

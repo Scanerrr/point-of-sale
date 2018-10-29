@@ -8,8 +8,6 @@
 
 namespace frontend\controllers;
 
-
-use frontend\models\CreateCustomerForm;
 use Yii;
 use frontend\components\cart\Cart;
 use frontend\controllers\access\CookieController;
@@ -24,6 +22,14 @@ class CartController extends CookieController
 {
 
     public $layout = 'afterLocation';
+
+    public function behaviors(): array
+    {
+        $behaviors = parent::behaviors();
+        $behaviors['verbs']['actions']['load-form'] = ['post'];
+        $behaviors['verbs']['actions']['assign-payment'] = ['post'];
+        return $behaviors;
+    }
 
     public function actionIndex()
     {
@@ -58,6 +64,8 @@ class CartController extends CookieController
         /* @var Cart $cart */
         $cart = Yii::$app->cart;
 
+        $session = Yii::$app->session;
+
         /* @var Location $location */
         $location = Yii::$app->params['location'];
 
@@ -67,21 +75,24 @@ class CartController extends CookieController
         if (Yii::$app->request->isPost) {
             $post = Yii::$app->request->post();
 
-            $order->load($post);
-
             $total = $cart->total;
+
+            $paid = $this->getPaidPrice();
 
             $order->status = Order::STATUS_NEW;
             $order->location_id = $location->id;
             $order->employee_id = Yii::$app->user->id;
+            $order->customer_id = $post['customer'] ?? null;
             $order->total_tax = $cart->totalTax;
             $order->total = $total; //todo: check for payment
+
+            if ($paid <= $total) return $this->asJson(['error' => 'Paid amount not matching total price!']);
 
             $transaction = Yii::$app->db->beginTransaction();
 
             if (!$order->save()) {
                 $transaction->rollback();
-                Yii::$app->session->setFlash('error', 'Order was not created');
+                $session->setFlash('error', 'Order was not created');
             }
 
             foreach ($items as $item) {
@@ -100,54 +111,59 @@ class CartController extends CookieController
 
                 if (!$orderProduct->save()) {
                     $transaction->rollBack();
-                    Yii::$app->session->setFlash('warning', 'Order product was not created');
+                    $session->setFlash('warning', 'Order product was not created');
                 }
             }
 
-            $orderPayment = new OrderPayment();
-            $orderPayment->order_id = $order->id;
-            $orderPayment->method_id = $post['payment_method'];
-            $orderPayment->amount = $post['payment_amount'];
+            $payments = $session->get('location.' . $location->id . '.payments', []);
 
-            $details = [];
+            foreach ($payments as $payment) {
 
-            switch ($post->payment_type) {
-                case PaymentMethod::TYPE_CASH:
-                    $orderPayment->method_id = PaymentMethod::find()->select('id')->where(['type_id' => PaymentMethod::TYPE_CASH])->scalar();
-                    $details = [
-                        'tendered' => $post['payment_amount'],
-                        'change' => $total - $post['payment_amount']
-                    ];
-                    break;
-                case PaymentMethod::TYPE_CREDIT_CARD:
-                    $details = [
-                        'last_digits' => $post['payment_card_number']
-                    ];
-                    break;
-                default:
-                    break;
+                $orderPayment = new OrderPayment();
+                $orderPayment->order_id = $order->id;
+                $orderPayment->method_id = $payment['method_id'];
+                $orderPayment->amount = $payment['price'];
+
+                $details = [];
+
+                switch (PaymentMethod::getTypeIdById($orderPayment->method_id)) {
+                    case PaymentMethod::TYPE_CASH:
+                        $details = [
+                            'tendered' => $post['price'],
+                            'change' => $total - $post['price']
+                        ];
+                        break;
+                    case PaymentMethod::TYPE_CREDIT_CARD:
+                        $details = [
+                            'last_digits' => $payment['card_number']
+                        ];
+                        break;
+                    default:
+                        break;
+                }
+
+                $orderPayment->details = json_encode($details);
+
+                if (!$orderPayment->save()) {
+                    $transaction->rollBack();
+                    $session->setFlash('warning', 'Order payment was not created');
+                }
+
             }
 
-            $orderPayment->details = json_encode($details);
+            $transaction->commit();
+            $cart->clear();
+            $this->resetPayment();
 
-            if ($orderPayment->save()) {
-                $transaction->commit();
-                $cart->clear();
-                Yii::$app->session->setFlash('success', 'Order #' . $order->id . ' created');
+            $session->setFlash('success', 'Order #' . $order->id . ' created');
 
-                return $this->redirect(Yii::$app->request->referrer ?? ['/site/index']);
-            } else {
-                $transaction->rollBack();
-                Yii::$app->session->setFlash('error', 'Order payment was not created');
-            }
+            return $this->asJson(Yii::$app->request->referrer ?? ['/site/index']);
 
         }
 
         $this->view->registerJsFile('/js/checkout.js', ['depends' => JqueryAsset::class]);
         $this->view->registerCssFile('/css/checkout.css');
 
-        $this->resetPayment();
-        
         return $this->render('checkout', [
             'cart' => $cart,
             'location' => $location,
@@ -214,28 +230,51 @@ class CartController extends CookieController
 
     public function actionAssignPayment()
     {
-        if (Yii::$app->request->isPost) {
-            $post = Yii::$app->request->post();
-// TODO: finish
-            $price = $post['price'];
+        $post = Yii::$app->request->post();
 
-            switch ($post['type']) {
-                case PaymentMethod::TYPE_CASH:
+        $method = $post['method'];
 
-                    break;
-                case PaymentMethod::TYPE_CREDIT_CARD:
+        $payment = [
+            'price' => $post['price'],
+            'method_id' => $method,
+            'name' => PaymentMethod::find()->select('name')->where(['id' => $method])->scalar()
+        ];
 
-                    break;
-                default:
-                    break;
-            }
+        if (PaymentMethod::getTypeIdById($method) === PaymentMethod::TYPE_CREDIT_CARD) {
+            $payment['card_number'] = $post['card_number'] ?? '';
+        }
 
+        $this->setPayment($payment);
 
+        $allowCheckout = false;
+
+        if (Yii::$app->cart->total - $this->getPaidPrice() <= 0) $allowCheckout = true;
+
+        return $this->asJson(['success' => true, 'allowCheckout' => $allowCheckout]);
+    }
+
+    protected function getPaidPrice()
+    {
+        $payments = Yii::$app->session->get('location.' . Yii::$app->params['location']->id . '.payments', []);
+        return array_reduce($payments, function ($total, $payment) {
+            return $total + $payment['price'];
+        }, 0);
+    }
+
+    protected function setPayment(array $payment): void
+    {
+        $session = Yii::$app->session;
+        $key = 'location.' . Yii::$app->params['location']->id . '.payments';
+        if ($payments = $session->get($key)) {
+            array_push($payments, $payment);
+            $session->set($key, $payments);
+        } else {
+            $session->set($key, [$payment]);
         }
     }
 
-    protected function resetPayment()
+    protected function resetPayment(): void
     {
-        Yii::$app->session->remove('payment.');
+        Yii::$app->session->remove('location.' . Yii::$app->params['location']->id . '.payments');
     }
 }
