@@ -62,7 +62,17 @@ body {
         }
         .select-payment-type {
           &.disabled {
-            background: pink;
+            .card {
+              background: #eee;
+              color: darken($lightGrey, 20%);
+              border-color: rgba(0, 0, 0, .125);
+              .icon {
+                color: darken($lightGrey, 20%);
+              }
+              &:hover {
+                cursor: not-allowed;
+              }
+            }
           }
         }
 
@@ -101,9 +111,11 @@ body {
 
         .complete-sale {
           color: lighten($purple, 5%);
+          border-color: lighten($purple, 5%);
 
           &:hover:enabled {
-            border-color: lighten($purple, 5%);
+            color: $purple;
+            border-color: $purple;
           }
         }
       }

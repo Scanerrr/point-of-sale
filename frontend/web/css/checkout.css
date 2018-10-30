@@ -33,8 +33,14 @@ body {
   .col-right .checkout-section.payment h3 {
     padding-bottom: 15px;
     border-bottom: 1px solid #e7eaee; }
-  .col-right .checkout-section.payment .select-payment-type.disabled {
-    background: pink; }
+  .col-right .checkout-section.payment .select-payment-type.disabled .card {
+    background: #eee;
+    color: #a5b1c0;
+    border-color: rgba(0, 0, 0, 0.125); }
+    .col-right .checkout-section.payment .select-payment-type.disabled .card .icon {
+      color: #a5b1c0; }
+    .col-right .checkout-section.payment .select-payment-type.disabled .card:hover {
+      cursor: not-allowed; }
   .col-right .checkout-section.payment .card {
     transition: .2s ease-out; }
     .col-right .checkout-section.payment .card:hover {
@@ -57,9 +63,11 @@ body {
       color: #3f4b5a;
       border-color: #3f4b5a; }
   .col-right .checkout-section.payment-actions .complete-sale {
-    color: #8992d4; }
+    color: #8992d4;
+    border-color: #8992d4; }
     .col-right .checkout-section.payment-actions .complete-sale:hover:enabled {
-      border-color: #8992d4; }
+      color: #7681cd;
+      border-color: #7681cd; }
 .col-right .checkout-section .card {
   width: 100%;
   text-align: center;

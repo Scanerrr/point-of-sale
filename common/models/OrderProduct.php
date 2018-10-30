@@ -85,7 +85,7 @@ class OrderProduct extends \yii\db\ActiveRecord
         if ($insert) {
             // subtract ordered product quantity from inventory
             if ($inventoryProduct = Inventory::find()->forLocation($this->order->location_id)->forProduct($this->product_id)->one()) {
-                $inventoryProduct->quantity = $inventoryProduct->quantity - $this->quantity;
+                $inventoryProduct->quantity -= $this->quantity;
                 $inventoryProduct->save();
             }
         }

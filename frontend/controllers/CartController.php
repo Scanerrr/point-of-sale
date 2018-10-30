@@ -12,7 +12,7 @@ use Yii;
 use frontend\components\cart\Cart;
 use frontend\controllers\access\CookieController;
 use yii\web\{JqueryAsset, NotFoundHttpException, Response};
-use common\models\{Order, OrderPayment, OrderProduct, PaymentMethod, Product, Location};
+use common\models\{Order, OrderPayment, OrderProduct, PaymentMethod, Product, Location, UserCommission};
 
 /**
  * Class CartController
@@ -72,29 +72,35 @@ class CartController extends CookieController
         $items = $cart->getItems();
         if (!$items) return $this->redirect(['/catalog/index']);
 
-        if (Yii::$app->request->isPost) {
-            $post = Yii::$app->request->post();
+        $payments = $session->get('location.' . $location->id . '.payments', []);
 
+        $paid = $this->getPaidPrice();
+
+        if (Yii::$app->request->isPost) {
             $total = $cart->total;
 
-            $paid = $this->getPaidPrice();
+            $user = Yii::$app->user;
 
             $order->status = Order::STATUS_NEW;
             $order->location_id = $location->id;
-            $order->employee_id = Yii::$app->user->id;
-            $order->customer_id = $post['customer'] ?? null;
+            $order->employee_id = $user->id;
+            $order->customer_id = Yii::$app->request->post('customer') ?? null;
             $order->total_tax = $cart->totalTax;
-            $order->total = $total; //todo: check for payment
+            $order->total = $total;
 
-            if ($paid <= $total) return $this->asJson(['error' => 'Paid amount not matching total price!']);
-
-            $transaction = Yii::$app->db->beginTransaction();
-
-            if (!$order->save()) {
-                $transaction->rollback();
-                $session->setFlash('error', 'Order was not created');
+            if ($paid < $total) {
+                Yii::debug('paid: ' . $paid);
+                Yii::debug('total: ' . $total);
+                return $this->asJson(['error' => 'Paid amount not matching total price!']);
             }
 
+            if (!$order->save()) {
+                Yii::debug($order->getErrors());
+                return $this->asJson(['error' => 'Order was not created!']);
+            }
+
+            // save ordered products
+            $productsCommissions = 0;
             foreach ($items as $item) {
                 /* @var Product $product */
                 $product = $item['product'];
@@ -110,13 +116,13 @@ class CartController extends CookieController
                 $orderProduct->total = ($item['price'] + $tax) * $item['quantity'];
 
                 if (!$orderProduct->save()) {
-                    $transaction->rollBack();
-                    $session->setFlash('warning', 'Order product was not created');
+                    Yii::debug($orderProduct->getErrors());
+                    return $this->asJson(['error' => 'Order was not created!']);
                 }
+                $productsCommissions += (($item['price'] * $product->commission) / 100)  * $item['quantity'];
             }
 
-            $payments = $session->get('location.' . $location->id . '.payments', []);
-
+            // save payment methods
             foreach ($payments as $payment) {
 
                 $orderPayment = new OrderPayment();
@@ -129,8 +135,8 @@ class CartController extends CookieController
                 switch (PaymentMethod::getTypeIdById($orderPayment->method_id)) {
                     case PaymentMethod::TYPE_CASH:
                         $details = [
-                            'tendered' => $post['price'],
-                            'change' => $total - $post['price']
+                            'tendered' => $payment['price'],
+                            'change' => $total - $payment['price']
                         ];
                         break;
                     case PaymentMethod::TYPE_CREDIT_CARD:
@@ -145,29 +151,56 @@ class CartController extends CookieController
                 $orderPayment->details = json_encode($details);
 
                 if (!$orderPayment->save()) {
-                    $transaction->rollBack();
-                    $session->setFlash('warning', 'Order payment was not created');
+                    Yii::debug($orderPayment->getErrors());
+                    return $this->asJson(['error' => 'Order payment was not created!']);
                 }
-
             }
 
-            $transaction->commit();
+            // save user commission
+            $userCommission = new UserCommission();
+            $userCommission->order_id = $order->id;
+            $userCommission->user_id = $user->id;
+
+            $commissions = $user->identity->salaryCommissions;
+
+            if ($commissions['flat'] && !$commissions['product']) {
+                $commissionType = UserCommission::COMMISSION_TYPE_FLAT;
+                $commissionValue = ($cart->subTotal * $commissions['flat']['rate']) / 100;
+            } elseif ($commissions['flat'] && $commissions['product']) {
+                $commissionType = UserCommission::COMMISSION_TYPE_FLAT_PRODUCT;
+                $commissionValue = ($cart->subTotal * ($productsCommissions + $commissions['flat']['rate'])) / 100;
+            } else {
+                $commissionType = UserCommission::COMMISSION_TYPE_PRODUCT;
+                $commissionValue = ($cart->subTotal * $productsCommissions) / 100;
+            }
+            $userCommission->commission_type = $commissionType;
+            $userCommission->commission_value = $commissionValue;
+            if (!$userCommission->save()) {
+                Yii::debug($userCommission->getErrors());
+                return $this->asJson(['error' => 'User commission was not created!']);
+            }
+
+            // update order status
+            $order->status = Order::STATUS_COMPLETE;
+            if (!$order->save(false)) {
+                return $this->asJson(['error' => 'Order status was not updated!']);
+            }
+
             $cart->clear();
             $this->resetPayment();
 
             $session->setFlash('success', 'Order #' . $order->id . ' created');
 
-            return $this->asJson(Yii::$app->request->referrer ?? ['/site/index']);
-
+            return $this->asJson(['success' => 'Order #' . $order->id . ' created']);
         }
 
         $this->view->registerJsFile('/js/checkout.js', ['depends' => JqueryAsset::class]);
         $this->view->registerCssFile('/css/checkout.css');
-
+//        $this->resetPayment();
         return $this->render('checkout', [
             'cart' => $cart,
-            'location' => $location,
-            'model' => $order
+            'paid' => $paid,
+            'payments' => $payments
         ]);
     }
 
@@ -193,8 +226,11 @@ class CartController extends CookieController
                 break;
         }
 
+        $total = Yii::$app->cart->total;
+        $paid = $this->getPaidPrice();
+
         return $this->renderAjax($view, [
-            'total' => Yii::$app->cart->total
+            'total' => $total - $paid
         ]);
     }
 
@@ -253,12 +289,12 @@ class CartController extends CookieController
         return $this->asJson(['success' => true, 'allowCheckout' => $allowCheckout]);
     }
 
-    protected function getPaidPrice()
+    protected function getPaidPrice(): float
     {
         $payments = Yii::$app->session->get('location.' . Yii::$app->params['location']->id . '.payments', []);
-        return array_reduce($payments, function ($total, $payment) {
+        return round(array_reduce($payments, function ($total, $payment) {
             return $total + $payment['price'];
-        }, 0);
+        }, 0), 2);
     }
 
     protected function setPayment(array $payment): void
@@ -267,10 +303,43 @@ class CartController extends CookieController
         $key = 'location.' . Yii::$app->params['location']->id . '.payments';
         if ($payments = $session->get($key)) {
             array_push($payments, $payment);
-            $session->set($key, $payments);
+            $session->set($key, $this->getFormattedPayments($payments, $payment));
         } else {
             $session->set($key, [$payment]);
         }
+    }
+
+    /**
+     * if payments have several items with the same method
+     * return it as one item with summary price
+     *
+     * @param array $payments
+     * @param array $payment
+     * @return array
+     */
+    protected function getFormattedPayments(array $payments, array $payment): array
+    {
+        $filteredPayments = array_filter($payments, function ($paid) use ($payment) {
+            return $paid['method_id'] === $payment['method_id'];
+        });
+
+        if (empty($filteredPayments)) return $payments;
+
+        $newPayments = array_diff_assoc($payments, $filteredPayments);
+
+        $newPayment = array_reduce(
+            $filteredPayments,
+            function ($newPayment, $payment) {
+                return [
+                    'price' => isset($newPayment['price']) ? $payment['price'] + $newPayment['price'] : $payment['price'],
+                    'method_id' => $payment['method_id'],
+                    'name' => $payment['name']
+                ];
+            }
+        );
+        array_push($newPayments, $newPayment);
+
+        return $newPayments;
     }
 
     protected function resetPayment(): void

@@ -4,6 +4,7 @@ namespace common\models;
 
 use common\models\query\InventoryQuery;
 use Yii;
+use yii\helpers\VarDumper;
 
 /**
  * This is the model class for table "inventory".
@@ -75,5 +76,15 @@ class Inventory extends \yii\db\ActiveRecord
     public static function find()
     {
         return new InventoryQuery(get_called_class());
+    }
+
+    public function afterSave($insert, $changedAttributes)
+    {
+        $log = new InventoryLog();
+        $log->inventory_id = $this->id;
+        $log->user_id = Yii::$app->user->id;
+        $log->update = $insert ? $this->quantity : $this->quantity - $changedAttributes['quantity'];
+        $log->save();
+        parent::afterSave($insert, $changedAttributes);
     }
 }

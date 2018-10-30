@@ -34,6 +34,7 @@ use common\models\query\UserQuery;
  * @property string $updated_at
  *
  * @property string|null $avatarUrl
+ * @property array $salaryCommission
  *
  * @property LocationUser[] $locationUsers
  * @property LocationWorkHistory[] $locationWorkHistories
@@ -322,6 +323,18 @@ class User extends ActiveRecord implements IdentityInterface
             'base' => $base,
             'commissionOrHourly' => $commissionOrHourly
         ]);
+    }
+
+    /**
+     * @return array
+     */
+    public function getSalaryCommissions(): array
+    {
+        $settings = Json::decode($this->salary_settings);
+        return [
+            'flat' => $settings['flat'],
+            'product' => $settings['product'],
+        ];
     }
 
     /**

@@ -75,14 +75,4 @@ class OrderPayment extends \yii\db\ActiveRecord
     {
         return $this->hasOne(PaymentMethod::class, ['id' => 'method_id']);
     }
-
-    public function afterSave($insert, $changedAttributes)
-    {
-        if ($insert) {
-            $order = $this->order;
-            $order->status = Order::STATUS_COMPLETE;
-            $order->save();
-        }
-        parent::afterSave($insert, $changedAttributes);
-    }
 }
