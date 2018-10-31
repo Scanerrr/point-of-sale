@@ -12,14 +12,13 @@ use yiister\gentelella\widgets\grid\GridView;
 
 $this->title = 'Inventory Management - ' . $location->name . (!$location->status ? ' (disabled)' : '');
 $this->params['breadcrumbs'][] = $this->title;
-$locationId = Yii::$app->request->get('id');
-$addButton = Html::a('Add Product', ['create', 'id' => $locationId], ['class' => 'btn btn-success']);
+$addButton = Html::a('Add Product', ['create', 'id' => $location->id], ['class' => 'btn btn-success']);
 ?>
 <div class="inventory-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
     <?php Pjax::begin(['id' => 'inventory-list']) ?>
-    <?= $this->render('_search', ['model' => $searchModel]) ?>
+    <?= $this->render('/partials/_search', ['model' => $searchModel]) ?>
 
     <p class="text-right">
         <?= $addButton ?>
@@ -68,10 +67,10 @@ $addButton = Html::a('Add Product', ['create', 'id' => $locationId], ['class' =>
             [
                 'class' => \yii\grid\ActionColumn::class,
                 'buttons' => [
-                    'update' => function ($url, $model, $key) use ($locationId) {
+                    'update' => function ($url, $model, $key) use ($location) {
                         return Html::a(
                             '<span class="glyphicon glyphicon-pencil"></span>',
-                            Url::to(['/inventory/update', 'id' => $key, 'location' => $locationId])
+                            Url::to(['/inventory/update', 'id' => $key, 'location' => $location->id])
                         );
                     }
                 ],

@@ -16,6 +16,7 @@ use yii\helpers\VarDumper;
  *
  * @property Location $location
  * @property Product $product
+ * @property InventoryLog[] $inventoryLogs
  */
 class Inventory extends \yii\db\ActiveRecord
 {
@@ -37,6 +38,7 @@ class Inventory extends \yii\db\ActiveRecord
             [['location_id', 'product_id', 'quantity'], 'integer'],
             [['location_id'], 'exist', 'skipOnError' => true, 'targetClass' => Location::class, 'targetAttribute' => ['location_id' => 'id']],
             [['product_id'], 'exist', 'skipOnError' => true, 'targetClass' => Product::class, 'targetAttribute' => ['product_id' => 'id']],
+            [['location_id', 'product_id'], 'unique', 'targetAttribute' => ['location_id', 'product_id']]
         ];
     }
 
@@ -70,6 +72,14 @@ class Inventory extends \yii\db\ActiveRecord
     }
 
     /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getInventoryLogs()
+    {
+        return $this->hasMany(InventoryLog::class, ['location_id' => 'location_id', 'product_id' => 'product_id']);
+    }
+
+    /**
      * {@inheritdoc}
      * @return InventoryQuery the active query used by this AR class.
      */
@@ -81,9 +91,11 @@ class Inventory extends \yii\db\ActiveRecord
     public function afterSave($insert, $changedAttributes)
     {
         $log = new InventoryLog();
-        $log->inventory_id = $this->id;
+        $log->location_id = $this->location_id;
+        $log->product_id = $this->product_id;
         $log->user_id = Yii::$app->user->id;
-        $log->update = $insert ? $this->quantity : $this->quantity - $changedAttributes['quantity'];
+        $log->quantity = $insert ? $this->quantity : $this->quantity - $changedAttributes['quantity'];
+        $log->comment = $insert ? 'New Product' : '';
         $log->save();
         parent::afterSave($insert, $changedAttributes);
     }

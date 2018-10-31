@@ -196,7 +196,7 @@ class CartController extends CookieController
 
         $this->view->registerJsFile('/js/checkout.js', ['depends' => JqueryAsset::class]);
         $this->view->registerCssFile('/css/checkout.css');
-        
+
         return $this->render('checkout', [
             'cart' => $cart,
             'paid' => $paid,

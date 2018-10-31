@@ -10,21 +10,32 @@ namespace common\models\query;
 class InventoryLogQuery extends \yii\db\ActiveQuery
 {
     /**
-     * @param int $userId
+     * @param int $id
      * @return InventoryLogQuery
      */
-    public function forUser(int $userId)
+    public function forUser(int $id)
     {
-        return $this->andWhere(['user_id' => $userId]);
+        return $this->andWhere(['user_id' => $id]);
     }
 
     /**
-     * @param int $inventoryId
+     * @param int $locationId
+     * @param int $productId
      * @return InventoryLogQuery
      */
-    public function forInventory(int $inventoryId)
+    public function forInventory(int $locationId, int $productId)
     {
-        return $this->andWhere(['inventory_id' => $inventoryId]);
+        return $this->forLocation($locationId)->forProduct($productId);
+    }
+
+    public function forLocation(int $id)
+    {
+        return $this->andWhere(['location_id' => $id]);
+    }
+
+    public function forProduct(int $id)
+    {
+        return $this->andWhere(['product_id' => $id]);
     }
 
     /**

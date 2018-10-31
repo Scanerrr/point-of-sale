@@ -65,6 +65,11 @@ $avatar = Image::resize($user->avatarUrl, 57);
 
                     <div class="menu_section">
                         <h3>General</h3>
+                        <?php $firsLocationId = Location::find()
+                            ->select('id')
+                            ->orderBy('id')
+                            ->limit(1)
+                            ->scalar() ?>
                         <?=
                         Menu::widget(
                             [
@@ -80,11 +85,14 @@ $avatar = Image::resize($user->avatarUrl, 57);
                                         'icon' => 'archive'],
                                     [
                                         'label' => 'Inventory',
-                                        'url' => ['inventory/index', 'id' => Location::find()
-                                            ->select('id')
-                                            ->orderBy('id')
-                                            ->limit(1)
-                                            ->scalar()],
+                                        'url' => '#',
+                                        'items' => [
+                                            [
+                                                'label' => 'Management',
+                                                'url' => ['inventory/index', 'id' => $firsLocationId]
+                                            ],
+                                            ['label' => 'Changes', 'url' => ['inventory-log/index', 'id' => $firsLocationId]],
+                                        ],
                                         'icon' => 'list-alt'
                                     ],
                                     ['label' => 'Employees', 'url' => ['employee/index'], 'icon' => 'users'],

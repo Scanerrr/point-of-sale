@@ -76,9 +76,10 @@ class OrderSearch extends Order
             'customer_id' => $this->customer_id,
             'total_tax' => $this->total_tax,
             'total' => $this->total,
-            'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ]);
+
+        $query->andFilterWhere(['like', 'created_at', $this->created_at]);
 
         return $dataProvider;
     }

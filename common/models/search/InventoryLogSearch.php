@@ -2,31 +2,29 @@
 
 namespace common\models\search;
 
-use common\models\Category;
 use common\models\Product;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use common\models\Inventory;
+use common\models\InventoryLog;
 
 /**
- * InventorySearch represents the model behind the search form of `common\models\Inventory`.
+ * InventoryLogSearch represents the model behind the search form of `common\models\InventoryLog`.
  */
-class InventorySearch extends Inventory
+class InventoryLogSearch extends InventoryLog
 {
-    public $category;
     public $barcode;
     public $product;
     public $size;
-
     /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
-            [['id', 'location_id', 'product_id', 'quantity'], 'integer'],
-            [['product', 'category', 'barcode', 'size'], 'string']
+            [['id', 'location_id', 'product_id', 'user_id', 'quantity'], 'integer'],
+            [['created_at'], 'safe'],
+            [['product', 'comment', 'barcode', 'size'], 'string']
         ];
     }
 
@@ -48,10 +46,10 @@ class InventorySearch extends Inventory
      */
     public function search($params)
     {
-        $query = Inventory::find()
+        $query = InventoryLog::find()
             ->forLocation($params['id'])
-            ->with(['product', Product::tableName() . '.category'])
-            ->joinWith(['product', Product::tableName() . '.category']);
+            ->with(['product', 'user'])
+            ->joinWith(['product']);
 
         // add conditions that should always apply here
 
@@ -68,10 +66,6 @@ class InventorySearch extends Inventory
         }
 
         $dataProvider->sort->attributes = [
-            'category' => [
-                'asc' => [Category::tableName() . '.name' => SORT_ASC],
-                'desc' => [Category::tableName() . '.name' => SORT_DESC],
-            ],
             'product' => [
                 'asc' => [Product::tableName() . '.name' => SORT_ASC],
                 'desc' => [Product::tableName() . '.name' => SORT_DESC],
@@ -88,16 +82,17 @@ class InventorySearch extends Inventory
 
         // grid filtering conditions
         $query->andFilterWhere([
-            Inventory::tableName() . '.id' => $this->id,
+            'id' => $this->id,
             'location_id' => $this->location_id,
             'product_id' => $this->product_id,
+            'user_id' => $this->user_id,
             'quantity' => $this->quantity,
         ]);
 
-        $query->andFilterWhere(['like', Product::tableName() . '.name', $this->product])
+        $query->andFilterWhere(['like', InventoryLog::tableName() . '.created_at', $this->created_at])
             ->andFilterWhere(['like', Product::tableName() . '.barcode', $this->barcode])
-            ->andFilterWhere(['like', Product::tableName() . '.size', $this->size])
-            ->andFilterWhere(['like', Category::tableName() . '.name', $this->category]);
+            ->andFilterWhere(['like', Product::tableName() . '.barcode', $this->barcode])
+            ->andFilterWhere(['like', Product::tableName() . '.size', $this->size]);
 
         return $dataProvider;
     }

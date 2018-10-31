@@ -5,7 +5,7 @@ namespace backend\controllers;
 use Yii;
 use yii\web\NotFoundHttpException;
 use yii2mod\editable\EditableAction;
-use common\models\{Inventory, Location};
+use common\models\{Inventory, InventoryLog, Location};
 use common\models\search\InventorySearch;
 
 /**
@@ -36,9 +36,7 @@ class InventoryController extends AccessController
             return $this->redirect(['index', 'id' => $iSearch['location_id']]);
         }
 
-        $location = Location::find()->where(['id' => $id])->one();
-
-        if (!$location) throw new NotFoundHttpException();
+        $location = $this->findLocationModel($id);
 
         $searchModel = new InventorySearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
@@ -77,7 +75,7 @@ class InventoryController extends AccessController
      */
     public function actionUpdate(int $id)
     {
-        $model = $this->findModel($id);
+        $model = $this->findInventoryModel($id);
 
         if ($model->load(Yii::$app->request->post())) {
             $model->save();
@@ -100,7 +98,7 @@ class InventoryController extends AccessController
      */
     public function actionDelete(int $id)
     {
-        $model = $this->findModel($id);
+        $model = $this->findInventoryModel($id);
         $model->delete();
 
         return $this->redirect(['index', 'id' => $model->location_id]);
@@ -113,12 +111,21 @@ class InventoryController extends AccessController
      * @return Inventory the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel(int $id)
+    protected function findInventoryModel(int $id)
     {
         if (($model = Inventory::findOne($id)) !== null) {
             return $model;
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    protected function findLocationModel(int $id)
+    {
+        if (($model = Location::findOne($id)) !== null) {
+            return $model;
+        }
+
+        throw new NotFoundHttpException('Location does not exist.');
     }
 }

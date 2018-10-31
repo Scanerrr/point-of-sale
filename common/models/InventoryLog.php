@@ -10,12 +10,16 @@ use common\models\query\InventoryLogQuery;
  * This is the model class for table "inventory_log".
  *
  * @property int $id
- * @property int $inventory_id
+ * @property int $location_id
+ * @property int $product_id
  * @property int $user_id
- * @property int $update
+ * @property int $quantity
+ * @property string $comment
  * @property string $created_at
  *
  * @property Inventory $inventory
+ * @property Location $location
+ * @property Product $product
  * @property User $user
  */
 class InventoryLog extends ActiveRecord
@@ -34,10 +38,11 @@ class InventoryLog extends ActiveRecord
     public function rules()
     {
         return [
-            [['inventory_id'], 'required'],
-            [['inventory_id', 'user_id', 'update'], 'integer'],
+            [['location_id', 'product_id'], 'required'],
+            [['location_id', 'product_id', 'user_id', 'quantity'], 'integer'],
             [['created_at'], 'safe'],
-            [['inventory_id'], 'exist', 'skipOnError' => true, 'targetClass' => Inventory::class, 'targetAttribute' => ['inventory_id' => 'id']],
+            [['comment'], 'string'],
+            [['location_id', 'product_id'], 'exist', 'skipOnError' => true, 'targetClass' => Inventory::class, 'targetAttribute' => ['location_id' => 'location_id', 'product_id' => 'product_id']],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
         ];
     }
@@ -49,19 +54,37 @@ class InventoryLog extends ActiveRecord
     {
         return [
             'id' => 'ID',
-            'inventory_id' => 'Inventory ID',
+            'location_id' => 'Location ID',
+            'product_id' => 'Product ID',
             'user_id' => 'User ID',
-            'update' => 'Update',
+            'quantity' => 'Quantity',
+            'comment' => 'Comment',
             'created_at' => 'Created At',
         ];
     }
 
     /**
-     * @return ActiveQuery
+     * @return \yii\db\ActiveQuery
      */
     public function getInventory()
     {
-        return $this->hasOne(Inventory::class, ['id' => 'inventory_id']);
+        return $this->hasOne(Inventory::class, ['location_id' => 'location_id', 'product_id' => 'product_id']);
+    }
+
+    /**
+     * @return ActiveQuery
+     */
+    public function getLocation()
+    {
+        return $this->hasOne(Location::class, ['id' => 'location_id']);
+    }
+
+    /**
+     * @return ActiveQuery
+     */
+    public function getProduct()
+    {
+        return $this->hasOne(Product::class, ['id' => 'product_id']);
     }
 
     /**

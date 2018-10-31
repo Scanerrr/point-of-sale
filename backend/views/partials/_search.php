@@ -6,14 +6,12 @@ use common\models\Location;
 use kartik\select2\Select2;
 
 /* @var $this yii\web\View */
-/* @var $model common\models\search\InventorySearch */
-/* @var $form yii\widgets\ActiveForm */
+/* @var $model yii\base\Model */
 ?>
 
 <div class="inventory-search">
 
     <?php $form = ActiveForm::begin([
-//        'action' => ['index'],
         'method' => 'get',
         'options' => [
             'data-pjax' => 1,
