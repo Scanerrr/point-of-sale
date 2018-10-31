@@ -5,12 +5,12 @@ namespace common\models\search;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use common\models\Category;
+use common\models\InventoryReport;
 
 /**
- * CategorySearch represents the model behind the search form of `common\models\Category`.
+ * InventoryReportSearch represents the model behind the search form of `common\models\InventoryReport`.
  */
-class CategorySearch extends Category
+class InventoryReportSearch extends InventoryReport
 {
     /**
      * {@inheritdoc}
@@ -18,8 +18,8 @@ class CategorySearch extends Category
     public function rules()
     {
         return [
-            [['id', 'parent_id', 'status'], 'integer'],
-            [['name', 'image', 'created_at', 'updated_at'], 'safe'],
+            [['id', 'location_id', 'product_id', 'user_id', 'reason_id', 'quantity'], 'integer'],
+            [['comment', 'created_at'], 'safe'],
         ];
     }
 
@@ -41,7 +41,7 @@ class CategorySearch extends Category
      */
     public function search($params)
     {
-        $query = Category::find()->with(['parent']);
+        $query = InventoryReport::find();
 
         // add conditions that should always apply here
 
@@ -60,14 +60,15 @@ class CategorySearch extends Category
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'parent_id' => $this->parent_id,
-            'status' => $this->status,
+            'location_id' => $this->location_id,
+            'product_id' => $this->product_id,
+            'user_id' => $this->user_id,
+            'reason_id' => $this->reason_id,
+            'quantity' => $this->quantity,
             'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
         ]);
 
-        $query->andFilterWhere(['like', 'name', $this->name])
-            ->andFilterWhere(['like', 'image', $this->image]);
+        $query->andFilterWhere(['like', 'comment', $this->comment]);
 
         return $dataProvider;
     }

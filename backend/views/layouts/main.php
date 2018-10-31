@@ -92,6 +92,8 @@ $avatar = Image::resize($user->avatarUrl, 57);
                                                 'url' => ['inventory/index', 'id' => $firsLocationId]
                                             ],
                                             ['label' => 'Changes', 'url' => ['inventory-log/index', 'id' => $firsLocationId]],
+                                            ['label' => 'Report Tester/Damage/Lose', 'url' => ['inventory-report/index', 'id' => $firsLocationId]],
+
                                         ],
                                         'icon' => 'list-alt'
                                     ],

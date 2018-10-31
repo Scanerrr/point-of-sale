@@ -9,7 +9,7 @@ use common\models\Category;
  *
  * @see \common\models\Category
  */
-class   CategoryQuery extends \yii\db\ActiveQuery
+class CategoryQuery extends \yii\db\ActiveQuery
 {
     public function active()
     {

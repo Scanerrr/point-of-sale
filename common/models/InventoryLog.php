@@ -41,7 +41,7 @@ class InventoryLog extends ActiveRecord
             [['location_id', 'product_id'], 'required'],
             [['location_id', 'product_id', 'user_id', 'quantity'], 'integer'],
             [['created_at'], 'safe'],
-            [['comment'], 'string'],
+            [['comment'], 'string', 'max' => 255],
             [['location_id', 'product_id'], 'exist', 'skipOnError' => true, 'targetClass' => Inventory::class, 'targetAttribute' => ['location_id' => 'location_id', 'product_id' => 'product_id']],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
         ];

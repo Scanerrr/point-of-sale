@@ -3,10 +3,10 @@
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use kartik\select2\Select2;
-use common\models\{Location, Product};
+use common\models\{Location, Product, InventoryReport};
 
 /* @var $this yii\web\View */
-/* @var $model common\models\Inventory */
+/* @var $model common\models\InventoryReport */
 /* @var $form yii\widgets\ActiveForm */
 
 $locationId = Yii::$app->request->get('id');
@@ -17,7 +17,7 @@ $options = [
 ];
 ?>
 
-<div class="inventory-form">
+<div class="inventory-report-form">
 
     <?php $form = ActiveForm::begin(['options' => ['class' => 'form-horizontal form-label-left']]); ?>
 
@@ -29,8 +29,8 @@ $options = [
             ->orderBy('name')
             ->indexBy('id')
             ->column(),
-         'theme' => Select2::THEME_DEFAULT,
-         'options' => [
+        'theme' => Select2::THEME_DEFAULT,
+        'options' => [
             'placeholder' => 'Select a location ...',
         ],
         'pluginOptions' => [
@@ -44,6 +44,7 @@ $options = [
             ->orderBy('name')
             ->indexBy('id')
             ->column(),
+        'hideSearch' => true,
         'theme' => Select2::THEME_DEFAULT,
         'options' => [
             'placeholder' => 'Select a product ...',
@@ -53,7 +54,24 @@ $options = [
         ],
     ]) ?>
 
+    <?= $form->field($model, 'reason_id', $options)->widget(Select2::class, [
+        'data' => InventoryReport::reasonList(),
+        'theme' => Select2::THEME_DEFAULT,
+        'options' => [
+            'placeholder' => 'Select a reason ...',
+        ],
+        'pluginOptions' => [
+            'allowClear' => true
+        ],
+    ]) ?>
+
     <?= $form->field($model, 'quantity', $options)->textInput() ?>
+
+    <?php $model->user_id = Yii::$app->user->id ?>
+
+    <?= Html::activeHiddenInput($model, 'user_id') ?>
+
+    <?= $form->field($model, 'comment', $options)->textInput(['maxlength' => true]) ?>
 
     <div class="col-md-7 col-xs-12 col-sm-offset-3">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>

@@ -17,6 +17,7 @@ use yii\helpers\VarDumper;
  * @property Location $location
  * @property Product $product
  * @property InventoryLog[] $inventoryLogs
+ * @property InventoryReport[] $inventoryReports
  */
 class Inventory extends \yii\db\ActiveRecord
 {
@@ -77,6 +78,14 @@ class Inventory extends \yii\db\ActiveRecord
     public function getInventoryLogs()
     {
         return $this->hasMany(InventoryLog::class, ['location_id' => 'location_id', 'product_id' => 'product_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getInventoryReports()
+    {
+        return $this->hasMany(InventoryReport::class, ['location_id' => 'location_id', 'product_id' => 'product_id']);
     }
 
     /**

@@ -1,35 +1,35 @@
 <?php
 
-use yii\widgets\Pjax;
-use kartik\select2\Select2;
 use yii\helpers\{Html, Url};
-use common\models\{InventoryLog, User};
+use yii\widgets\Pjax;
+use common\models\{User, InventoryReport};
+use kartik\select2\Select2;
 use yiister\gentelella\widgets\grid\GridView;
+
 /* @var $this yii\web\View */
-/* @var $searchModel common\models\search\InventoryLogSearch */
+/* @var $searchModel common\models\search\InventoryReportSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Inventory Logs - ' . $location->name . (!$location->status ? ' (disabled)' : '');
+$this->title = 'Inventory Reports - ' . $location->name . (!$location->status ? ' (disabled)' : '');
 $this->params['breadcrumbs'][] = $this->title;
+$addButton = Html::a('Add Report', ['create', 'id' => $location->id], ['class' => 'btn btn-success']);
 ?>
-<div class="inventory-log-index">
+<div class="inventory-report-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
-    <?php Pjax::begin() ?>
+    <?php Pjax::begin(); ?>
     <?= $this->render('/partials/_search', ['model' => $searchModel]) ?>
+
+    <p>
+        <?= $addButton ?>
+    </p>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
-        'rowOptions' => function (InventoryLog $model) {
-            if ($model->quantity < 0) {
-                return ['class' => 'danger'];
-            } else {
-                return ['class' => 'success'];
-            }
-        },
+        'emptyText' => Html::tag('p', 'No products found!', ['class' => 'text-center']) .
+            Html::tag('p', $addButton, ['class' => 'text-center']),
         'columns' => [
-            'created_at',
             [
                 'attribute' => 'barcode',
                 'value' => 'product.barcode'
@@ -37,10 +37,6 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'attribute' => 'product',
                 'value' => 'product.name'
-            ],
-            [
-                'attribute' => 'size',
-                'value' => 'product.size'
             ],
             [
                 'attribute' => 'user_id',
@@ -60,14 +56,36 @@ $this->params['breadcrumbs'][] = $this->title;
                     ],
                 ]),
             ],
-
+            [
+                'attribute' => 'reason_id',
+                'value' => function ($model) {
+                    return InventoryReport::reasonName($model->reason_id);
+                },
+                'filter' => Select2::widget([
+                    'model' => $searchModel,
+                    'attribute' => 'reason_id',
+                    'data' => InventoryReport::reasonList(),
+                    'value' => $searchModel->reason_id,
+                    'theme' => Select2::THEME_DEFAULT,
+                    'hideSearch' => true,
+                    'options' => [
+                        'class' => 'form-control',
+                        'placeholder' => 'Select Reason ...'
+                    ],
+                    'pluginOptions' => [
+                        'allowClear' => true,
+                    ],
+                ]),
+            ],
             'quantity',
             'comment',
+            'created_at',
+
             [
                 'class' => \yii\grid\ActionColumn::class,
                 'template' => '{delete}'
             ],
         ],
     ]); ?>
-    <?php Pjax::end() ?>
+    <?php Pjax::end(); ?>
 </div>
