@@ -111,14 +111,15 @@ class CartController extends CookieController
                 $orderProduct->discount = $item['discount'] * $item['quantity'];
 
                 $tax = ($item['price'] * $location->tax_rate) / 100; // get tax in $
+                $productTotal = ($item['price'] + $tax) * $item['quantity'];
                 $orderProduct->tax = $tax;
-                $orderProduct->total = ($item['price'] + $tax) * $item['quantity'];
+                $orderProduct->total = $productTotal;
 
                 if (!$orderProduct->save()) {
                     Yii::debug($orderProduct->getErrors());
                     return $this->asJson(['error' => 'Order was not created!']);
                 }
-                $productsCommissions += (($item['price'] * $product->commission) / 100)  * $item['quantity'];
+                $productsCommissions += (($productTotal * $product->commission) / 100)  * $item['quantity'];
             }
 
             // save payment methods
@@ -135,7 +136,7 @@ class CartController extends CookieController
                     case PaymentMethod::TYPE_CASH:
                         $details = [
                             'tendered' => $payment['price'],
-                            'change' => $paid - $payment['price']
+                            'change' => ($paid - $total) - $payment['price']
                         ];
                         break;
                     case PaymentMethod::TYPE_CREDIT_CARD:
@@ -167,10 +168,10 @@ class CartController extends CookieController
                 $commissionValue = ($cart->subTotal * $commissions['flat']['rate']) / 100;
             } elseif ($commissions['flat'] && $commissions['product']) {
                 $commissionType = UserCommission::COMMISSION_TYPE_FLAT_PRODUCT;
-                $commissionValue = ($cart->subTotal * ($productsCommissions + $commissions['flat']['rate'])) / 100;
+                $commissionValue = (($cart->subTotal * $commissions['flat']['rate']) / 100) + $productsCommissions;
             } else {
                 $commissionType = UserCommission::COMMISSION_TYPE_PRODUCT;
-                $commissionValue = ($cart->subTotal * $productsCommissions) / 100;
+                $commissionValue = $productsCommissions;
             }
             $userCommission->commission_type = $commissionType;
             $userCommission->commission_value = $commissionValue;
