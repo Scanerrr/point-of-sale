@@ -2,10 +2,9 @@
 
 namespace common\models;
 
-use common\models\query\LocationQuery;
 use Yii;
 use yii\db\ActiveRecord;
-use yii\helpers\VarDumper;
+use common\models\query\LocationQuery;
 
 /**
  * This is the model class for table "location".

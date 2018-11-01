@@ -2,9 +2,8 @@
 
 namespace common\models;
 
-use common\models\query\InventoryQuery;
 use Yii;
-use yii\helpers\VarDumper;
+use common\models\query\InventoryQuery;
 
 /**
  * This is the model class for table "inventory".

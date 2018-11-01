@@ -2,9 +2,9 @@
 
 namespace common\models;
 
-use common\models\query\OrderQuery;
 use Yii;
 use yii\helpers\ArrayHelper;
+use common\models\query\OrderQuery;
 
 /**
  * This is the model class for table "order".

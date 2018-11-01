@@ -3,9 +3,9 @@
 namespace common\models;
 
 use Yii;
-use common\models\query\InventoryReportQuery;
 use yii\db\ActiveRecord;
 use yii\helpers\ArrayHelper;
+use common\models\query\InventoryReportQuery;
 
 /**
  * This is the model class for table "inventory_report".

@@ -4,8 +4,8 @@ namespace common\models\search;
 
 use Yii;
 use yii\base\Model;
-use yii\data\ActiveDataProvider;
 use common\models\Order;
+use yii\data\ActiveDataProvider;
 
 /**
  * OrderSearch represents the model behind the search form of `common\models\Order`.

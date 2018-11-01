@@ -2,8 +2,8 @@
 
 namespace common\models;
 
-use common\models\query\LocationWorkHistoryQuery;
 use Yii;
+use common\models\query\LocationWorkHistoryQuery;
 
 /**
  * This is the model class for table "location_work_history".

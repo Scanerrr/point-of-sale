@@ -4,8 +4,8 @@ namespace common\models\search;
 
 use Yii;
 use yii\base\Model;
-use yii\data\ActiveDataProvider;
 use common\models\Supplier;
+use yii\data\ActiveDataProvider;
 
 /**
  * SupplierSearch represents the model behind the search form of `common\models\Supplier`.

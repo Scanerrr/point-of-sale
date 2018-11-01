@@ -2,9 +2,9 @@
 
 namespace common\models;
 
-use common\models\query\ProductQuery;
 use yii\db\ActiveRecord;
 use yii\helpers\FileHelper;
+use common\models\query\ProductQuery;
 
 /**
  * This is the model class for table "product".

@@ -4,8 +4,8 @@ namespace common\models\search;
 
 use Yii;
 use yii\base\Model;
-use yii\data\ActiveDataProvider;
 use common\models\User;
+use yii\data\ActiveDataProvider;
 
 /**
  * UserSearch represents the model behind the search form of `common\models\User`.

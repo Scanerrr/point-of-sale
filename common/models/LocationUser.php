@@ -5,7 +5,6 @@ namespace common\models;
 use Yii;
 use common\models\query\LocationUserQuery;
 use yii\db\ActiveRecord;
-use yii\helpers\VarDumper;
 
 /**
  * This is the model class for table "location_user".
