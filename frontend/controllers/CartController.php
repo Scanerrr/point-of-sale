@@ -55,7 +55,6 @@ class CartController extends CookieController
 
     /**
      * @return string|Response
-     * @throws \yii\db\Exception
      */
     public function actionCheckout()
     {
@@ -136,7 +135,7 @@ class CartController extends CookieController
                     case PaymentMethod::TYPE_CASH:
                         $details = [
                             'tendered' => $payment['price'],
-                            'change' => $total - $payment['price']
+                            'change' => $paid - $payment['price']
                         ];
                         break;
                     case PaymentMethod::TYPE_CREDIT_CARD:
