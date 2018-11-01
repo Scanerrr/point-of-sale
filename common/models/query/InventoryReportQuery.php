@@ -9,10 +9,34 @@ namespace common\models\query;
  */
 class InventoryReportQuery extends \yii\db\ActiveQuery
 {
-    /*public function active()
+    /**
+     * @param int $id
+     * @return InventoryReportQuery
+     */
+    public function forUser(int $id)
     {
-        return $this->andWhere('[[status]]=1');
-    }*/
+        return $this->andWhere(['user_id' => $id]);
+    }
+
+    /**
+     * @param int $locationId
+     * @param int $productId
+     * @return InventoryReportQuery
+     */
+    public function forInventory(int $locationId, int $productId)
+    {
+        return $this->forLocation($locationId)->forProduct($productId);
+    }
+
+    public function forLocation(int $id)
+    {
+        return $this->andWhere(['location_id' => $id]);
+    }
+
+    public function forProduct(int $id)
+    {
+        return $this->andWhere(['product_id' => $id]);
+    }
 
     /**
      * {@inheritdoc}

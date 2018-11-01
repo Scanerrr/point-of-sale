@@ -84,6 +84,10 @@ class InventorySearch extends Inventory
                 'asc' => [Product::tableName() . '.size' => SORT_ASC],
                 'desc' => [Product::tableName() . '.size' => SORT_DESC],
             ],
+            'quantity' => [
+                'asc' => ['quantity' => SORT_ASC],
+                'desc' => ['quantity' => SORT_DESC],
+            ],
         ];
 
         // grid filtering conditions

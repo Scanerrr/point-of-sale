@@ -32,4 +32,9 @@
       color: #001bd3;
       font-size: 12px; }
 
+.product-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center; }
+
 /*# sourceMappingURL=catalog.css.map */

@@ -46,3 +46,9 @@ $color_fair_pink: #bdcaff69;
     }
   }
 }
+
+.product-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}

@@ -16,10 +16,10 @@ class m181031_162233_create_inventory_report_table extends Migration
             'id' => $this->primaryKey(),
             'location_id' => $this->integer()->notNull(),
             'product_id' => $this->integer()->notNull(),
-            'user_id' => $this->integer(),
+            'user_id' => $this->integer()->notNull(),
             'reason_id' => $this->smallInteger(1)->comment('0 - damaged, 1 - lost, 2 - tester, 3 - other'),
-            'quantity' => $this->integer(),
-            'comment' => $this->string(),
+            'quantity' => $this->integer()->notNull(),
+            'comment' => $this->string()->notNull(),
             'created_at' => $this->timestamp()->defaultExpression('CURRENT_TIMESTAMP')
         ]);
 

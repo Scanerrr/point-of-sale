@@ -4,8 +4,10 @@ namespace frontend\controllers;
 
 use Yii;
 use frontend\models\AddToCartForm;
-use common\models\{Category, Product};
+use common\models\{Category, InventoryReport, Product};
 use frontend\controllers\access\CookieController;
+use yii\web\JqueryAsset;
+use yii\web\NotFoundHttpException;
 
 class CatalogController extends CookieController
 {
@@ -26,6 +28,7 @@ class CatalogController extends CookieController
         $products = Product::find()->active()->forCategory($id)->orderBy('name')->all();
 
         $this->view->registerCssFile('/css/catalog.css');
+        $this->view->registerJsFile('/js/catalog.js', ['depends' => JqueryAsset::class]);
 
         return $this->render('category', [
             'categories' => $categories,
@@ -39,4 +42,33 @@ class CatalogController extends CookieController
         return $this->render('index');
     }
 
+    public function actionReportDamaged(int $id)
+    {
+        $product = $this->findProductModel($id);
+
+        $quantity = Yii::$app->request->bodyParams['quantity'] ?? 1;
+
+        $report = new InventoryReport();
+        $report->location_id = Yii::$app->params['location']->id;
+        $report->product_id = $product->id;
+        $report->user_id = Yii::$app->user->id;
+        $report->quantity = $quantity;
+        $report->reason_id = $report::REASON_DAMAGED;
+
+        if ($report->save()) {
+            Yii::$app->session->setFlash('success', 'Report was created');
+        } else {
+            Yii::$app->session->setFlash('error', 'Report was not created');
+        }
+        return $this->redirect('index');
+    }
+
+    protected function findProductModel(int $id)
+    {
+        if (($model = Product::find()->where(['id' => $id])->active()->one()) !== null) {
+            return $model;
+        }
+
+        throw new NotFoundHttpException('Product not found');
+    }
 }

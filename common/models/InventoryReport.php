@@ -19,8 +19,8 @@ use yii\helpers\ArrayHelper;
  * @property string $comment
  * @property string $created_at
  *
- * @property Inventory $location
- * @property Location $location0
+ * @property Inventory $inventory
+ * @property Location $location
  * @property Product $product
  * @property User $user
  */
@@ -49,6 +49,7 @@ class InventoryReport extends ActiveRecord
             [['location_id', 'product_id', 'user_id', 'reason_id', 'quantity'], 'integer'],
             [['created_at'], 'safe'],
             [['comment'], 'string', 'max' => 255],
+            [['comment'], 'default', 'value' => ''],
             [['location_id', 'product_id'], 'exist', 'skipOnError' => true, 'targetClass' => Inventory::class, 'targetAttribute' => ['location_id' => 'location_id', 'product_id' => 'product_id']],
             [['location_id'], 'exist', 'skipOnError' => true, 'targetClass' => Location::class, 'targetAttribute' => ['location_id' => 'id']],
             [['product_id'], 'exist', 'skipOnError' => true, 'targetClass' => Product::class, 'targetAttribute' => ['product_id' => 'id']],
@@ -76,7 +77,7 @@ class InventoryReport extends ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getLocation()
+    public function getInventory()
     {
         return $this->hasOne(Inventory::class, ['location_id' => 'location_id', 'product_id' => 'product_id']);
     }
@@ -84,7 +85,7 @@ class InventoryReport extends ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getLocation0()
+    public function getLocation()
     {
         return $this->hasOne(Location::class, ['id' => 'location_id']);
     }

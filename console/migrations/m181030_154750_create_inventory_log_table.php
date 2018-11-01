@@ -16,9 +16,9 @@ class m181030_154750_create_inventory_log_table extends Migration
             'id' => $this->primaryKey(),
             'location_id' => $this->integer()->notNull(),
             'product_id' => $this->integer()->notNull(),
-            'user_id' => $this->integer(),
-            'quantity' => $this->integer(),
-            'comment' => $this->string(),
+            'user_id' => $this->integer()->notNull(),
+            'quantity' => $this->integer()->notNull(),
+            'comment' => $this->string()->notNull(),
             'created_at' => $this->timestamp()->defaultExpression('CURRENT_TIMESTAMP')
         ]);
 

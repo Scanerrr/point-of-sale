@@ -78,6 +78,22 @@ class InventoryLogSearch extends InventoryLog
                 'asc' => [Product::tableName() . '.size' => SORT_ASC],
                 'desc' => [Product::tableName() . '.size' => SORT_DESC],
             ],
+            'created_at' => [
+                'asc' => ['created_at' => SORT_ASC],
+                'desc' => ['created_at' => SORT_DESC],
+            ],
+            'comment' => [
+                'asc' => ['comment' => SORT_ASC],
+                'desc' => ['comment' => SORT_DESC],
+            ],
+            'quantity' => [
+                'asc' => ['quantity' => SORT_ASC],
+                'desc' => ['quantity' => SORT_DESC],
+            ],
+            'user_id' => [
+                'asc' => ['user_id' => SORT_ASC],
+                'desc' => ['user_id' => SORT_DESC],
+            ],
         ];
 
         // grid filtering conditions
