@@ -1,9 +1,9 @@
 <?php
 
-use yii\helpers\{Html, Url};
+use yii\helpers\Html;
 use yii\widgets\Pjax;
-use common\models\{User, InventoryReport};
 use kartik\select2\Select2;
+use common\models\{User, InventoryReport};
 use yiister\gentelella\widgets\grid\GridView;
 
 /* @var $this yii\web\View */
