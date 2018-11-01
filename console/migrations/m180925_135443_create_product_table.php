@@ -28,7 +28,7 @@ class m180925_135443_create_product_table extends Migration
             'commission_policy_id' => $this->smallInteger()->notNull()->defaultValue(1),
             'commission' => $this->decimal(15, 2)->defaultValue(0),
 
-            'image' => $this->string()->null(),
+            'image' => $this->string(),
             'barcode' => $this->string(64),
             'size' => $this->string(64),
             'sku' => $this->string(64),

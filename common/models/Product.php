@@ -71,6 +71,7 @@ class Product extends ActiveRecord
             [['created_at', 'updated_at'], 'safe'],
             [['name', 'image'], 'string', 'max' => 255],
             [['barcode', 'size', 'sku'], 'string', 'max' => 64],
+            [['image', 'size'], 'default', 'value' => ''],
             [['category_id'], 'exist', 'skipOnError' => true, 'targetClass' => Category::class, 'targetAttribute' => ['category_id' => 'id']],
             [['supplier_id'], 'exist', 'skipOnError' => true, 'targetClass' => Supplier::class, 'targetAttribute' => ['supplier_id' => 'id']],
 
