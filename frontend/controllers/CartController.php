@@ -136,7 +136,7 @@ class CartController extends CookieController
                     case PaymentMethod::TYPE_CASH:
                         $details = [
                             'tendered' => $payment['price'],
-                            'change' => ($paid - $total) - $payment['price']
+                            'change' => $paid - $total
                         ];
                         break;
                     case PaymentMethod::TYPE_CREDIT_CARD:
