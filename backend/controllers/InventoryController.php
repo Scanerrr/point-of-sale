@@ -5,7 +5,7 @@ namespace backend\controllers;
 use Yii;
 use yii\web\NotFoundHttpException;
 use yii2mod\editable\EditableAction;
-use common\models\{Inventory, InventoryLog, Location};
+use common\models\{Inventory, Location};
 use common\models\search\InventorySearch;
 
 /**
