@@ -12,7 +12,7 @@ use Yii;
 use frontend\components\cart\Cart;
 use frontend\controllers\access\CookieController;
 use yii\web\{JqueryAsset, NotFoundHttpException, Response};
-use common\models\{Order, OrderPayment, OrderProduct, PaymentMethod, Product, Location, UserCommission};
+use common\models\{Customer, Order, OrderPayment, OrderProduct, PaymentMethod, Product, Location, UserCommission};
 
 /**
  * Class CartController
@@ -76,6 +76,9 @@ class CartController extends CookieController
         $paid = $this->getPaidPrice();
 
         if (Yii::$app->request->isPost) {
+
+            $customerId = Yii::$app->request->post('customer');
+
             $total = $cart->total;
 
             $user = Yii::$app->user;
@@ -83,7 +86,7 @@ class CartController extends CookieController
             $order->status = Order::STATUS_NEW;
             $order->location_id = $location->id;
             $order->employee_id = $user->id;
-            $order->customer_id = Yii::$app->request->post('customer') ?? null;
+            $order->customer_id = $customerId ?? null;
             $order->total_tax = $cart->totalTax;
             $order->total = $total;
 
@@ -184,6 +187,24 @@ class CartController extends CookieController
             $order->status = Order::STATUS_COMPLETE;
             if (!$order->save(false)) {
                 return $this->asJson(['error' => 'Order status was not updated!']);
+            }
+
+            $customer = Customer::findOne($customerId);
+            if ($customer) {
+                Yii::$app->mailer
+                    ->compose(
+                        ['html' => 'billing-html'],
+                        [
+                            'cart' => $cart,
+                            'location' => $location,
+                            'order' => $order,
+                            'paid' => $paid
+                        ]
+                    )
+                    ->setFrom('from@domain.com')
+                    ->setTo($customer->email)
+                    ->setSubject('Invoice #' . $order->id)
+                    ->send();
             }
 
             $cart->clear();
