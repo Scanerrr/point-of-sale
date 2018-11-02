@@ -3,6 +3,7 @@
 namespace backend\controllers;
 
 use backend\models\EmployeeForm;
+use backend\models\EmployeeSalaryForm;
 use Yii;
 use common\models\User;
 use common\models\search\UserSearch;
@@ -59,15 +60,20 @@ class EmployeeController extends AccessController
     {
         $user = $this->findModel($id);
 
-        if (Yii::$app->request->isPost) {
-            $user->salary_settings = User::validateSalaryInfo(Yii::$app->request->post());
-            if (!$user->save()) {
+        $model = new EmployeeSalaryForm();
+
+        if ($model->load(Yii::$app->request->post())) {
+
+            if (!$model->save($user)) {
                 Yii::$app->session->setFlash('error', 'An error occurred while saving settings');
             }
+            Yii::$app->session->setFlash('success', 'Settings saved successfully!');
+
             return $this->redirect(['details', 'id' => $user->id]);
         }
 
         return $this->render('details', [
+            'model' => $model,
             'user' => $user,
         ]);
     }

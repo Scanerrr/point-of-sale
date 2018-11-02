@@ -1,4 +1,7 @@
 <?php
+function randBool() {
+    return rand(0, 1);
+}
 
 function getSalarySettings() {
     return json_encode([
@@ -6,10 +9,27 @@ function getSalarySettings() {
 //                0 => ['from' => 0, 'to' => 500, 'commission' => rand(5, 10)],
 //                1 => ['from' => 501, 'to' => 1000, 'commission' => rand(11, 15)],
 //            ],
-            'flat' => rand(0, 1) ? ['rate' => rand(5, 10)]: false,
-            'product' => rand(0, 1) ? true: false,
-            'hourly' => rand(0, 1) ? ['rate' => rand(10, 100), 'notIncludeBreaks' => false] : false,
-            'base' => rand(0, 1) ? ['rate' => rand(1000, 5000), 'added' => 'Weekly', 'on' => 'Monday'] : false
+            'flat' => [
+                'status' => randBool(),
+                'rate' => rand(5, 10)
+            ],
+            'product' => [
+                'status' => randBool()
+            ],
+            'product_or_commission' => [
+                'status' => randBool()
+            ],
+            'hourly' => [
+                'status' => randBool(),
+                'rate' => rand(10, 100),
+                'include_breaks' => randBool(),
+            ],
+            'base' => [
+                'status' => randBool(),
+                'rate' => rand(1000, 5000),
+                'added' => 'Weekly',
+                'added_on' => 'Monday'
+            ]
     ]);
 }
 $users = [];

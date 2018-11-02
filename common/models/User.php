@@ -35,6 +35,7 @@ use common\models\query\UserQuery;
  *
  * @property string|null $avatarUrl
  * @property array $salaryCommission
+ * @property object $salarySettings
  *
  * @property LocationUser[] $locationUsers
  * @property LocationWorkHistory[] $locationWorkHistories
@@ -282,31 +283,42 @@ class User extends ActiveRecord implements IdentityInterface
     public function validateSalaryInfo($salary)
     {
 
-        $flat = isset($salary['flat']['rate']) && !empty($salary['flat']['rate']) ? ['rate' => $salary['flat']['rate']] : false;
+        $flatSalary = $salary['flat'];
+
+        if (isset($flatSalary['checked'])) {
+            $flat = isset($flatSalary['rate']) && !empty($flatSalary['rate']) ? [
+                'rate' => $flatSalary['rate']
+            ] : false;
+        }
 
         $product = isset($salary['product']) && $salary['product'] === 'on';
 
-        $hourly = isset($salary['hourly']['rate']) && !empty($salary['hourly']['rate']) ? [
-            'rate' => $salary['hourly']['rate'],
-            'notIncludeBreaks' => true
-        ] : false;
+        $hourlySalary = $salary['hourly'];
 
-        if ($hourly && isset($salary['hourly']['notIncludeBreaks']) && $salary['hourly']['notIncludeBreaks'] === 'on') {
-            $hourly['notIncludeBreaks'] = false;
+        if (isset($hourlySalary['checked'])) {
+            $hourly = isset($hourlySalary['rate']) && !empty($hourlySalary['rate']) ? [
+                'rate' => $hourlySalary['rate'],
+            ] : false;
+
+            $hourly['notIncludeBreaks'] = isset($hourlySalary['notIncludeBreaks']) && $hourlySalary['notIncludeBreaks'] === 'on';
         }
 
-        $base = isset($salary['base']['rate']) && !empty($salary['base']['rate']) ? [
-            'rate' => rand(1000, 5000),
-            'added' => 'Weekly',
-            'on' => 'Monday'
-        ] : false;
+        $baseSalary = $salary['base'];
 
-        if ($base && isset($salary['base']['added'])) {
-            $base['added'] = $salary['base']['added'];
-        }
+        if ($baseSalary['checked']) {
+            $base = isset($baseSalary['rate']) && !empty($baseSalary['rate']) ? [
+                'rate' => rand(1000, 5000),
+                'added' => 'Weekly',
+                'on' => 'Monday'
+            ] : false;
 
-        if ($base && isset($salary['base']['on'])) {
-            $base['on'] = $salary['base']['on'];
+            if ($base && isset($baseSalary['added'])) {
+                $base['added'] = $baseSalary['added'];
+            }
+
+            if ($base && isset($baseSalary['on'])) {
+                $base['on'] = $baseSalary['on'];
+            }
         }
 
         $commissionOrHourly = isset($salary['commissionOrHourly']) && $salary['commissionOrHourly'] === 'on';
@@ -317,12 +329,20 @@ class User extends ActiveRecord implements IdentityInterface
 //                    0 => ['from' => 0, 'to' => 500, 'commission' => rand(5, 10)],
 //                    1 => ['from' => 501, 'to' => 1000, 'commission' => rand(11, 15)],
 //                ],
-            'flat' => $flat,
+            'flat' => $flat ?? false,
             'product' => $product,
-            'hourly' => $hourly,
-            'base' => $base,
+            'hourly' => $hourly ?? false,
+            'base' => $base ?? false,
             'commissionOrHourly' => $commissionOrHourly
         ]);
+    }
+
+    /**
+     * @return object
+     */
+    public function getSalarySettings(): object
+    {
+        return (object) Json::decode($this->salary_settings);
     }
 
     /**

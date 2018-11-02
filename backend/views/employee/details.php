@@ -1,160 +1,125 @@
 <?php
 
-use yii\helpers\{Html, Json, Url};
-use yii\widgets\ActiveForm;
 use common\models\User;
 use kartik\select2\Select2;
+use yii\widgets\ActiveForm;
+use yii\helpers\{Html, Url};
 
 /* @var $this yii\web\View */
 /* @var $user User */
+/* @var $model \backend\models\EmployeeSalaryForm */
 
 $this->title = 'Salary settings';
-$salary = Json::decode($user->salary_settings);
+$salary = $user->salarySettings;
+
+$options = [
+    'template' => "{label}\n<div class='col-md-6 col-sm-6 col-xs-12'>{input}</div>\n{hint}\n{error}",
+    'labelOptions' => ['class' => 'control-label col-md-3 col-sm-3 col-xs-12'],
+    'inputOptions' => ['class' => 'form-control col-md-7 col-xs-12']
+];
 ?>
     <div class="user-details">
 
         <h1><?= Html::encode($this->title) ?></h1>
         <h2><?= Html::encode($user->name) ?></h2>
 
-        <p>
-            <?= Html::a('Update', ['update', 'id' => $user->id], ['class' => 'btn btn-primary']) ?>
-            <?= Html::a('Delete', ['delete', 'id' => $user->id], [
-                'class' => 'btn btn-danger',
-                'data' => [
-                    'confirm' => 'Are you sure you want to delete this item?',
-                    'method' => 'post',
-                ],
-            ]) ?>
-        </p>
-
-        <?php $form = ActiveForm::begin(['options' => ['class' => 'salary-setting-form']]) ?>
-
-        <!-- COMMISSION STEPS -->
-<!--        <div>-->
-<!--            <label class="control-label">-->
-<!--                <input type="checkbox" name="steps"> Commission Steps-->
-<!--            </label>-->
-<!--            <table>-->
-<!--                <thead>-->
-<!--                <tr>-->
-<!--                    <th></th>-->
-<!--                    <th>From ($)</th>-->
-<!--                    <th>To ($)</th>-->
-<!--                    <th>Commission (%)</th>-->
-<!--                </tr>-->
-<!--                </thead>-->
-<!--                <tbody>-->
-<!--                <tr class="step-0">-->
-<!--                    <td></td>-->
-<!--                    <td><input type="text"="0"></td>-->
-<!--                    <td><input name="steps[0][to]" type="number" min="0" max="99999" step="any"></td>-->
-<!--                    <td><input name="steps[0][rate]" type="number" min="0" max="100" step="any"></td>-->
-<!--                </tr>-->
-<!--                <tr class="step-1">-->
-<!--                    <td>-->
-<!--                        <label>-->
-<!--                            <input type="checkbox" name="steps][1]"> Step 2-->
-<!--                        </label>-->
-<!--                    </td>-->
-<!--                    <td><input type="text"></td>-->
-<!--                    <td><input name="steps[1][to]" type="number" min="0" max="99999" step="any"></td>-->
-<!--                    <td><input name="steps[1][rate]" type="number" min="0" max="100" step="any"></td>-->
-<!--                </tr>-->
-<!--                </tbody>-->
-<!--            </table>-->
-<!--        </div>-->
+        <?php $form = ActiveForm::begin(['options' => ['class' => 'salary-setting-form form-horizontal form-label-left']]) ?>
 
         <!-- SALARY HOURLY -->
+        <?php $hourly = $salary->hourly ?>
         <div>
-            <label class="control-label">
-                <input type="checkbox" name="hourly" <?= $salary['hourly'] ? 'checked' : null ?>> Hourly
-            </label>
+            <?php $model->hourlyStatus = $hourly['status'] ?>
+            <?= $form->field($model, 'hourlyStatus', $options)->checkbox() ?>
 
-            <input type="number" min="0" max="99999"
-                   name="hourly[rate]" <?= isset($salary['hourly']['rate']) ? 'value="' . $salary['hourly']['rate'] . '"' : null ?>>
+            <?php $model->hourlyRate = $hourly['rate'] ?>
+            <?= $form->field($model, 'hourlyRate', $options)->textInput([
+                'type' => 'number',
+                'min' => '0',
+                'max' => '99999'
+            ]) ?>
 
-            <label class="control-label">
-                <input type="checkbox"
-                       name="hourly[notIncludeBreaks]" <?= isset($salary['hourly']['notIncludeBreaks']) && $salary['hourly']['notIncludeBreaks'] ? 'checked' : null ?>>
-                Do not include breaks in total hours count
-            </label>
+            <?php $model->hourlyRate = $hourly['include_break'] ?>
+            <?= $form->field($model, 'hourlyIncludeBreaks', $options)->checkbox() ?>
+
         </div>
 
         <!-- COMMISSION FLAT -->
+        <?php $flat = $salary->flat ?>
         <div>
-            <label class="control-label">
-                <input type="checkbox" name="flat" <?= $salary['flat'] ? 'checked' : null ?>> Flat commission
-            </label>
+            <?php $model->flatStatus = $flat['status'] ?>
+            <?= $form->field($model, 'flatStatus')->checkbox() ?>
 
-            <input type="number" min="0" max="100" step="any"
-                   name="flat[rate]" <?= isset($salary['flat']['rate']) ? 'value="' . $salary['flat']['rate'] . '"' : null ?>>
+            <?php $model->flatRate = $flat['rate'] ?>
+            <?= $form->field($model, 'flatRate')->textInput([
+                'type' => 'number',
+                'step' => 'any'
+            ]) ?>
         </div>
 
         <!-- COMMISSION PRODUCT -->
+        <?php $product = $salary->product ?>
         <div>
-            <label class="control-label">
-                <input type="checkbox" name="product" <?= $salary['product'] ? 'checked' : null ?>> Products commission
-            </label>
+            <?php $model->productStatus = $product['status'] ?>
+            <?= $form->field($model, 'productStatus')->checkbox() ?>
         </div>
 
         <!-- COMMISSION or Hourly -->
+        <?php $productOrCommission = $salary->product ?>
         <div>
-            <label class="control-label">
-                <input type="checkbox" name="commissionOrHourly" <?= $salary['commissionOrHourly'] ? 'checked' : null ?>> Higher of Commission or Hourly
-            </label>
+            <?php $model->productOrCommissionStatus = $productOrCommission['status'] ?>
+            <?= $form->field($model, 'productOrCommissionStatus')->checkbox() ?>
         </div>
 
         <!-- SALARY BASE -->
+        <?php $base = $salary->base ?>
         <div>
-            <label class="control-label">
-                <input type="checkbox" name="base" <?= $salary['base'] ? 'checked' : null ?>> Base Salary
-            </label>
+            <?php $model->baseStatus = $base['status'] ?>
+            <?= $form->field($model, 'baseStatus')->checkbox() ?>
 
-            <label for="salary_base_rate" class="control-label">$</label>
-            <input id="salary_base_rate" type="number" min="0" max="999999"
-                   name="base[rate]" <?= isset($salary['base']['rate']) ? 'value="' . $salary['base']['rate'] . '"' : null ?>>
+            <?php $model->baseRate = $base['rate'] ?>
+            <?= $form->field($model, 'baseRate')->textInput(['type' => 'number']) ?>
 
-            <label for="salary_added" class="control-label">Added To Salary</label>
-            <select id="salary_added"
-                    name="base[added]" <?= isset($salary['base']['added']) ? 'value="' . $salary['base']['added'] . '"' : null ?>>
-                <option value="weekly">Weekly</option>
-                <option value="monthly">Monthly</option>
-            </select>
+            <?php $model->baseAdded = $base['added'] ?>
+            <?= $form->field($model, 'baseAdded')->dropDownList([
+                'weekly' => 'Weekly',
+                'monthly' => 'Monthly'
+            ]) ?>
 
-            <label for="salary_on" class="control-label">on</label>
-            <select id="salary_on"
-                    name="base[on]" <?= isset($salary['base']['on']) ? 'value="' . $salary['base']['on'] . '"' : null ?>>
-                <option value="">Monday</option>
-                <option value="">Tuesday</option>
-                <option value="">Wednesday</option>
-                <option value="">Thursday</option>
-                <option value="">Friday</option>
-                <option value="">Saturday</option>
-                <option value="">Sunday</option>
-            </select>
+            <?php $model->baseAddedOn = $base['added_on'] ?>
+            <?= $form->field($model, 'baseAddedOn')->dropDownList([
+                1 => 'Monday',
+                2 => 'Tuesday',
+                3 => 'Wednesday',
+                4 => 'Thursday',
+                5 => 'Friday',
+                6 => 'Saturday',
+                7 => 'Sunday',
+            ]) ?>
         </div>
 
         <div>
             <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
         </div>
-        <?php ActiveForm::end() ?>
 
-        <div class="col-sm-6">
-            <!-- COPY SALARY SETTINGS -->
-            <div>
-                <label class="control-label">Copy salary information from:</label>
-                <?= Select2::widget([
-                    'name' => 'user_settings',
-                    'data' => User::find()->select('name')->orderBy('name')->indexBy('id')->column(),
-                    'theme' => Select2::THEME_DEFAULT,
-                    'options' => [
-                        'placeholder' => 'Select a user ...',
-                    ],
-                ]) ?>
-                <?= Html::button('Copy', ['class' => 'btn btn-sm btn-primary copy-salary-info']) ?>
+        <div class="row">
+            <div class="col-sm-6">
+                <!-- COPY SALARY SETTINGS -->
+                <div>
+                    <label class="control-label">Copy salary information from:</label>
+                    <?= Select2::widget([
+                        'name' => 'user_settings',
+                        'data' => User::find()->select('name')->orderBy('name')->indexBy('id')->column(),
+                        'theme' => Select2::THEME_DEFAULT,
+                        'options' => [
+                            'placeholder' => 'Select a user ...',
+                        ],
+                    ]) ?>
+                    <?= Html::button('Copy', ['class' => 'btn btn-sm btn-primary copy-salary-info']) ?>
+                </div>
+
             </div>
-
         </div>
+        <?php ActiveForm::end() ?>
     </div>
 <?php
 $copyUrl = Url::to(['/employee/copy']);
