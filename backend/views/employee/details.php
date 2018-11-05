@@ -122,6 +122,7 @@ $options = [
         <?php ActiveForm::end() ?>
     </div>
 <?php
+// TODO: finish copying of settings
 $copyUrl = Url::to(['/employee/copy']);
 $script = <<< JS
 $('.copy-salary-info').on('click', e => {
